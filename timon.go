@@ -3,22 +3,27 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/pcap"
 )
 
-var (
-	device            = "wlp3s0"
-	snapshotLen int32 = 1024
-	promiscuous       = false
-	err         error
-	timeout     time.Duration = 5 * time.Second
-	handle      *pcap.Handle
-)
-
 func main() {
+	if len(os.Args) < 2 {
+		fmt.Println("Usage:\n\tsudo timon [interface]\n")
+		return
+	}
+
+	var (
+		device            = os.Args[1]
+		snapshotLen int32 = 1024
+		promiscuous       = false
+		err         error
+		timeout     time.Duration = 1 * time.Second
+		handle      *pcap.Handle
+	)
 
 	// Open device
 	handle, err = pcap.OpenLive(device, snapshotLen, promiscuous, timeout)
