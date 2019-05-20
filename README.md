@@ -11,7 +11,7 @@
 `go build -o bin/timon ./...`
 
 ## Run
-`sudo bin/timon [interface]`
+`sudo timon [interface]`
 
 In order to run timon, you need to choose an interface to monitor.
 
