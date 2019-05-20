@@ -88,12 +88,12 @@ func main() {
 				for i, octet := range tcpLayer.Payload {
 					//if character is printable, print it; else print a "."
 					if IsASCIIPrintable(rune(octet)) {
-						fmt.Print(string(octet), " ")
+						fmt.Print(string(octet))
 					} else {
-						fmt.Print(". ")
+						fmt.Print(".")
 					}
-					//every 40 characters printed, print a newline
-					if (i+1)%40 == 0 {
+					//every 80 characters printed, print a newline
+					if (i+1)%80 == 0 {
 						fmt.Println()
 					}
 				}
