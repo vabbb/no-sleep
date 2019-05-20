@@ -4,8 +4,8 @@
 
 # Install Instructions
 
-## Clone
-`https://gitlab.com/cc19-sapienza/timon.git`
+## Download
+`git clone https://gitlab.com/cc19-sapienza/timon.git`
 
 ## Build
 `go build -o bin/timon ./...`
