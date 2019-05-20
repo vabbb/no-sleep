@@ -6,13 +6,13 @@
 
 # Install Instructions
 
-## Download
+### Download
 `git clone https://gitlab.com/cc19-sapienza/timon.git`
 
-## Build
+### Build
 `go build -o bin/timon ./...`
 
-## Run
+### Run
 `sudo timon [interface]`
 
 (The `timon` executable is in the `bin/` folder)
