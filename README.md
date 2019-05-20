@@ -13,4 +13,6 @@
 ## Run
 `sudo bin/timon [interface]`
 
-In order to run timon, you need to choose an interface to monitor. You can list all of your interfaces with the command `ip addr`
+In order to run timon, you need to choose an interface to monitor.
+
+You can list all of your interfaces with the command `ip addr`
