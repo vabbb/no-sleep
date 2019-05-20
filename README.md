@@ -1,6 +1,8 @@
 # Requirements
 
-* go version >=1.11
+* `go` version >=1.11
+* Arch Linux dependencies: `libpcap`
+* Ubuntu dependencies: `libpcap-dev`
 
 # Install Instructions
 
