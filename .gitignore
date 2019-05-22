@@ -56,3 +56,4 @@ bin/
 #vscode stuff
 .vscode/
 settings.json
+*.code-workspace
