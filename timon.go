@@ -21,6 +21,7 @@ var (
 	ethLayer    layers.Ethernet
 	ipLayer     layers.IPv4
 	tcpLayer    layers.TCP
+	tlsLayer    layers.TLS
 )
 
 //IsASCIIPrintable => {true if char is printable ; false otherwise}
@@ -63,6 +64,7 @@ func main() {
 			layers.LayerTypeEthernet,
 			&ethLayer,
 			&ipLayer,
+			&tlsLayer,
 			&tcpLayer,
 		)
 
@@ -75,6 +77,27 @@ func main() {
 
 		//go through packet layers
 		for _, layerType := range foundLayerTypes {
+			//print IP info
+			if layerType == layers.LayerTypeTLS {
+				fmt.Println("TLS payload: ")
+				for i, octet := range tlsLayer.Contents {
+					//if character is printable, print it; else print a "."
+					if IsASCIIPrintable(rune(octet)) {
+						fmt.Print(string(octet))
+					} else {
+						fmt.Print(".")
+					}
+					//every 80 characters printed, print a newline
+					if (i+1)%80 == 0 {
+						fmt.Println()
+					}
+				}
+
+			}
+			//print IP info
+			if layerType == layers.LayerTypeTLS {
+				fmt.Println("IPv4: ", ipLayer.SrcIP, "->", ipLayer.DstIP)
+			}
 			//print IP info
 			if layerType == layers.LayerTypeIPv4 {
 				fmt.Println("IPv4: ", ipLayer.SrcIP, "->", ipLayer.DstIP)

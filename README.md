@@ -10,7 +10,7 @@ Suggestions are very much appreciated, on our Telegram group.
 
 # Requirements
 
-* `go` version >=1.11
+* `go` version >=1.12
 * Arch Linux dependencies: `libpcap`
 * Ubuntu dependencies: `libpcap-dev`
 
@@ -20,7 +20,7 @@ Suggestions are very much appreciated, on our Telegram group.
 `git clone https://gitlab.com/cc19-sapienza/timon.git`
 
 ### Build
-`go build -o bin/timon ./...`
+`go build -o bin/timon timon.go`
 
 ### Run
 `sudo timon [interface]`
