@@ -17,13 +17,13 @@ Suggestions are very much appreciated, on our Telegram group.
 # Install Instructions
 
 ### Download
-`git clone https://gitlab.com/cc19-sapienza/timon.git`
+* `git clone https://gitlab.com/cc19-sapienza/timon.git`
 
 ### Build
-`go build -o bin/timon timon.go`
+* `make`
 
 ### Run
-`sudo timon [interface]`
+* `sudo timon -i [interface]`
 
 (The `timon` executable is in the `bin/` folder)
 
