@@ -17,26 +17,24 @@ import (
 var (
 	err error
 
-	device  = flag.String("i", "", "Interface to get packets from")
-	fname   = flag.String("r", "", "Filename to read from, overrides -i")
-	pcapDir = flag.String("d", ".", `Directory to look into, overrides -i and -r.
-	Defaults to "."`)
-	//"tcp and dst port 80"
-	filter        = flag.String("f", "tcp", "BPF filter for pcap")
-	logAllPackets = flag.Bool("w", false, `
-	Logs every packet in great detail`)
-	bufferedPerConnection = flag.Int("connection_max_buffer", 0, `
-	Max packets to buffer for a single connection before skipping over a gap 
-	in data and continuing to stream the connection after the buffer. If zero 
-	or less, this is infinite.`)
-	bufferedTotal = flag.Int("total_max_buffer", 0, `
-	Max packets to buffer total before skipping over gaps in connections and
-	continuing to stream connection data.  If zero or less, this is infinite`)
+	pcapDir = flag.String("d", ".", "Directory to look into, overrides -i and -r.")
+	filter  = flag.String("f", "tcp", "BPF filter for pcap")
+
+	logAllPackets         = flag.Bool("w", false, `Logs every packet in great detail`)
+	bufferedPerConnection = flag.Int("connection_max_buffer", 0, "Max packets to"+
+		"buffer for a single connection before skipping over a gap in data and "+
+		"continuing to stream the connection after the buffer.\nIf zero or less, "+
+		"this is infinite.")
+	bufferedTotal = flag.Int("total_max_buffer", 0, "Max packets to buffer total "+
+		"before skipping over gaps in connections and continuing to stream "+
+		"connection data.\nIf zero or less, this is infinite")
+
 	help = flag.Bool("help", false, "Shows this output")
 
-	// pcapFiles is a map (dictionary), in which the keys are the last modify time
-	// and the value is the file's path
+	/* pcapFiles is a map (dictionary), in which
+	   the keys are the last modify time and the value is the file's path */
 	pcapFiles = make(map[int64]string)
+	fname     string
 
 	handle        *pcap.Handle
 	snapshotLen   int32 = 65536
@@ -63,9 +61,9 @@ func main() {
 		flag.PrintDefaults()
 		os.Exit(1)
 	}
-	if *device == "" && *fname == "" && *pcapDir == "" {
-		fmt.Print("Usage:\n\tsudo timon [-d pcaps' directory]\n\n")
-		fmt.Print("Show help:\n\tsudo timom -help\n\n")
+	if *pcapDir == "" {
+		fmt.Print("Usage:\n\ttcp_assembler [-d pcaps' directory]\n\n")
+		fmt.Print("Show help:\n\ttcp_assembler -help\n\n")
 		os.Exit(1)
 	}
 
@@ -89,11 +87,11 @@ func main() {
 		}
 	}
 
-	*fname = pcapFiles[lowest]
+	fname = pcapFiles[lowest]
 
 	// Open file
-	log.Infof("opening file %q", *fname)
-	handle, err = pcap.OpenOffline(*fname)
+	log.Infof("opening file %q", fname)
+	handle, err = pcap.OpenOffline(fname)
 	if err != nil {
 		log.Fatal("error opening pcap handle: ", err)
 	}

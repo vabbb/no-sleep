@@ -84,12 +84,10 @@ Before building for the first time, you will need to run the following commands:
 # Install Instructions
 
 ### Download
-* `git clone https://gitlab.com/cc19-sapienza/timon.git`
+    $ git clone https://gitlab.com/cc19-sapienza/timon.git
 
 ### Build
-* `make`
+    $ make
 
 ### Run
-* `tcp_assembler [-d pcaps' directory]`
-
-(The `timon` executable is in the `bin/` folder)
+    $ ./bin/tcp_assembler [-d pcaps' directory]
