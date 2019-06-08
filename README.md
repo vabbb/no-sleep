@@ -15,7 +15,8 @@ Suggestions are very much appreciated, on our Telegram group.
 # The Minimum Viable Product (MVP)
 
 ### tcp_assembler
-* able to parse data from .pcap files
+* able to parse data from pcap files
+* able to look for pcap files to process (with the format described in the above paragraph)... for now, we are fine with it just sorting pcap files by date, then processing the oldest one, then moving it to an `archive/` folder and start over again.
 * able to assemble data belonging to a single tcp flow
 * able to recognize when a flow is completed
 * able to assign the completed flow to the `flowt` struct
@@ -30,7 +31,6 @@ Suggestions are very much appreciated, on our Telegram group.
 # Next steps
 
 ### tcp_assembler
-* ability to process pcaps the tcp_assembler is lagging behind the rate at which pcap files are received: i.e. tcp_assembler would sort the pcap files in the pcaps directory, process the oldest one first, then rename it and move it to the archive folder
 * parsing flow contents to check for presence of flags
 * ... 
 
@@ -87,6 +87,6 @@ With `data_flowt` being like this:
 * `make`
 
 ### Run
-* `sudo timon -r [dump_%Y-%m-%d_%H:%M:%S.pcap]`
+* `sudo timon`
 
 (The `timon` executable is in the `bin/` folder)
