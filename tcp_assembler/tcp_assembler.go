@@ -4,23 +4,26 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"time"
 
-	"github.com/golang/glog"
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
 	"github.com/google/gopacket/tcpassembly"
+	log "github.com/sirupsen/logrus"
 )
 
 var (
 	err error
 
-	device = flag.String("i", "", "Interface to get packets from")
-	fname  = flag.String("r", "", "Filename to read from, overrides -i")
+	device  = flag.String("i", "", "Interface to get packets from")
+	fname   = flag.String("r", "", "Filename to read from, overrides -i")
+	pcapDir = flag.String("d", ".", `Directory to look into, overrides -i and -r.
+	Defaults to "."`)
 	//"tcp and dst port 80"
 	filter        = flag.String("f", "tcp", "BPF filter for pcap")
-	logAllPackets = flag.Bool("v", false, `
+	logAllPackets = flag.Bool("w", false, `
 	Logs every packet in great detail`)
 	bufferedPerConnection = flag.Int("connection_max_buffer", 0, `
 	Max packets to buffer for a single connection before skipping over a gap 
@@ -30,6 +33,10 @@ var (
 	Max packets to buffer total before skipping over gaps in connections and
 	continuing to stream connection data.  If zero or less, this is infinite`)
 	help = flag.Bool("help", false, "Shows this output")
+
+	// pcapFiles is a map (dictionary), in which the keys are the last modify time
+	// and the value is the file's path
+	pcapFiles = make(map[int64]string)
 
 	handle        *pcap.Handle
 	snapshotLen   int32 = 65536
@@ -56,24 +63,46 @@ func main() {
 		flag.PrintDefaults()
 		os.Exit(1)
 	}
-	if *device == "" && *fname == "" {
-		fmt.Print("Usage:\n\tsudo timon -r [dump.pcap]\n\n")
+	if *device == "" && *fname == "" && *pcapDir == "" {
+		fmt.Print("Usage:\n\tsudo timon [-d pcaps' directory]\n\n")
 		fmt.Print("Show help:\n\tsudo timom -help\n\n")
 		os.Exit(1)
 	}
 
-	// Open device
-	glog.V(2).Infof("starting capture on interface %q", *device)
+	// find .pcap file to analyze
+	err := filepath.Walk(*pcapDir, func(path string, info os.FileInfo, err error) error {
+		if !info.IsDir() && filepath.Ext(path) == ".pcap" {
+			pcapFiles[info.ModTime().UnixNano()] = path
+		}
+		return nil
+	})
+	if err != nil {
+		log.Fatal("error looking through files: ", err)
+	}
+	if len(pcapFiles) == 0 {
+		log.Fatal("No .pcap files found")
+	}
+	lowest := int64(^uint64(0) >> 1)
+	for t := range pcapFiles {
+		if t < lowest {
+			lowest = t
+		}
+	}
+
+	*fname = pcapFiles[lowest]
+
+	// Open file
+	log.Infof("opening file %q", *fname)
 	handle, err = pcap.OpenOffline(*fname)
 	if err != nil {
-		glog.Fatal("error opening pcap handle: ", err)
+		log.Fatal("error opening pcap handle: ", err)
 	}
 	defer handle.Close()
 
 	// Set filter for only tcp traffic. Can also filter port numbers
 	err = handle.SetBPFFilter(*filter)
 	if err != nil {
-		glog.Fatal("error setting BPF filter: ", err)
+		log.Fatal("error setting BPF filter: ", err)
 	}
 
 	// Set up assembly
@@ -110,17 +139,17 @@ loop:
 				//go to next .pcap file (if it exists, else wait around)
 				break
 			}
-			glog.V(2).Infof("error getting packet: %v", err)
+			log.Infof("error getting packet: %v", err)
 			continue
 		}
 
 		err = parser.DecodeLayers(data, &decoded)
 		if err != nil {
-			glog.V(2).Infof("error decoding packet: %v", err)
+			log.Infof("error decoding packet: %v", err)
 			continue
 		}
 		if *logAllPackets {
-			glog.V(2).Infof("decoded the following layers: %v", decoded)
+			log.Infof("decoded the following layers: %v", decoded)
 		}
 		byteCount += int64(len(data))
 		// Find either the IPv4 or IPv6 address to use as our network
@@ -143,11 +172,11 @@ loop:
 						ci.Timestamp,
 					)
 				} else {
-					glog.V(2).Infof("could not find IPv4 layer, ignoring")
+					log.Infof("could not find IPv4 layer, ignoring")
 				}
 				continue loop
 			}
 		}
-		glog.V(2).Infof("could not find TCP layer")
+		log.Infof("could not find TCP layer")
 	}
 }

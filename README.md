@@ -79,7 +79,7 @@ With `dataFlowt` being like this:
 Before building for the first time, you will need to run the following commands:
 
     $ go get github.com/google/gopacket
-    $ go get github.com/golang/glog
+    $ go get github.com/sirupsen/logrus
 
 # Install Instructions
 
@@ -90,6 +90,6 @@ Before building for the first time, you will need to run the following commands:
 * `make`
 
 ### Run
-* `sudo timon`
+* `tcp_assembler [-d pcaps' directory]`
 
 (The `timon` executable is in the `bin/` folder)

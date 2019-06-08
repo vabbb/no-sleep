@@ -2,13 +2,12 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"time"
 	"unicode"
 
-	"github.com/golang/glog"
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/tcpassembly"
+	log "github.com/sirupsen/logrus"
 )
 
 // IsASCIIPrintable will return true if char is printable
@@ -52,7 +51,7 @@ type tcpStream struct {
 }
 
 func (factory *tcpStreamFactory) New(net, tport gopacket.Flow) tcpassembly.Stream {
-	log.Printf("new stream %v:%v started", net, tport)
+	log.Infof("new stream %v:%v started", net, tport)
 	t := &tcpStream{
 		net:       net,
 		transport: tport,
@@ -82,7 +81,7 @@ func (s *tcpStream) Reassembled(reassemblies []tcpassembly.Reassembly) {
 // finished.
 func (s *tcpStream) ReassemblyComplete() {
 	diffSecs := float64(s.end.Sub(s.start)) / float64(time.Second)
-	glog.V(2).Infof("Reassembly of stream %v:%v complete - start:%v end:%v bytes:%v bps:%v",
+	log.Infof("Reassembly of stream %v:%v complete - start:%v end:%v bytes:%v bps:%v",
 		s.net, s.transport, s.start, s.end, s.bytes,
 		float64(s.bytes)/diffSecs)
 	fmt.Println("Payload:")
