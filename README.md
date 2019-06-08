@@ -59,7 +59,7 @@ Suggestions are very much appreciated, on our Telegram group.
     }
 
 
-With `data_flowt` being like this:
+With `dataFlowt` being like this:
 
     type dataFlowt struct {
         from string
