@@ -78,17 +78,17 @@ With `data_flowt` being like this:
 * Arch Linux dependencies: `libpcap`
 * Ubuntu dependencies: `libpcap-dev`
 
+Before building for the first time, you will need to run the following commands:
+
+      $ go get github.com/google/gopacket
+      $ go get github.com/golang/glog
+
 # Install Instructions
 
 ### Download
 * `git clone https://gitlab.com/cc19-sapienza/timon.git`
 
 ### Build
-Before building for the first time, you will need to run the following commands:
-
-      $ go get github.com/google/gopacket
-      $ go get github.com/golang/glog
-
 * `make`
 
 ### Run
