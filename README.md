@@ -2,11 +2,11 @@
 
 The project will be divided into four components:
 
-* **tcpdump** - We will run tcpdump on the vulnbox as follows:
+* **tcpdump** - We will run `tcpdump` on the vulnbox as follows:
     
         # tcpdump -i [device] -G 60 -z "./send_to_remote_assembler_and_archive.py" -w dump_%Y-%m-%d_%H:%M:%S.pcap tcp port 8080 or 443 or 80
 
-* **tcp_assembler** - Written in Go. This is a service that periodically checks for new files named dump_%Y-%m-%d_%H:%M:%S.pcap, processes them, then archives them.
+* **tcp_assembler** - Written in Go. This is a service that periodically checks for new files named `dump_%Y-%m-%d_%H:%M:%S.pcap`, processes them, then archives them.
 * **The Database** - This will be where all the data from the TCP streams will be archived. Ideally, we will be using a NoSQL DB (mongodb), that can be installed on any machine, but, by default, it will be assumed to be running on the same machine as the Packet Sniffer, on port 27017. I don't think much coding will be required for this component, it should *just work* ™.
 * **The Front-end** - This will be the interface through which we will access the data stored in the Database. It can be realized either on python flask, any node-js server, or Nginx. This component will need to have the following features: **real-time traffic updates** (done through ajax requests), **filter by "presence of a flag"** in a TCP stream, **ease of use** in order to make other team's exploit reusable as fast as possible (see how [Flower](https://github.com/secgroup/flower) does it).
 
@@ -18,11 +18,11 @@ Suggestions are very much appreciated, on our Telegram group.
 * able to parse data from .pcap files
 * able to assemble data belonging to a single tcp flow
 * able to recognize when a flow is completed
-* able to assign the completed flow to the "flowt" struct
+* able to assign the completed flow to the `flowt` struct
 * able to push a finished tcp flow to mongodb, using the stuct defined later, plus a unique id (which can be the hash of the tcp flow identifiers and its start time)
 
 ### Database
-* having a working instance of mongodb
+* having a working instance of `mongodb`
 
 ### Webserver
 * bare-bones webserver able to query the mongodb and display the data that was pushed to it
@@ -36,9 +36,12 @@ Suggestions are very much appreciated, on our Telegram group.
 
 ### Webserver
 * screen to show current iptables configuration
-* option to manually mark bad packet contents with iptables, and automatically update iptables configuration on the vulnbox
+* option to manually mark bad packet contents with `iptables`, and automatically update iptables' configuration on the vulnbox
 * ...
-* heuristic analysis to mark bad packets
+
+
+### Other
+* make a new packet sniffer to provide heuristic analysis to mark bad packets
 * ...
 
 # Flow Structure
@@ -58,7 +61,7 @@ Suggestions are very much appreciated, on our Telegram group.
         data_flow   []data_flowt    // custom type
     }
 
-With data_flowt being like this:
+With `data_flowt` being like this:
 
     type data_flowt struct {
         from    string
@@ -84,6 +87,6 @@ With data_flowt being like this:
 * `make`
 
 ### Run
-* `sudo timon -r [dump.pcap]`
+* `sudo timon -r [dump_%Y-%m-%d_%H:%M:%S.pcap]`
 
 (The `timon` executable is in the `bin/` folder)
