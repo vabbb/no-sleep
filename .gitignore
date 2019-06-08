@@ -37,8 +37,11 @@ ehthumbs.db
 Thumbs.db
 
 # bin/ dir #
-###################
 bin/
+
+# debug dirs
+vulnbox_config/pcap/
+vulnbox_config/archive/
 
 # Binaries for programs and plugins
 *.exe
