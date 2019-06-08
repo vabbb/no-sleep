@@ -3,8 +3,8 @@
 The project will be divided into four components:
 
 * **tcpdump** - We will run `tcpdump` on the vulnbox as follows:
-    
-        # tcpdump -i [device] -G 60 -z "./send_to_remote_assembler_and_archive.py" -w dump_%Y-%m-%d_%H:%M:%S.pcap tcp port 8080 or 443 or 80
+
+      # tcpdump -i [device] -G 60 -z "./send_to_remote_assembler_and_archive.py" -w dump_%Y-%m-%d_%H:%M:%S.pcap tcp port 8080 or 443 or 80
 
 * **tcp_assembler** - Written in Go. This is a service that periodically checks for new files named `dump_%Y-%m-%d_%H:%M:%S.pcap`, processes them, then archives them.
 * **The Database** - This will be where all the data from the TCP streams will be archived. Ideally, we will be using a NoSQL DB (mongodb), that can be installed on any machine, but, by default, it will be assumed to be running on the same machine as the Packet Sniffer, on port 27017. I don't think much coding will be required for this component, it should *just work* ™.
@@ -84,6 +84,11 @@ With `data_flowt` being like this:
 * `git clone https://gitlab.com/cc19-sapienza/timon.git`
 
 ### Build
+Before building for the first time, you will need to run the following commands:
+
+      $ go get github.com/google/gopacket
+      $ go get github.com/golang/glog
+
 * `make`
 
 ### Run
