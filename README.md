@@ -18,6 +18,9 @@ Suggestions are very much appreciated, on our Telegram group.
 * having a working instance of mongodb
 * bare-bones web-server able to query the mongodb and display the data that was pushed to it
 
+### Pushing flows to database:
+* If a flow with the same identifiers (ip addresses and port addresses) already exists in the database, check for its last_seen field. If it was last_seen within the past 5 minutes, add the current flow to that one. Otherwise, create a new flow.
+
 # Next steps
 
 ### flow_parser
@@ -41,6 +44,7 @@ Flow data structure, in Go:
         dst_port    uint16
         time        int64       // as is returned by time.Now().UnixNano()
                                 // measured in nanoseconds
+        last_seen   int64       // in nanoseconds
         has_flag    bool        // regex find for flag{...} pattern
         favourite   bool        // defaults to false, can only be
                                 // changed from the front-end
