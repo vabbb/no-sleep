@@ -48,27 +48,25 @@ Suggestions are very much appreciated, on our Telegram group.
 `flowt` data structure, in Go:
 
     type flowt struct {
-        src_ip      string
-        dst_ip      string
-        src_port    uint16
-        dst_port    uint16
-        time        int64       // as is returned by time.Now().UnixNano()
-                                // measured in nanoseconds
-        last_seen   int64       // in nanoseconds
-        has_flag    bool        // regex find for flag{...} pattern
-        favourite   bool        // defaults to false, can only be
-                                // changed from the front-end
-        data_flow   []data_flowt    // custom type
+        srcIP, dstIP     string
+        srcPort, dstPort uint16
+        time             int64 // as is returned by time.Now().UnixNano()
+        lastSeen         int64 // also in nanoseconds
+        hasFlag          bool  // regex find for flag{...} pattern
+        favourite        bool  // defaults to false, can only be
+        // changed from the front-end
+        dataFlow []dataFlowt // custom type
     }
+
 
 With `data_flowt` being like this:
 
-    type data_flowt struct {
-        from    string
+    type dataFlowt struct {
+        from string
         // some redundancy for faster processing
-        data    string      // printable representation of the data
-        hex     []byte      // hex representation of the data
-        time    int64       // as is returned by time.Now().UnixNano()
+        data string // printable representation of the data
+        hex  []byte // hex representation of the data
+        time int64  // as is returned by time.Now().UnixNano()
     }
 
 
@@ -80,8 +78,8 @@ With `data_flowt` being like this:
 
 Before building for the first time, you will need to run the following commands:
 
-      $ go get github.com/google/gopacket
-      $ go get github.com/golang/glog
+    $ go get github.com/google/gopacket
+    $ go get github.com/golang/glog
 
 # Install Instructions
 

@@ -63,7 +63,7 @@ func main() {
 	}
 
 	// Open device
-	glog.Infof("starting capture on interface %q", *device)
+	glog.V(2).Infof("starting capture on interface %q", *device)
 	handle, err = pcap.OpenOffline(*fname)
 	if err != nil {
 		glog.Fatal("error opening pcap handle: ", err)
@@ -107,20 +107,20 @@ loop:
 
 		if err != nil {
 			if err.Error() == "EOF" {
-				//go to next .pcap file, if it exists
+				//go to next .pcap file (if it exists, else wait around)
 				break
 			}
-			glog.Infof("error getting packet: %v", err)
+			glog.V(2).Infof("error getting packet: %v", err)
 			continue
 		}
 
 		err = parser.DecodeLayers(data, &decoded)
 		if err != nil {
-			glog.Infof("error decoding packet: %v", err)
+			glog.V(2).Infof("error decoding packet: %v", err)
 			continue
 		}
 		if *logAllPackets {
-			glog.Infof("decoded the following layers: %v", decoded)
+			glog.V(2).Infof("decoded the following layers: %v", decoded)
 		}
 		byteCount += int64(len(data))
 		// Find either the IPv4 or IPv6 address to use as our network
@@ -143,11 +143,11 @@ loop:
 						ci.Timestamp,
 					)
 				} else {
-					glog.Infof("could not find IPv4 layer, ignoring")
+					glog.V(2).Infof("could not find IPv4 layer, ignoring")
 				}
 				continue loop
 			}
 		}
-		glog.Infof("could not find TCP layer")
+		glog.V(2).Infof("could not find TCP layer")
 	}
 }
