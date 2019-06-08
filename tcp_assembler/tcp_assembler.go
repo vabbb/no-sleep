@@ -3,10 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"time"
 
+	"github.com/golang/glog"
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
@@ -63,17 +63,17 @@ func main() {
 	}
 
 	// Open device
-	log.Printf("starting capture on interface %q", *device)
-	handle, err = pcap.OpenLive(*device, snapshotLen, promiscuous, flushDuration/2)
+	glog.Infof("starting capture on interface %q", *device)
+	handle, err = pcap.OpenOffline(*fname)
 	if err != nil {
-		log.Fatal("error opening pcap handle: ", err)
+		glog.Fatal("error opening pcap handle: ", err)
 	}
 	defer handle.Close()
 
 	// Set filter for only tcp traffic. Can also filter port numbers
 	err = handle.SetBPFFilter(*filter)
 	if err != nil {
-		log.Fatal("error setting BPF filter: ", err)
+		glog.Fatal("error setting BPF filter: ", err)
 	}
 
 	// Set up assembly
@@ -106,17 +106,21 @@ loop:
 		data, ci, err := handle.ReadPacketData()
 
 		if err != nil {
-			log.Printf("error getting packet: %v", err)
+			if err.Error() == "EOF" {
+				//go to next .pcap file, if it exists
+				break
+			}
+			glog.Infof("error getting packet: %v", err)
 			continue
 		}
 
 		err = parser.DecodeLayers(data, &decoded)
 		if err != nil {
-			log.Printf("error decoding packet: %v", err)
+			glog.Infof("error decoding packet: %v", err)
 			continue
 		}
 		if *logAllPackets {
-			log.Printf("decoded the following layers: %v", decoded)
+			glog.Infof("decoded the following layers: %v", decoded)
 		}
 		byteCount += int64(len(data))
 		// Find either the IPv4 or IPv6 address to use as our network
@@ -139,11 +143,11 @@ loop:
 						ci.Timestamp,
 					)
 				} else {
-					log.Println("could not find IPv4 layer, ignoring")
+					glog.Infof("could not find IPv4 layer, ignoring")
 				}
 				continue loop
 			}
 		}
-		log.Println("could not find TCP layer")
+		glog.Infof("could not find TCP layer")
 	}
 }
