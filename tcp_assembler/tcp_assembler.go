@@ -80,14 +80,14 @@ func main() {
 	if len(pcapFiles) == 0 {
 		log.Fatal("No .pcap files found")
 	}
-	lowest := int64(^uint64(0) >> 1)
+
+	oldest := int64(^uint64(0) >> 1)
 	for t := range pcapFiles {
-		if t < lowest {
-			lowest = t
+		if t < oldest {
+			oldest = t
 		}
 	}
-
-	fname = pcapFiles[lowest]
+	fname = pcapFiles[oldest]
 
 	// Open file
 	log.Infof("opening file %q", fname)
@@ -150,8 +150,8 @@ loop:
 			log.Infof("decoded the following layers: %v", decoded)
 		}
 		byteCount += int64(len(data))
-		// Find either the IPv4 or IPv6 address to use as our network
-		// layer.
+
+		// Find either the IPv4 or IPv6 address to use as our network layer.
 		foundNetLayer := false
 		var netFlow gopacket.Flow
 		for _, typ := range decoded {
