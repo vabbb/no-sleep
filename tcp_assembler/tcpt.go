@@ -81,21 +81,24 @@ func (s *tcpStream) Reassembled(reassemblies []tcpassembly.Reassembly) {
 // finished.
 func (s *tcpStream) ReassemblyComplete() {
 	diffSecs := float64(s.end.Sub(s.start)) / float64(time.Second)
-	log.Infof("Reassembly of stream %v:%v complete - start:%v end:%v bytes:%v bps:%v",
-		s.net, s.transport, s.start, s.end, s.bytes,
-		float64(s.bytes)/diffSecs)
-	fmt.Println("Payload:")
-	for i, octet := range s.payload {
-		//if character is printable, print it; else print a "."
-		if IsASCIIPrintable(rune(octet)) {
-			fmt.Print(string(octet))
-		} else {
-			fmt.Print(".")
+	// ignore flows that contain no payload
+	if len(s.payload) > 0 {
+		log.Infof("Reassembly of stream %v:%v complete - start:%v end:%v bytes:%v bps:%v",
+			s.net, s.transport, s.start, s.end, s.bytes,
+			float64(s.bytes)/diffSecs)
+		fmt.Println("Payload:")
+		for i, octet := range s.payload {
+			//if character is printable, print it; else print a "."
+			if IsASCIIPrintable(rune(octet)) {
+				fmt.Print(string(octet))
+			} else {
+				fmt.Print(".")
+			}
+			//every 80 characters printed, print a newline
+			if (i+1)%80 == 0 {
+				fmt.Println()
+			}
 		}
-		//every 80 characters printed, print a newline
-		if (i+1)%80 == 0 {
-			fmt.Println()
-		}
+		fmt.Print("\n-------------------------------\n")
 	}
-	fmt.Print("\n-------------------------------\n")
 }
