@@ -15,9 +15,9 @@ Suggestions are very much appreciated, on our Telegram group.
 # The Minimum Viable Product (MVP)
 
 ### tcp_assembler
-* able to parse data from pcap files
-* able to look for pcap files to process (with the format described in the above paragraph)... for now, we are fine with it just sorting pcap files by date, then processing the oldest one, then moving it to an `archive/` folder and start over again.
-* able to assemble data belonging to a single tcp flow
+* ✓ ~~able to parse data from pcap files~~
+* ✓ ~~able to look for pcap files to process (with the format described in the above paragraph)... for now, we are fine with it just sorting pcap files by date, then processing the oldest one, then moving it to an `archive/` folder and start over again.~~
+* ✓ ~~able to assemble data belonging to a single tcp flow~~
 * able to recognize when a flow is completed
 * able to assign the completed flow to the `flowt` struct
 * able to push a finished tcp flow to mongodb, using the stuct defined later, plus a unique id (which can be the hash of the tcp flow identifiers and its start time)
