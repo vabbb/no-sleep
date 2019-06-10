@@ -1,10 +1,11 @@
 package main
 
 import (
+	"errors"
 	"flag"
-	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/google/gopacket"
@@ -17,8 +18,9 @@ import (
 var (
 	err error
 
-	pcapDir = flag.String("d", ".", "Directory to look into, overrides -i and -r.")
-	filter  = flag.String("f", "tcp", "BPF filter for pcap")
+	pcapDir    = flag.String("d", "pcaps", "Directory to look into for pcap files")
+	archiveDir = flag.String("a", "archive", "Directory where to store archived "+
+		"pcap files")
 
 	logAllPackets         = flag.Bool("w", false, `Logs every packet in great detail`)
 	bufferedPerConnection = flag.Int("connection_max_buffer", 0, "Max packets to"+
@@ -31,10 +33,7 @@ var (
 
 	help = flag.Bool("help", false, "Shows this output")
 
-	/* pcapFiles is a map (dictionary), in which
-	   the keys are the last modify time and the value is the file's path */
-	pcapFiles = make(map[int64]string)
-	fname     string
+	fname string
 
 	handle        *pcap.Handle
 	snapshotLen   int32 = 65536
@@ -54,18 +53,10 @@ var (
 		&ethLayer, &ip4Layer, &ip6Layer, &tlsLayer, &tcpLayer, &payloadLayer)
 )
 
-func main() {
-	//parse command line arguments
-	flag.Parse()
-	if *help == true {
-		flag.PrintDefaults()
-		os.Exit(1)
-	}
-	if *pcapDir == "" {
-		fmt.Print("Usage:\n\ttcp_assembler [-d pcaps' directory]\n\n")
-		fmt.Print("Show help:\n\ttcp_assembler -help\n\n")
-		os.Exit(1)
-	}
+func oldestPcap() (response string, arr error) {
+	/* pcapFiles is a map (dictionary), in which
+	   the keys are the last modify time and the value is the file's path */
+	pcapFiles := make(map[int64]string)
 
 	// find .pcap file to analyze
 	err := filepath.Walk(*pcapDir, func(path string, info os.FileInfo, err error) error {
@@ -75,34 +66,43 @@ func main() {
 		return nil
 	})
 	if err != nil {
-		log.Fatal("error looking through files: ", err)
+		log.Fatal("Error looking through files: ", err)
 	}
 	if len(pcapFiles) == 0 {
-		log.Fatal("No .pcap files found")
+		log.Infof("No .pcap files found")
+		return "", errors.New("no pcaps dawg")
 	}
 
-	oldest := int64(^uint64(0) >> 1)
+	oldest := int64(^uint64(0) >> 1) // this means "MAX_UINT64"
 	for t := range pcapFiles {
 		if t < oldest {
 			oldest = t
 		}
 	}
-	fname = pcapFiles[oldest]
+	return pcapFiles[oldest], nil
+}
 
-	// Open file
-	log.Infof("opening file %q", fname)
-	handle, err = pcap.OpenOffline(fname)
-	if err != nil {
-		log.Fatal("error opening pcap handle: ", err)
+// init happens before main
+func init() {
+	// DEBUG MODE
+	log.SetLevel(log.DebugLevel)
+
+	//parse command line arguments
+	flag.Parse()
+
+	// Create archiveDir if it doesnt exist
+	if _, err := os.Stat(*archiveDir); os.IsNotExist(err) {
+		os.Mkdir(*archiveDir, 0755)
 	}
-	defer handle.Close()
 
-	// Set filter for only tcp traffic. Can also filter port numbers
-	err = handle.SetBPFFilter(*filter)
-	if err != nil {
-		log.Fatal("error setting BPF filter: ", err)
+	// If user asked for help...
+	if *help == true {
+		flag.PrintDefaults()
+		os.Exit(1)
 	}
+}
 
+func main() {
 	// Set up assembly
 	streamFactory := &tcpStreamFactory{}
 	streamPool := tcpassembly.NewStreamPool(streamFactory)
@@ -115,66 +115,96 @@ func main() {
 
 	decoded := make([]gopacket.LayerType, 0, 4)
 
-	// infinite loop for reading packets
-loop:
 	for {
-		// Check to see if we should flush the streams we have
-		// that haven't seen any new data in a while.  Note we set a
-		// timeout on our PCAP handle, so this should happen even if we
-		// never see packet data.
-		if time.Now().After(nextFlush) {
-			// flushing all streams that haven't seen packets
-			// in the last 2 minutes
-			assembler.FlushOlderThan(time.Now().Add(flushDuration))
-			nextFlush = time.Now().Add(flushDuration / 2)
-		}
-
-		// copy packet from kernel buffers with ReadPacketData
-		data, ci, err := handle.ReadPacketData()
-
-		if err != nil {
-			if err.Error() == "EOF" {
-				//go to next .pcap file (if it exists, else wait around)
+		// loop until a .pcap file to analyze is found
+		for {
+			fname, err = oldestPcap()
+			if err == nil {
 				break
 			}
-			log.Infof("error getting packet: %v", err)
-			continue
+			time.Sleep(time.Second * 10)
 		}
 
-		err = parser.DecodeLayers(data, &decoded)
+		// Open file
+		log.Infof("opening file %q", fname)
+		handle, err = pcap.OpenOffline(fname)
 		if err != nil {
-			log.Infof("error decoding packet: %v", err)
-			continue
+			log.Fatal("error opening pcap handle: ", err)
 		}
-		if *logAllPackets {
-			log.Infof("decoded the following layers: %v", decoded)
-		}
-		byteCount += int64(len(data))
+		defer handle.Close()
 
-		// Find either the IPv4 or IPv6 address to use as our network layer.
-		foundNetLayer := false
-		var netFlow gopacket.Flow
-		for _, typ := range decoded {
-			switch typ {
-			case layers.LayerTypeIPv4:
-				netFlow = ip4Layer.NetworkFlow()
-				foundNetLayer = true
-			case layers.LayerTypeIPv6:
-				netFlow = ip6Layer.NetworkFlow()
-				foundNetLayer = true
-			case layers.LayerTypeTCP:
-				if foundNetLayer {
-					assembler.AssembleWithTimestamp(
-						netFlow,
-						&tcpLayer,
-						ci.Timestamp,
-					)
-				} else {
-					log.Infof("could not find IPv4 layer, ignoring")
+		// READ PACKETS FROM PCAP FILE
+		for {
+			// Check to see if we should flush the streams we have
+			// that haven't seen any new data in a while.  Note we set a
+			// timeout on our PCAP handle, so this should happen even if we
+			// never see packet data.
+			if time.Now().After(nextFlush) {
+				// flushing all streams that haven't seen packets
+				// in the last 2 minutes
+				assembler.FlushOlderThan(time.Now().Add(flushDuration))
+				nextFlush = time.Now().Add(flushDuration / 2)
+			}
+
+			// copy packet from kernel buffers with ReadPacketData
+			data, ci, err := handle.ReadPacketData()
+
+			if err != nil {
+				if err.Error() == "EOF" {
+					//go to next .pcap file (if it exists, else wait around)
+					break
 				}
-				continue loop
+				log.Tracef("error getting packet: %v", err)
+				continue
+			}
+
+			err = parser.DecodeLayers(data, &decoded)
+			if err != nil {
+				log.Tracef("error decoding packet: %v", err)
+				continue
+			}
+			if *logAllPackets {
+				log.Tracef("decoded the following layers: %v", decoded)
+			}
+			byteCount += int64(len(data))
+
+			// Find either the IPv4 or IPv6 address to use as our network layer.
+			foundNetLayer := false
+			var netFlow gopacket.Flow
+			for _, typ := range decoded {
+				switch typ {
+				case layers.LayerTypeIPv4:
+					netFlow = ip4Layer.NetworkFlow()
+					foundNetLayer = true
+				case layers.LayerTypeIPv6:
+					netFlow = ip6Layer.NetworkFlow()
+					foundNetLayer = true
+				case layers.LayerTypeTCP:
+					if foundNetLayer {
+						assembler.AssembleWithTimestamp(
+							netFlow,
+							&tcpLayer,
+							ci.Timestamp,
+						)
+					} else {
+						log.Trace("could not find IPv4 layer, ignoring")
+					}
+					continue
+				}
 			}
 		}
-		log.Infof("could not find TCP layer")
+		// Move analyzed pcap files to archive folder (if not in DEBUG MODE)
+		if log.GetLevel() != log.DebugLevel {
+			// move pcap file to archive folder
+			splitboi := strings.Split(fname, "/")
+			onlyFname := splitboi[len(splitboi)-1]
+			err := os.Rename(fname, *archiveDir+"/"+onlyFname)
+			if err != nil {
+				log.Fatal(err)
+			}
+		} else {
+			log.Debugf("We are in debug mode! Analysis will restart in 10s")
+			time.Sleep(time.Second * 10)
+		}
 	}
 }
