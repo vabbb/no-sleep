@@ -44,10 +44,7 @@ vulnbox_config/pcap/
 vulnbox_config/archive/
 
 # Binaries for programs and plugins
-*.exe
 *.exe~
-*.dll
-*.so
 *.dylib
 
 # Test binary, built with `go test -c`
@@ -60,3 +57,6 @@ vulnbox_config/archive/
 .vscode/
 settings.json
 *.code-workspace
+
+#python compiled
+*.pyc
