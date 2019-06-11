@@ -75,6 +75,18 @@
     <!-- Navbar Search -->
     <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
       <div class="input-group">
+        <div class="input-group-sm">
+          <input type="text" class="form-control" placeholder="SrcIP" style="width: 100px">
+          <input type="text" class="form-control" placeholder="SrcPort" style="width: 70px">
+        </div>
+        <div class="input-group-sm">
+          <input type="text" class="form-control" placeholder="DstIP" style="width: 100px">
+          <input type="text" class="form-control" placeholder="DstPort" style="width: 70px">
+        </div>
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" class="custom-control-input" id="defaultUnchecked">
+          <label class="custom-control-label text-light" for="defaultUnchecked">Hexdump</label>
+        </div>
         <input type="text" class="form-control" placeholder="Type here to search" aria-label="Search"
           aria-describedby="basic-addon2">
         <div class="input-group-append">
@@ -83,6 +95,7 @@
           </button>
         </div>
       </div>
+
     </form>
 
   </nav>
