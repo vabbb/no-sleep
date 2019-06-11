@@ -48,25 +48,49 @@ Suggestions are very much appreciated, on our Telegram group.
 `flowt` data structure, in Go:
 
     type flowt struct {
-        id               string
+        flowID           string
+        connID           string
         srcIP, dstIP     string
         srcPort, dstPort uint16
-        time             int64 // as is returned by time.Now().UnixNano()
+        start, end       int64 // as is returned by time.Now().UnixNano()
         hasFlag          bool  // regex find for flag{...} pattern
-        favourite        bool  /* defaults to false, can only be
+        favorite         bool  /* defaults to false, can only be
         changed from the front-end*/
         hasSYN, hasFIN bool
-        dataFlow       dataFlowt // custom type
-    }
-
-
-With `dataFlowt` being like this:
-
-    type dataFlowt struct {
-        size int64
+        size           int64
         // some redundancy for faster processing
         data string // printable representation of the data
         hex  []byte // hex representation of the data
+    }
+
+
+This structure will be uploaded to mongodb as follows:
+
+    connection {
+        connID           string
+        srcIP, dstIP     string
+        srcPort, dstPort uint16
+        lastSeen         int64 // updated with the latest flowt.end uploaded
+        favorite         bool  /* defaults to false, can only be
+        changed from the front-end*/
+        flows {
+            mongo_flow_type,
+            mongo_flow_type,
+            mongo_flow_type,
+            ...
+        }
+    }
+
+
+    mongo_flow_type {
+        src            string // "IP:port"
+        dst            string // "IP:port"
+        time           int64 // this is the flow's start time
+        favorite       bool
+        hasSYN, hasFIN bool
+        size           int64
+        data           string // printable representation of the data
+        hex            []byte // hex representation of the data
     }
 
 

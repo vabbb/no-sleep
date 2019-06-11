@@ -5,6 +5,8 @@ import (
 	"crypto/md5"
 	"encoding/binary"
 	"encoding/hex"
+	"regexp"
+	"sort"
 	"time"
 	"unicode"
 
@@ -26,23 +28,38 @@ func bytesToUint16(a []byte) uint16 {
 	return uint16(a[0])<<8 + uint16(a[1])
 }
 
-type dataFlowt struct {
-	size int64
+func min(a, b int64) int64 {
+	if a < b {
+		return a
+	}
+	return b
+}
+func max(a, b int64) int64 {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+type flowt struct {
+	flowID           string
+	connID           string
+	srcIP, dstIP     string
+	srcPort, dstPort uint16
+	start, end       int64 // as is returned by time.Now().UnixNano()
+	hasFlag          bool  // regex find for flag{...} pattern
+	favorite         bool  /* defaults to false, can only be
+	changed from the front-end*/
+	hasSYN, hasFIN bool
+	size           int64
 	// some redundancy for faster processing
 	data string // printable representation of the data
 	hex  []byte // hex representation of the data
 }
 
-type flowt struct {
-	id               string
-	srcIP, dstIP     string
-	srcPort, dstPort uint16
-	time             int64 // as is returned by time.Now().UnixNano()
-	hasFlag          bool  // regex find for flag{...} pattern
-	favourite        bool  /* defaults to false, can only be
-	changed from the front-end*/
-	hasSYN, hasFIN bool
-	dataFlow       dataFlowt // custom type
+func isFlagPresent(a string) bool {
+	r, _ := regexp.Compile("((?:flag|cci?t?1?9?){[ a-zA-Z0-9-_]*})")
+	return r.MatchString(a)
 }
 
 // tcpStreamFactory implements tcpassembly.StreamFactory
@@ -53,7 +70,7 @@ type tcpStream struct {
 	net, transport   gopacket.Flow
 	bytes            int64
 	payload          []byte
-	start            time.Time
+	start, end       int64
 	sawStart, sawEnd bool
 }
 
@@ -62,8 +79,9 @@ func (factory *tcpStreamFactory) New(net, tport gopacket.Flow) tcpassembly.Strea
 	t := &tcpStream{
 		net:       net,
 		transport: tport,
-		start:     time.Now(),
+		start:     int64(^uint64(0) >> 1), // this means "MAX_INT64"
 	}
+	t.end = t.start
 	// ReaderStream implements tcpassembly.Stream, so we can return a pointer to it.
 	return t
 }
@@ -72,6 +90,8 @@ func (factory *tcpStreamFactory) New(net, tport gopacket.Flow) tcpassembly.Strea
 // Reassembly objects contain stream data IN ORDER.
 func (s *tcpStream) Reassembled(reassemblies []tcpassembly.Reassembly) {
 	for _, reassembly := range reassemblies {
+		s.start = min(s.start, reassembly.Seen.UnixNano())
+		s.end = max(s.end, reassembly.Seen.UnixNano())
 		s.payload = append(s.payload, reassembly.Bytes...)
 		s.bytes += int64(len(reassembly.Bytes))
 
@@ -91,10 +111,6 @@ func (s *tcpStream) ReassemblyComplete() {
 
 	// ignore flows that contain no payload
 	if s.bytes > 0 {
-		dataFlow := &dataFlowt{
-			size: s.bytes,
-			hex:  s.payload,
-		}
 		temp := make([]byte, len(s.payload))
 		for i, octet := range s.payload {
 			//if character is printable, add it; else add a "."
@@ -104,20 +120,31 @@ func (s *tcpStream) ReassemblyComplete() {
 				temp[i] = 0x2e
 			}
 		}
-		dataFlow.data = string(temp)
 
 		flowToUpload := &flowt{
-			srcIP:     s.net.Src().String(),
-			dstIP:     s.net.Dst().String(),
-			srcPort:   bytesToUint16(s.transport.Src().Raw()),
-			dstPort:   bytesToUint16(s.transport.Dst().Raw()),
-			hasFlag:   false,
-			favourite: false,
-			hasSYN:    s.sawStart,
-			hasFIN:    s.sawEnd,
-			time:      s.start.UnixNano(),
-			dataFlow:  *dataFlow,
+			srcIP:    s.net.Src().String(),
+			dstIP:    s.net.Dst().String(),
+			srcPort:  bytesToUint16(s.transport.Src().Raw()),
+			dstPort:  bytesToUint16(s.transport.Dst().Raw()),
+			favorite: false,
+			hasSYN:   s.sawStart,
+			hasFIN:   s.sawEnd,
+			start:    s.start,
+			end:      s.end,
+			size:     s.bytes,
+			hex:      s.payload,
+			data:     string(temp),
 		}
+
+		// connID is made of the 2 pairs IP:PORT
+		// they are SORTED so the connID is the same both ways
+		connIDPieces := []string{flowToUpload.srcIP + ":" + string(flowToUpload.srcPort),
+			flowToUpload.dstIP + ":" + string(flowToUpload.dstPort)}
+		sort.Strings(connIDPieces)
+		flowToUpload.connID = connIDPieces[0] + "<->" + connIDPieces[1]
+
+		// look for flags
+		flowToUpload.hasFlag = isFlagPresent(flowToUpload.data)
 
 		/* Concatenate all unique info of the flow in order
 		to make a unique MD5 which will be the flow's id */
@@ -126,24 +153,25 @@ func (s *tcpStream) ReassemblyComplete() {
 		t = append(t, s.transport.Dst().Raw()...)
 		// create a temporary buffer to hold the time converted from int64 to []byte
 		bytetime := new(bytes.Buffer)
-		binary.Write(bytetime, binary.LittleEndian, flowToUpload.time)
+		binary.Write(bytetime, binary.LittleEndian, flowToUpload.start)
 		t = append(t, bytetime.Bytes()...)
-		t = append(t, flowToUpload.dataFlow.hex...)
+		t = append(t, flowToUpload.hex...)
 		md5sum := md5.Sum(t)
+		flowToUpload.flowID = hex.EncodeToString(md5sum[:])
 
-		flowToUpload.id = hex.EncodeToString(md5sum[:])
-
-		log.Info("id:", flowToUpload.id)
+		log.Info("flowID:", flowToUpload.flowID)
+		log.Info("connID:", flowToUpload.connID)
 		log.Info("srcIP:", flowToUpload.srcIP)
 		log.Info("dstIP:", flowToUpload.dstIP)
 		log.Info("srcPort:", flowToUpload.srcPort)
 		log.Info("dstPort:", flowToUpload.dstPort)
 		log.Info("hasFlag:", flowToUpload.hasFlag)
-		log.Info("favourite:", flowToUpload.favourite)
+		log.Info("favorite:", flowToUpload.favorite)
 		log.Info("hasSYN, hasFIN: ", flowToUpload.hasSYN, ", ", flowToUpload.hasFIN)
-		log.Info("time:", time.Unix(0, flowToUpload.time))
-		log.Info("dataFlow.size:", flowToUpload.dataFlow.size)
-		log.Info("dataFlow.data:", flowToUpload.dataFlow.data)
+		log.Info("start:", time.Unix(0, flowToUpload.start))
+		log.Info("end:", time.Unix(0, flowToUpload.end))
+		log.Info("dataFlow.size:", flowToUpload.size)
+		log.Info("dataFlow.data:", flowToUpload.data)
 		log.Info("-------------------------------\n")
 
 		/*UPLOAD FLOWT TO MONGO HERE*/

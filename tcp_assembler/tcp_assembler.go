@@ -73,7 +73,7 @@ func oldestPcap() (response string, arr error) {
 		return "", errors.New("no pcaps found, dawg")
 	}
 
-	oldest := int64(^uint64(0) >> 1) // this means "MAX_UINT64"
+	oldest := int64(^uint64(0) >> 1) // this means "MAX_INT64"
 	for t := range pcapFiles {
 		if t < oldest {
 			oldest = t
