@@ -54,8 +54,7 @@ Suggestions are very much appreciated, on our Telegram group.
         srcPort, dstPort uint16
         start, end       int64 // as is returned by time.Now().UnixNano()
         hasFlag          bool  // regex find for flag{...} pattern
-        favorite         bool  /* defaults to false, can only be
-        changed from the front-end*/
+        favorite         bool  // defaults to false, can only be changed from the front-end
         hasSYN, hasFIN bool
         size           int64
         // some redundancy for faster processing
