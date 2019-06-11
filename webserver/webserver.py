@@ -20,3 +20,8 @@ def star(flow_id, sel):
 def starred():
     starred = db.get_starred()
     return render_template('starred.html', starred=starred)
+
+@app.route("/flow/<int:id>")
+def get_flow(id):
+    flow = get_flow(id)
+    return render_template('flow.html', flow=flow)

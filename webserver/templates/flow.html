@@ -1,0 +1,17 @@
+{% macro flow(flow) %}
+<!-- TODO: select client or server 
+		client -> to-right
+		server -> to-left -->
+<div class="card to-right">
+	<div class="card-body">
+		<h5 class="card-title"><!-- TODO -->></h5>
+		<p class="card-text text-monospace">
+			<!-- TODO: insert flow content-->
+		</p>
+	</div>
+</div>
+{% endmacro %}
+
+(% for data in flow %)
+	{{ flow(f) }}
+(% endfor %)
