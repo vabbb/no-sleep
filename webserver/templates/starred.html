@@ -1,0 +1,23 @@
+{% macro add_starred(flow) %}
+<li onclick="activate(this)" class="list-group-item">
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <i class="fas fa-heart align-middle"></i>
+      </div>
+      <div class="col-9">
+        <div class="row font-weight-bold">
+          {{ flow['id'] }}
+        </div>
+        <div class="row">
+          {{ flow['time'] }}
+        </div>
+      </div>
+    </div>
+  </div>
+</li>
+{% endmacro %}
+
+{% for flow in starred %}
+{{ add_starred(flow) }}
+{% endfor %}
