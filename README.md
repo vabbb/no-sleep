@@ -71,8 +71,7 @@ This structure will be uploaded to mongodb as follows:
         srcIP, dstIP     string
         srcPort, dstPort uint16
         lastSeen         int64 // updated with the latest flowt.end uploaded
-        favorite         bool  /* defaults to false, can only be
-        changed from the front-end*/
+        favorite         bool  // defaults to false, can only be changed from the front-end
         flows {
             mongo_flow_type,
             mongo_flow_type,
