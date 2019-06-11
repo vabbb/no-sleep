@@ -12,7 +12,8 @@
   <title>SB Admin - Dashboard</title>
 
   <!-- Custom fonts for this template-->
-  <link href="{{ url_for('static', filename='vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
+  <link href="{{ url_for('static', filename='vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet"
+    type="text/css">
 
   <!-- Page level plugin CSS-->
   <link href="{{ url_for('static', filename='vendor/datatables/dataTables.bootstrap4.css') }}" rel="stylesheet">
@@ -20,14 +21,56 @@
   <!-- Custom styles for this template-->
   <link href="{{ url_for('static', filename='css/sb-admin.css') }}" rel="stylesheet">
 
+  {% macro add_starred(flow) %}
+  <li onclick="activate(this)" class="list-group-item">
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <i class="fas fa-heart align-middle"></i>
+        </div>
+        <div class="col-9">
+          <div class="row font-weight-bold">
+            {{ flow['id'] }}
+          </div>
+          <div class="row">
+            {{ flow['time'] }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </li>
+  {% endmacro %}
+
+  {% macro add_flow(flow) %}
+  <li onclick="activate(this)" class="list-group-item">
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <i onclick="change_star(this)" class="far fa-heart align-middle"></i>
+        </div>
+        <div class="col-9">
+          <div class="row font-weight-bold">
+            {{ flow['id'] }}
+          </div>
+          <div class="row">
+            {{ flow['srcIP'] }}:{{ flow['srcPort'] }} => {{ flow['dstIP'] }}:{{ flow['dstPort'] }}
+          </div>
+          <div class="row">
+            {{ flow['time'] }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </li>
+  {% endmacro %}
+
 </head>
 
 <body id="page-top">
 
   <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
 
-    <a class="navbar-brand mr-1" href="index.html">Timon</a>
-
+    <a class="navbar-brand mr-1">Timon</a>
 
     <!-- Navbar Search -->
     <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
@@ -45,77 +88,26 @@
   </nav>
 
   <div id="wrapper">
-    
+
     <!-- Starred flows -->
     <ul class="list-group-star">
-      <li onclick="activate(this)" class="list-group-item">
-        <div class="container">
-          <div class="row">
-            <div class="col">
-              <i class="fas fa-heart align-middle"></i>
-            </div>
-            <div class="col-9">
-              <div class="row font-weight-bold">
-                flow
-              </div>
-              <div class="row">
-                13:23:09, 130 ms
-              </div>
-            </div>
-          </div>
-        </div>
-      </li>
-
+      {% for flow in starred %}
+      {{ add_starred(flow) }}
+      {% endfor %}
     </ul>
 
     <ul class="list-group">
-      <li onclick="activate(this)" class="list-group-item">
-        <div class="container">
-          <div class="row">
-            <div class="col">
-              <i onclick="change_star(this)" class="far fa-heart align-middle"></i>
-            </div>
-            <div class="col-9">
-              <div class="row font-weight-bold">
-                flow
-              </div>
-              <div class="row">
-                1.1.1.1:1234 => 1.2.3.4:4321
-              </div>
-              <div class="row">
-                13:23:09, 130 ms
-              </div>
-            </div>
-          </div>
-        </div>
-      </li>
-      <li onclick="activate(this)" class="list-group-item">
-        <div class="container">
-          <div class="row">
-            <div class="col">
-              <i onclick="change_star(this)" class="far fa-heart align-middle"></i>
-            </div>
-            <div class="col-9">
-              <div class="row font-weight-bold">
-                flow
-              </div>
-              <div class="row">
-                1.1.1.1:1234 => 1.2.3.4:4321
-              </div>
-              <div class="row">
-                13:23:09, 130 ms
-              </div>
-            </div>
-          </div>
-        </div>
-      </li>
+      {% for flow in flows %}
+      {{ add_flow(flow) }}
+      {% endfor %}
     </ul>
 
     <ul class="list-group2">
       <div class="card to-right">
         <div class="card-body">
           <h5 class="card-title">1. Server +45 ms</h5>
-          <p class="card-text text-monospace">Some quick example text to build on the card title and make up the bulk of
+          <p class="card-text text-monospace">Some quick example text to build on the card title and make up the
+            bulk of
             the card's
             content.</p>
         </div>
@@ -124,7 +116,8 @@
       <div class="card to-left">
         <div class="card-body">
           <h5 class="card-title">2. Client +50 ms</h5>
-          <p class="card-text text-monospace">Some quick example text to build on the card title and make up the bulk of
+          <p class="card-text text-monospace">Some quick example text to build on the card title and make up the
+            bulk of
             the card's
             content.</p>
         </div>
