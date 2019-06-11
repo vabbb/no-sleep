@@ -22,7 +22,7 @@ var (
 	archiveDir = flag.String("a", "archive", "Directory where to store archived "+
 		"pcap files")
 
-	logAllPackets         = flag.Bool("w", false, `Logs every packet in great detail`)
+	logAllPackets         = flag.Bool("w", false, "Logs every packet in great detail")
 	bufferedPerConnection = flag.Int("connection_max_buffer", 0, "Max packets to"+
 		"buffer for a single connection before skipping over a gap in data and "+
 		"continuing to stream the connection after the buffer.\nIf zero or less, "+
@@ -38,9 +38,9 @@ var (
 	handle        *pcap.Handle
 	snapshotLen   int32 = 65536
 	promiscuous         = false
-	flushDuration       = time.Second * 30
+	flushDuration       = time.Minute * 4
 
-	byteCount int64
+	// byteCount int64
 
 	ethLayer     layers.Ethernet
 	ip4Layer     layers.IPv4
@@ -69,8 +69,8 @@ func oldestPcap() (response string, arr error) {
 		log.Fatal("Error looking through files: ", err)
 	}
 	if len(pcapFiles) == 0 {
-		log.Infof("No .pcap files found")
-		return "", errors.New("no pcaps dawg")
+		log.Warning("No .pcap files found")
+		return "", errors.New("no pcaps found, dawg")
 	}
 
 	oldest := int64(^uint64(0) >> 1) // this means "MAX_UINT64"
@@ -85,7 +85,7 @@ func oldestPcap() (response string, arr error) {
 // init happens before main
 func init() {
 	// DEBUG MODE
-	log.SetLevel(log.DebugLevel)
+	log.SetLevel(log.TraceLevel)
 
 	//parse command line arguments
 	flag.Parse()
@@ -131,7 +131,6 @@ func main() {
 		if err != nil {
 			log.Fatal("error opening pcap handle: ", err)
 		}
-		defer handle.Close()
 
 		// READ PACKETS FROM PCAP FILE
 		for {
@@ -166,7 +165,7 @@ func main() {
 			if *logAllPackets {
 				log.Tracef("decoded the following layers: %v", decoded)
 			}
-			byteCount += int64(len(data))
+			// byteCount += int64(len(data))
 
 			// Find either the IPv4 or IPv6 address to use as our network layer.
 			foundNetLayer := false
@@ -193,8 +192,11 @@ func main() {
 				}
 			}
 		}
+		// close pcap file
+		handle.Close()
+
 		// Move analyzed pcap files to archive folder (if not in DEBUG MODE)
-		if log.GetLevel() != log.DebugLevel {
+		if log.GetLevel() < log.DebugLevel {
 			// move pcap file to archive folder
 			splitboi := strings.Split(fname, "/")
 			onlyFname := splitboi[len(splitboi)-1]

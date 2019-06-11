@@ -48,25 +48,25 @@ Suggestions are very much appreciated, on our Telegram group.
 `flowt` data structure, in Go:
 
     type flowt struct {
+        id               string
         srcIP, dstIP     string
         srcPort, dstPort uint16
         time             int64 // as is returned by time.Now().UnixNano()
-        lastSeen         int64 // also in nanoseconds
         hasFlag          bool  // regex find for flag{...} pattern
-        favourite        bool  // defaults to false, can only be
-        // changed from the front-end
-        dataFlow []dataFlowt // custom type
+        favourite        bool  /* defaults to false, can only be
+        changed from the front-end*/
+        hasSYN, hasFIN bool
+        dataFlow       dataFlowt // custom type
     }
 
 
 With `dataFlowt` being like this:
 
     type dataFlowt struct {
-        from string
+        size int64
         // some redundancy for faster processing
         data string // printable representation of the data
         hex  []byte // hex representation of the data
-        time int64  // as is returned by time.Now().UnixNano()
     }
 
 
