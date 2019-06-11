@@ -42,7 +42,7 @@
   {% endmacro %}
 
   {% macro add_flow(flow) %}
-  <li onclick="activate(this)" class="list-group-item">
+  <li onclick="activate(this, {{ flow['id'] }})" class="list-group-item">
     <div class="container">
       <div class="row">
         <div class="col">
@@ -144,6 +144,20 @@
   <script src="{{ url_for('static', filename='vendor/jquery-easing/jquery.easing.min.js') }}"></script>
 
   <script>
+    function get_flow(id) {
+      $.ajax({
+        url: '/flow/' + id,
+        type: 'POST',
+        success: function (response) {
+          console.log(response)
+          //TODO: visualize flow
+        },
+        error: function (error) {
+          console.log(error);
+        }
+      });
+    }
+
     function update_starred() {
       $(".list-group-star").children().each(function(i) {this.remove()})
       $.ajax({
@@ -189,11 +203,12 @@
       })
     }
 
-    function activate(o) {
+    function activate(o, id) {
       deactivate_all()
       if (!o.className.match(/active/)) {
         o.className += ' active'
       }
+      get_flow(id)
     }
   </script>
 

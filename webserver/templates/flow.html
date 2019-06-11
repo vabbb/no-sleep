@@ -1,4 +1,4 @@
-{% macro flow(flow) %}
+{% macro flow_track(data) %}
 <!-- TODO: select client or server 
 		client -> to-right
 		server -> to-left -->
@@ -13,5 +13,5 @@
 {% endmacro %}
 
 (% for data in flow %)
-	{{ flow(f) }}
+	{{ flow_track(data) }}
 (% endfor %)
