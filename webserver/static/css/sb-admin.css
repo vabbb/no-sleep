@@ -10927,12 +10927,14 @@ footer.sticky-footer {
   margin-left: 300px; 
   margin-top: 5px; 
   margin-bottom: 5px;
+  margin-right: 5px;
 }
 
 .to-left {
   margin-right: 300px; 
   margin-top: 5px; 
   margin-bottom: 5px;
+  margin-left: 5px;
 }
 
 footer.sticky-footer .copyright {
