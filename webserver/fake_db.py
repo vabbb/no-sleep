@@ -22,7 +22,7 @@ def get_starred():
             res.append(flow)
     return res
 
-def star_flow(id):
+def star_flow(id, sel):
     f = get_flow(id)
     if (f):
-        f['favourite'] = True
+        f['favourite'] = True if sel == "true" else False
