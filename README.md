@@ -55,11 +55,11 @@ Suggestions are very much appreciated, on our Telegram group.
         start, end       int64 // as is returned by time.Now().UnixNano()
         hasFlag          bool  // regex find for flag{...} pattern
         favorite         bool  // defaults to false, can only be changed from the front-end
-        hasSYN, hasFIN bool
-        size           int64
+        hasSYN, hasFIN   bool
+        size             int64
         // some redundancy for faster processing
-        data string // printable representation of the data
-        hex  []byte // hex representation of the data
+        data             string // printable representation of the data
+        hex              []byte // hex representation of the data
     }
 
 
@@ -72,9 +72,9 @@ This structure will be uploaded to mongodb as follows:
         lastSeen         int64 // updated with the latest flowt.end uploaded
         favorite         bool  // defaults to false, can only be changed from the front-end
         flows {
-            mongo_flow_type,
-            mongo_flow_type,
-            mongo_flow_type,
+            mongo_flow_type
+            mongo_flow_type
+            mongo_flow_type
             ...
         }
     }
