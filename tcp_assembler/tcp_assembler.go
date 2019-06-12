@@ -31,7 +31,8 @@ var (
 		"before skipping over gaps in connections and continuing to stream "+
 		"connection data.\nIf zero or less, this is infinite")
 
-	help = flag.Bool("help", false, "Shows this output")
+	nodebug = flag.Bool("nodebug", false, "If this is set, uses production mode")
+	help    = flag.Bool("help", false, "Shows this output")
 
 	fname string
 
@@ -84,8 +85,12 @@ func oldestPcap() (response string, arr error) {
 
 // init happens before main
 func init() {
-	// DEBUG MODE
-	log.SetLevel(log.DebugLevel)
+	// DEBUG MODE (?)
+	if *nodebug {
+		log.SetLevel(log.DebugLevel)
+	} else {
+		log.SetLevel(log.InfoLevel)
+	}
 
 	//parse command line arguments
 	flag.Parse()
