@@ -7,7 +7,7 @@ flows = [
         "dstPort"   : 4321,
         "time"  : 12349872394908,
         "hasFlag" : False,
-        "favourite" : True,
+        "favorite" : True,
         "hasSYN" : False,
         "hasFIN" : False,
         "dataFlow" : {
@@ -26,7 +26,7 @@ flows = [
         "dstPort"   : 4321,
         "time"  : 128347298347923,
         "hasFlag" : False,
-        "favourite" : False,
+        "favorite" : False,
         "hasSYN" : False,
         "hasFIN" : False,
         "dataFlow" : {

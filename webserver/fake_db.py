@@ -18,11 +18,11 @@ def get_flow_data(id):
 def get_starred():
     res = []
     for flow in flows:
-        if flow['favourite']:
+        if flow['favorite']:
             res.append(flow)
     return res
 
 def star_flow(id, sel):
     f = get_flow(id)
     if (f):
-        f['favourite'] = True if sel == "true" else False
+        f['favorite'] = True if sel == "true" else False
