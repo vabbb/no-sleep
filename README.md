@@ -3,9 +3,9 @@
 The project will be divided into four components:
 
 * **tcpdump** - We will run `tcpdump` on the vulnbox as follows:
-
-      # tcpdump -i [device] -G 60 -z "./send_to_remote_assembler_and_archive.py" -w dump_%Y-%m-%d_%H:%M:%S.pcap tcp port 8080 or 443 or 80
-
+```
+# tcpdump -i [device] -G 60 -z "./send_to_remote_assembler_and_archive.py" -w dump_%Y-%m-%d_%H:%M:%S.pcap tcp port 8080 or 443 or 80
+```
 * **tcp_assembler** - Written in Go. This is a service that periodically checks for new files named `dump_%Y-%m-%d_%H:%M:%S.pcap`, processes them, then archives them.
 * **The Database** - This will be where all the data from the TCP streams will be archived. Ideally, we will be using a NoSQL DB (mongodb), that can be installed on any machine, but, by default, it will be assumed to be running on the same machine as the Packet Sniffer, on port 27017. I don't think much coding will be required for this component, it should *just work* ™.
 * **The Front-end** - This will be the interface through which we will access the data stored in the Database. It can be realized either on python flask, any node-js server, or Nginx. This component will need to have the following features: **real-time traffic updates** (done through ajax requests), **filter by "presence of a flag"** in a TCP stream, **ease of use** in order to make other team's exploit reusable as fast as possible (see how [Flower](https://github.com/secgroup/flower) does it).
@@ -46,7 +46,7 @@ Suggestions are very much appreciated, on our Telegram group.
 
 # Flow Structure
 `flowt` data structure, in Go:
-
+```go
     type flowt struct {
         flowID           string
         connID           string
@@ -61,38 +61,44 @@ Suggestions are very much appreciated, on our Telegram group.
         data             string // printable representation of the data
         hex              []byte // hex representation of the data
     }
-
+```
 
 This structure will be uploaded to mongodb as follows:
-
-    connection {
-        connID           string
-        srcIP, dstIP     string
-        srcPort, dstPort uint16
-        lastSeen         int64 // updated with the latest flowt.end uploaded
-        favorite         bool  // defaults to false, can only be changed from the front-end
-        flows {
-            mongo_flow_type
-            mongo_flow_type
-            mongo_flow_type
-            ...
-        }
+```
+connection {
+    connID           string
+    srcIP, dstIP     string
+    srcPort, dstPort uint16
+    lastSeen         int64 // updated with the latest flowt.end uploaded
+    favorite         bool  // defaults to false, can only be changed from the front-end
+    flows {
+        mongo_flow_type
+        mongo_flow_type
+        mongo_flow_type
+        ...
     }
+}
 
 
-    mongo_flow_type {
-        flowID         string
-        connID         string
-        src            string // "IP:port"
-        dst            string // "IP:port"
-        time           int64 // this is the flow's start time
-        favorite       bool
-        hasSYN, hasFIN bool
-        size           int64
-        data           string // printable representation of the data
-        hex            []byte // hex representation of the data
-    }
+mongo_flow_type {
+    flowID         string
+    connID         string
+    src            string // "IP:port"
+    dst            string // "IP:port"
+    time           int64 // this is the flow's start time
+    favorite       bool
+    hasSYN, hasFIN bool
+    size           int64
+    data           string // printable representation of the data
+    hex            []byte // hex representation of the data
+}
+```
+# Mongodb Usage
 
+#### Start the db with:
+```
+
+```
 
 # Build Requirements
 
