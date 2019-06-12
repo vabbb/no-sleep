@@ -46,7 +46,7 @@
     <div class="container">
       <div class="row">
         <div class="col">
-          <i onclick="change_star(this, {{ flow['id'] }})" class="far fa-heart align-middle"></i>
+          <i onclick="change_star(this, {{ flow['id'] }})" class="{% if flow['favorite'] %} fas fa-heart {% else %} far fa-heart {% endif %} align-middle"></i>
         </div>
         <div class="col-9">
           <div class="row font-weight-bold">
