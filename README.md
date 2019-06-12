@@ -81,6 +81,8 @@ This structure will be uploaded to mongodb as follows:
 
 
     mongo_flow_type {
+        flowID         string
+        connID         string
         src            string // "IP:port"
         dst            string // "IP:port"
         time           int64 // this is the flow's start time
