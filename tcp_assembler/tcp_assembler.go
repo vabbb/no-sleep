@@ -216,7 +216,7 @@ func main() {
 			}
 		} else {
 			log.Debugf("We are in debug mode! Analysis will restart in 10s")
-			time.Sleep(time.Second * 10)
+			time.Sleep(time.Second * 60)
 		}
 	}
 }

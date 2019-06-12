@@ -106,7 +106,7 @@ func insertFlowtDoc(flowt *flowt) {
 		return
 	}
 
-	log.Infoln("Inserted flowt doc", insertResult.InsertedID)
+	log.Debugln("Inserting flowt doc", insertResult.InsertedID, "...")
 
 	update := bson.M{"$push": bson.M{"flows": flowt.flowID}, "$set": bson.M{"lastSeen": flowt.end}}
 	_, err = collConnections.UpdateOne(context.TODO(), filter, update)
@@ -115,7 +115,7 @@ func insertFlowtDoc(flowt *flowt) {
 		log.Infoln(err)
 	}
 
-	log.Infoln("Added flowt", flowt.flowID, "with lastSeen", flowt.end, "at flows array in connection doc", flowt.connID)
+	log.Infoln("Inserted flowt", flowt.flowID, "with lastSeen", flowt.end, "at flows array in connection doc", flowt.connID)
 }
 
 func addNewConnection(flowt *flowt) {
@@ -131,7 +131,7 @@ func addNewConnection(flowt *flowt) {
 		"flows":    bson.A{}})
 
 	if err != nil {
-		log.Infoln("Already exists object", flowt.connID)
+		log.Debugln("Object ", flowt.connID, " already exists")
 		return
 	}
 
