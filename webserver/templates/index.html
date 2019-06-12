@@ -21,32 +21,13 @@
   <!-- Custom styles for this template-->
   <link href="{{ url_for('static', filename='css/sb-admin.css') }}" rel="stylesheet">
 
-  {% macro add_starred(flow) %}
-  <li onclick="activate(this)" class="list-group-item">
-    <div class="container">
-      <div class="row">
-        <div class="col">
-          <i class="fas fa-heart align-middle"></i>
-        </div>
-        <div class="col-9">
-          <div class="row font-weight-bold">
-            {{ flow['id'] }}
-          </div>
-          <div class="row">
-            {{ flow['time'] }}
-          </div>
-        </div>
-      </div>
-    </div>
-  </li>
-  {% endmacro %}
-
   {% macro add_flow(flow) %}
   <li onclick="activate(this, {{ flow['id'] }})" class="list-group-item">
     <div class="container">
       <div class="row">
         <div class="col">
-          <i onclick="change_star(this, {{ flow['id'] }})" class="{% if flow['favorite'] %} fas fa-heart {% else %} far fa-heart {% endif %} align-middle"></i>
+          <i onclick="change_star(this, {{ flow['id'] }})"
+            class="{% if flow['favorite'] %} fas fa-heart {% else %} far fa-heart {% endif %} align-middle"></i>
         </div>
         <div class="col-9">
           <div class="row font-weight-bold">
@@ -91,7 +72,7 @@
       </div>
       <input name="data" type="text" class="form-control" placeholder="Type here to search" aria-label="Search"
         aria-describedby="basic-addon2">
-      <div class="input-group-append"></div>
+      <div class="input-group-append">
       <button class="btn btn-primary" type="submit">
         <i class="fas fa-search"></i>
       </button>
@@ -104,9 +85,7 @@
 
     <!-- Starred flows -->
     <ul class="list-group-star">
-      {% for flow in starred %}
-      {{ add_starred(flow) }}
-      {% endfor %}
+      {% include 'starred.html' %}
     </ul>
 
     <ul class="list-group">
