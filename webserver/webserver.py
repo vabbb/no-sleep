@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import fake_db as db
 from pprint import pprint
 
@@ -6,6 +6,8 @@ app = Flask(__name__)
 
 @app.route("/")
 def hello_world():
+    filters = request.args
+    pprint(filters)
     starred = db.get_starred()
     flows   = db.get_flow_list()
     return render_template('index.html', starred=starred, flows=flows)
