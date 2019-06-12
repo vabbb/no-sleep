@@ -20,10 +20,10 @@ Suggestions are very much appreciated, on our Telegram group.
 * ✓ ~~able to assemble data belonging to a single tcp flow~~
 * ✓ ~~able to recognize when a flow is completed~~
 * ✓ ~~able to assign the completed flow to the `flowt` struct~~
-* able to push a finished tcp flow to mongodb, using the stuct defined later, plus a unique id (which can be the hash of the tcp flow identifiers and its start time)
+* ✓ ~~able to push a finished tcp flow to mongodb, using the stuct defined later, plus a unique id (which can be the hash of the tcp flow identifiers and its start time)~~
 
 ### Database
-* having a working instance of `mongodb`
+* ✓ ~~having a working instance of `mongodb`~~
 
 ### Webserver
 * bare-bones webserver able to query the mongodb and display the data that was pushed to it
@@ -31,7 +31,7 @@ Suggestions are very much appreciated, on our Telegram group.
 # Next steps
 
 ### tcp_assembler
-* parsing flow contents to check for presence of flags
+* ✓ ~~parsing flow contents to check for presence of flags~~
 * ... 
 
 ### Webserver
