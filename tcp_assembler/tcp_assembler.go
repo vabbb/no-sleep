@@ -87,9 +87,9 @@ func oldestPcap() (response string, arr error) {
 func init() {
 	// DEBUG MODE (?)
 	if *nodebug {
-		log.SetLevel(log.DebugLevel)
-	} else {
 		log.SetLevel(log.InfoLevel)
+	} else {
+		log.SetLevel(log.DebugLevel)
 	}
 
 	//parse command line arguments
