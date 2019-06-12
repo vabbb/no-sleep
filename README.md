@@ -105,7 +105,7 @@ Before building for the first time, you will need to run the following commands:
 ```pseudocode
 $ go get github.com/google/gopacket
 $ go get github.com/sirupsen/logrus
-$ go get go.mongodb.org/mongo-driver
+$ go get go.mongodb.org/mongo-driver/mongo
 ```
 
 # Install Instructions
