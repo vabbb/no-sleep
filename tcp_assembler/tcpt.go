@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"regexp"
 	"sort"
+	"strconv"
 	"time"
 	"unicode"
 
@@ -138,8 +139,8 @@ func (s *tcpStream) ReassemblyComplete() {
 
 		// connID is made of the 2 pairs IP:PORT
 		// they are SORTED so the connID is the same both ways
-		connIDPieces := []string{flowToUpload.srcIP + ":" + string(flowToUpload.srcPort),
-			flowToUpload.dstIP + ":" + string(flowToUpload.dstPort)}
+		connIDPieces := []string{flowToUpload.srcIP + ":" + strconv.Itoa(int(flowToUpload.srcPort)),
+			flowToUpload.dstIP + ":" + strconv.Itoa(int(flowToUpload.dstPort))}
 		sort.Strings(connIDPieces)
 		flowToUpload.connID = connIDPieces[0] + "<->" + connIDPieces[1]
 
