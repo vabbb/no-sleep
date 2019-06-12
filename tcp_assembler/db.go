@@ -77,16 +77,16 @@ func insertFlowtDoc(flowt *flowt) {
 	addNewConnection(flowt)
 	var err error
 	filter := bson.M{"_id" : flowt.connID}
-	connDoc := collConnections.FindOne(context.TODO(), filter)
+	// connDoc := collConnections.FindOne(context.TODO(), filter)
 
-	var connDocDecoded bson.M
-	err = connDoc.Decode(&connDocDecoded)
+	// var connDocDecoded bson.M
+	// err = connDoc.Decode(&connDocDecoded)
 
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println("Found", connDocDecoded["_id"])
-	}
+	// if err != nil {
+	// 	fmt.Println(err)
+	// } else {
+	// 	fmt.Println("Found", connDocDecoded["_id"])
+	// }
 
 	insertResult, err := collFlows.InsertOne(context.TODO(), bson.M{
 		"_id" : flowt.flowID,
@@ -108,7 +108,7 @@ func insertFlowtDoc(flowt *flowt) {
 
 	fmt.Println("Inserted flowt doc", insertResult.InsertedID)
 	
-	update := bson.M{"$push": bson.M{"flows": flowt.flowID}} //, "$set": bson.M{"lastSeen": flowt.end}}
+	update := bson.M{"$push": bson.M{"flows": flowt.flowID} , "$set": bson.M{"lastSeen": flowt.end}}
 	_, err = collConnections.UpdateOne(context.TODO(), filter, update)
 
 	if err != nil {
