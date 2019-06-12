@@ -10,7 +10,8 @@ def hello_world():
     pprint(filters)
     starred = db.get_starred()
     flows   = db.get_flow_list()
-    return render_template('index.html', starred=starred, flows=flows)
+    services = ['one', 'two']
+    return render_template('index.html', starred=starred, flows=flows, services=services)
 
 @app.route("/star/<int:flow_id>/<sel>", methods=['POST'])
 def star(flow_id, sel):
