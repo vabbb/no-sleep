@@ -126,8 +126,8 @@ c.find().pretty()
 ```
 Remove all data from the db:
 ```pseudocode
-r.removeMany({})
-c.removeMany({})
+r.deleteMany({})
+c.deleteMany({})
 ```
 
 # Build Requirements

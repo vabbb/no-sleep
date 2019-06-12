@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"log"
 	"strconv"
+
+	log "github.com/sirupsen/logrus"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -29,7 +29,7 @@ var (
 // type connectionDocT struct {
 // 	_id              string
 // 	srcIP            string
-//     dstIP            string	
+//     dstIP            string
 // 	srcPort          uint16
 // 	dstPort          uint16
 //     lastSeen         int64 // updated with the latest flowt.end uploaded
@@ -56,7 +56,7 @@ func connectDB(url string) {
 	if err != nil {
 		log.Fatal(err)
 	} else {
-		fmt.Println("Connected to mongodb server!")
+		log.Infoln("Connected to mongodb server!")
 	}
 
 	client = resClient
@@ -76,7 +76,7 @@ func insertFlowtDoc(flowt *flowt) {
 
 	addNewConnection(flowt)
 	var err error
-	filter := bson.M{"_id" : flowt.connID}
+	filter := bson.M{"_id": flowt.connID}
 	// connDoc := collConnections.FindOne(context.TODO(), filter)
 
 	// var connDocDecoded bson.M
@@ -89,53 +89,52 @@ func insertFlowtDoc(flowt *flowt) {
 	// }
 
 	insertResult, err := collFlows.InsertOne(context.TODO(), bson.M{
-		"_id" : flowt.flowID,
-		"connID" : flowt.connID,
-		"src" : flowt.srcIP + ":" + strconv.Itoa(int(flowt.srcPort)),
-		"dst" : flowt.dstIP + ":" + strconv.Itoa(int(flowt.dstPort)),
-		"time" : flowt.srcPort,
-		"favorite" : flowt.start,
-		"hasSYN" : flowt.hasSYN,
-		"hasFIN" : flowt.hasFIN,
-		"size" : flowt.size,
-		"data" : flowt.data,
-		"hex" : flowt.hex})
+		"_id":      flowt.flowID,
+		"connID":   flowt.connID,
+		"src":      flowt.srcIP + ":" + strconv.Itoa(int(flowt.srcPort)),
+		"dst":      flowt.dstIP + ":" + strconv.Itoa(int(flowt.dstPort)),
+		"time":     flowt.srcPort,
+		"favorite": flowt.start,
+		"hasSYN":   flowt.hasSYN,
+		"hasFIN":   flowt.hasFIN,
+		"size":     flowt.size,
+		"data":     flowt.data,
+		"hex":      flowt.hex})
 
 	if err != nil {
-		fmt.Println("Error in insert flowt", flowt.flowID)
+		log.Infoln("Error in insert flowt", flowt.flowID)
 		return
 	}
 
-	fmt.Println("Inserted flowt doc", insertResult.InsertedID)
-	
-	update := bson.M{"$push": bson.M{"flows": flowt.flowID} , "$set": bson.M{"lastSeen": flowt.end}}
+	log.Infoln("Inserted flowt doc", insertResult.InsertedID)
+
+	update := bson.M{"$push": bson.M{"flows": flowt.flowID}, "$set": bson.M{"lastSeen": flowt.end}}
 	_, err = collConnections.UpdateOne(context.TODO(), filter, update)
 
 	if err != nil {
-		fmt.Println(err)
-	} 
+		log.Infoln(err)
+	}
 
-	fmt.Println("Added flowt", flowt.flowID, "with lastSeen", flowt.end, "at flows array in connection doc", flowt.connID)
+	log.Infoln("Added flowt", flowt.flowID, "with lastSeen", flowt.end, "at flows array in connection doc", flowt.connID)
 }
 
 func addNewConnection(flowt *flowt) {
 
 	insertResult, err := collConnections.InsertOne(context.TODO(), bson.M{
-		"_id" : flowt.connID,
-		"srcIP" : flowt.srcIP,
-		"dstIP" : flowt.dstIP,
-		"srcPort" : flowt.srcPort,
-		"dstPort" : flowt.dstPort,
-		"lastSeen" : flowt.end,
-		"favorite" : false,
-		"flows" : bson.A{}})
-		
-	
+		"_id":      flowt.connID,
+		"srcIP":    flowt.srcIP,
+		"dstIP":    flowt.dstIP,
+		"srcPort":  flowt.srcPort,
+		"dstPort":  flowt.dstPort,
+		"lastSeen": flowt.end,
+		"favorite": false,
+		"flows":    bson.A{}})
+
 	if err != nil {
-		fmt.Println("Already exists object", flowt.connID)
+		log.Infoln("Already exists object", flowt.connID)
 		return
 	}
 
-	fmt.Println("Inserted connection doc", insertResult.InsertedID)
+	log.Infoln("Inserted connection doc", insertResult.InsertedID)
 
 }

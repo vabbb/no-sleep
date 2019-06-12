@@ -85,7 +85,7 @@ func oldestPcap() (response string, arr error) {
 // init happens before main
 func init() {
 	// DEBUG MODE
-	log.SetLevel(log.TraceLevel)
+	log.SetLevel(log.DebugLevel)
 
 	//parse command line arguments
 	flag.Parse()
