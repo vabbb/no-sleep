@@ -102,8 +102,11 @@ This structure will be uploaded to mongodb as follows:
 
 Before building for the first time, you will need to run the following commands:
 
-    $ go get github.com/google/gopacket
-    $ go get github.com/sirupsen/logrus
+```pseudocode
+$ go get github.com/google/gopacket
+$ go get github.com/sirupsen/logrus
+$ go get go.mongodb.org/mongo-driver
+```
 
 # Install Instructions
 
