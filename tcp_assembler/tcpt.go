@@ -176,5 +176,6 @@ func (s *tcpStream) ReassemblyComplete() {
 		log.Info("-------------------------------\n")
 
 		/*UPLOAD FLOWT TO MONGO HERE*/
+		insertFlowtDoc(flowToUpload)
 	}
 }

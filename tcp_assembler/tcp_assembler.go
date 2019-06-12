@@ -100,6 +100,11 @@ func init() {
 		flag.PrintDefaults()
 		os.Exit(1)
 	}
+
+	// Connection to mongoDB server
+	connectDB(url)
+	getCollectionsFromDB(client, dbName, connections)
+	getCollectionsFromDB(client, dbName, flows)
 }
 
 func main() {
