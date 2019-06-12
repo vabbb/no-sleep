@@ -82,7 +82,7 @@ func (factory *tcpStreamFactory) New(net, tport gopacket.Flow) tcpassembly.Strea
 		transport: tport,
 		start:     int64(^uint64(0) >> 1), // this means "MAX_INT64"
 	}
-	t.end = t.start
+	t.end = 0
 	// ReaderStream implements tcpassembly.Stream, so we can return a pointer to it.
 	return t
 }
