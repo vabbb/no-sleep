@@ -95,9 +95,39 @@ mongo_flow_type {
 ```
 # Mongodb Usage
 
-#### Start the db with:
+### Start the db with:
+```pseudocode
+mongod --db-path /path/to/where_you_want_your_db_to_be
 ```
 
+### Connect to the db with:
+```pseudocode
+mongo
+```
+### Followed by:
+```pseudocode
+use my_db
+```
+
+## Use these commands to perform various tests:
+
+Declare these variables first:
+```pseudocode
+r = db.getCollection("connections")
+c = db.getCollection("flows")
+```
+See connections:
+```pseudocode
+r.find().pretty()
+```
+See flows:
+```pseudocode
+c.find().pretty()
+```
+Remove all data from the db:
+```pseudocode
+r.removeMany({})
+c.removeMany({})
 ```
 
 # Build Requirements
