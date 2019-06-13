@@ -44,10 +44,10 @@ def get_flow(flow_id):
     h = True if request.args['hex'] == 'true' else False
     flow, _ = db.get_flows_of_a_conn(db.collConnections, db.collFlows, flow_id)
     pprint(flow)
-    return render_template('flow.html', flow=flow, client=c.vm_ip, hex=h)
+    return render_template('flow.html', flow=flow, client=c.vm_ip, hex=h, flow_id=flow_id)
 
-@app.route("/pwn/<int:flow_id>", methods=['GET'])
+@app.route("/pwn/<flow_id>", methods=['GET'])
 def get_flow2pwn(flow_id):
-    c = db.get_flows_of_a_conn(db.collConnections, db.collFlows, flow_id)
+    c, _ = db.get_flows_of_a_conn(db.collConnections, db.collFlows, flow_id)
     return flow2pwn(c)
     

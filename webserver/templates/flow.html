@@ -44,6 +44,7 @@
 {% endif %}
 {% endmacro %}
 
+<button onclick="pwn('{{ flow_id }}')"type="button" class="btn btn-outline-primary mx-2 mt-2">Pwn</button>
 {% for f in flow %}
 {{ flow_track(loop.index, f, client, hex) }}
 {% endfor %}

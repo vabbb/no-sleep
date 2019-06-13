@@ -66,6 +66,19 @@ function activate(o, id) {
     get_flow(id)
 }
 
+function pwn(flow_id) {
+    $.ajax({
+        url: '/pwn/' + flow_id,
+        type: 'GET',
+        success: function (response) {
+            console.log(response);
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    });
+}
+
 const checkbox = document.getElementById('check_hex')
 
 checkbox.addEventListener('change', (event) => {
