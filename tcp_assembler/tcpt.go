@@ -76,7 +76,7 @@ type tcpStream struct {
 }
 
 func (factory *tcpStreamFactory) New(net, tport gopacket.Flow) tcpassembly.Stream {
-	log.Tracef("new stream %v:%v started", net, tport)
+	log.Tracef("New stream %v:%v started", net, tport)
 	t := &tcpStream{
 		net:       net,
 		transport: tport,
@@ -160,20 +160,20 @@ func (s *tcpStream) ReassemblyComplete() {
 		md5sum := md5.Sum(t)
 		flowToUpload.flowID = hex.EncodeToString(md5sum[:])
 
-		log.Traceln("flowID:", flowToUpload.flowID)
-		log.Traceln("connID:", flowToUpload.connID)
-		log.Traceln("srcIP:", flowToUpload.srcIP)
-		log.Traceln("dstIP:", flowToUpload.dstIP)
-		log.Traceln("srcPort:", flowToUpload.srcPort)
-		log.Traceln("dstPort:", flowToUpload.dstPort)
-		log.Traceln("hasFlag:", flowToUpload.hasFlag)
-		log.Traceln("favorite:", flowToUpload.favorite)
-		log.Traceln("hasSYN, hasFIN: ", flowToUpload.hasSYN, ", ", flowToUpload.hasFIN)
-		log.Traceln("start:", time.Unix(0, flowToUpload.start))
-		log.Traceln("end:", time.Unix(0, flowToUpload.end))
-		log.Traceln("dataFlow.size:", flowToUpload.size)
-		log.Traceln("dataFlow.data:", flowToUpload.data)
-		log.Traceln("-------------------------------\n")
+		log.Trace("flowID:", flowToUpload.flowID)
+		log.Trace("connID:", flowToUpload.connID)
+		log.Trace("srcIP:", flowToUpload.srcIP)
+		log.Trace("dstIP:", flowToUpload.dstIP)
+		log.Trace("srcPort:", flowToUpload.srcPort)
+		log.Trace("dstPort:", flowToUpload.dstPort)
+		log.Trace("hasFlag:", flowToUpload.hasFlag)
+		log.Trace("favorite:", flowToUpload.favorite)
+		log.Trace("hasSYN, hasFIN: ", flowToUpload.hasSYN, ", ", flowToUpload.hasFIN)
+		log.Trace("start:", time.Unix(0, flowToUpload.start))
+		log.Trace("end:", time.Unix(0, flowToUpload.end))
+		log.Trace("dataFlow.size:", flowToUpload.size)
+		log.Trace("dataFlow.data:", flowToUpload.data)
+		log.Trace("-------------------------------\n\n")
 
 		/*UPLOAD FLOWT TO MONGO HERE*/
 		insertFlowtDoc(flowToUpload)
