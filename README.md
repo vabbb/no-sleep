@@ -97,7 +97,7 @@ mongo_flow_type {
 
 ### Start the db with:
 ```pseudocode
-mongod --db-path /path/to/where_you_want_your_db_to_be
+mongod --dbpath /path/to/where_you_want_your_db_to_be
 ```
 
 ### Connect to the db with:
