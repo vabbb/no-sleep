@@ -56,7 +56,11 @@ vulnbox_config/archive/
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
-#vscode stuff
+# vscode stuff
 .vscode/
 settings.json
 *.code-workspace
+
+# python stuff
+webserver/__pycache__/
+*.pyc
