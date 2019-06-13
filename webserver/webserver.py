@@ -30,5 +30,6 @@ def starred():
 
 @app.route("/flow/<int:flow_id>", methods=['POST'])
 def get_flow(flow_id):
-    flow = db.get_flow(id)
-    return render_template('flow.html', flow=flow)
+    flow = db.get_flow_data(flow_id)
+    pprint(flow)
+    return render_template('flow.html', flow=flow, client=c.vm_ip)

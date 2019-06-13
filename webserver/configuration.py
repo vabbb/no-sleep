@@ -1,4 +1,4 @@
-vm_ip = "192.168.1.10"  # todo put regex
+vm_ip = "2.2.2.2"
 
 services = [{"ip": vm_ip, "port": 9876, "name": "timon"},
             {"ip": vm_ip, "port": 80, "name": "beep beep"},
