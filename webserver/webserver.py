@@ -28,8 +28,9 @@ def starred():
     starred = db.get_starred()
     return render_template('starred.html', starred=starred)
 
-@app.route("/flow/<int:flow_id>", methods=['POST'])
+@app.route("/flow/<int:flow_id>", methods=['GET'])
 def get_flow(flow_id):
+    h = True if request.args['hex'] == 'true' else False
     flow = db.get_flow_data(flow_id)
     pprint(flow)
-    return render_template('flow.html', flow=flow, client=c.vm_ip)
+    return render_template('flow.html', flow=flow, client=c.vm_ip, hex=h)

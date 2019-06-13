@@ -1,7 +1,8 @@
 function get_flow(id) {
+    const checkbox = document.getElementById('check_hex')
     $.ajax({
-        url: '/flow/' + id,
-        type: 'POST',
+        url: '/flow/' + id + '?hex=' + checkbox.checked,
+        type: 'GET',
         success: function (response) {
             $(".list-group2").children().each(function (i) { this.remove() })
             $(".list-group2").append(response)
@@ -64,3 +65,15 @@ function activate(o, id) {
     }
     get_flow(id)
 }
+
+const checkbox = document.getElementById('check_hex')
+
+checkbox.addEventListener('change', (event) => {
+  if (event.target.checked) {
+    $('[id=hex]').each(function (i) {this.className = this.className.replace(/ d-none/, '')})
+    $('[id=data]').each(function (i) {this.className += ' d-none'})
+  } else {
+    $('[id=data]').each(function (i) {this.className = this.className.replace(/ d-none/, '')})
+    $('[id=hex]').each(function (i) {this.className += ' d-none'})
+  }
+})
