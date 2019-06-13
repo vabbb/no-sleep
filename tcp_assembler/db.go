@@ -89,17 +89,16 @@ func insertFlowtDoc(flowt *flowt) {
 	// }
 
 	insertResult, err := collFlows.InsertOne(context.TODO(), bson.M{
-		"_id":      flowt.flowID,
-		"connID":   flowt.connID,
-		"src":      flowt.srcIP + ":" + strconv.Itoa(int(flowt.srcPort)),
-		"dst":      flowt.dstIP + ":" + strconv.Itoa(int(flowt.dstPort)),
-		"time":     flowt.srcPort,
-		"favorite": flowt.start,
-		"hasSYN":   flowt.hasSYN,
-		"hasFIN":   flowt.hasFIN,
-		"size":     flowt.size,
-		"data":     flowt.data,
-		"hex":      flowt.hex})
+		"_id":    flowt.flowID,
+		"connID": flowt.connID,
+		"src":    flowt.srcIP + ":" + strconv.Itoa(int(flowt.srcPort)),
+		"dst":    flowt.dstIP + ":" + strconv.Itoa(int(flowt.dstPort)),
+		"time":   flowt.srcPort,
+		"hasSYN": flowt.hasSYN,
+		"hasFIN": flowt.hasFIN,
+		"size":   flowt.size,
+		"data":   flowt.data,
+		"hex":    flowt.hex})
 
 	if err != nil {
 		log.Infoln("Error in insert flowt", flowt.flowID)
@@ -121,11 +120,11 @@ func insertFlowtDoc(flowt *flowt) {
 func addNewConnection(flowt *flowt) {
 
 	insertResult, err := collConnections.InsertOne(context.TODO(), bson.M{
-		"_id":      flowt.connID,
-		"srcIP":    flowt.srcIP,
-		"dstIP":    flowt.dstIP,
-		"srcPort":  flowt.srcPort,
-		"dstPort":  flowt.dstPort,
+		"_id": flowt.connID,
+		"endpoints": bson.A{
+			bson.A{flowt.srcIP, flowt.srcPort},
+			bson.A{flowt.dstIP, flowt.dstPort},
+		},
 		"lastSeen": flowt.end,
 		"favorite": false,
 		"flows":    bson.A{}})

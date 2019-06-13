@@ -49,10 +49,8 @@ type flowt struct {
 	srcPort, dstPort uint16
 	start, end       int64 // as is returned by time.Now().UnixNano()
 	hasFlag          bool  // regex find for flag{...} pattern
-	favorite         bool  /* defaults to false, can only be
-	changed from the front-end*/
-	hasSYN, hasFIN bool
-	size           int64
+	hasSYN, hasFIN   bool
+	size             int64
 	// some redundancy for faster processing
 	data string // printable representation of the data
 	hex  []byte // hex representation of the data
@@ -123,18 +121,17 @@ func (s *tcpStream) ReassemblyComplete() {
 		}
 
 		flowToUpload := &flowt{
-			srcIP:    s.net.Src().String(),
-			dstIP:    s.net.Dst().String(),
-			srcPort:  bytesToUint16(s.transport.Src().Raw()),
-			dstPort:  bytesToUint16(s.transport.Dst().Raw()),
-			favorite: false,
-			hasSYN:   s.sawStart,
-			hasFIN:   s.sawEnd,
-			start:    s.start,
-			end:      s.end,
-			size:     s.bytes,
-			hex:      s.payload,
-			data:     string(temp),
+			srcIP:   s.net.Src().String(),
+			dstIP:   s.net.Dst().String(),
+			srcPort: bytesToUint16(s.transport.Src().Raw()),
+			dstPort: bytesToUint16(s.transport.Dst().Raw()),
+			hasSYN:  s.sawStart,
+			hasFIN:  s.sawEnd,
+			start:   s.start,
+			end:     s.end,
+			size:    s.bytes,
+			hex:     s.payload,
+			data:    string(temp),
 		}
 
 		// connID is made of the 2 pairs IP:PORT
@@ -167,7 +164,6 @@ func (s *tcpStream) ReassemblyComplete() {
 		log.Trace("srcPort:", flowToUpload.srcPort)
 		log.Trace("dstPort:", flowToUpload.dstPort)
 		log.Trace("hasFlag:", flowToUpload.hasFlag)
-		log.Trace("favorite:", flowToUpload.favorite)
 		log.Trace("hasSYN, hasFIN: ", flowToUpload.hasSYN, ", ", flowToUpload.hasFIN)
 		log.Trace("start:", time.Unix(0, flowToUpload.start))
 		log.Trace("end:", time.Unix(0, flowToUpload.end))
