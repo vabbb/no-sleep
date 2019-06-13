@@ -1,0 +1,25 @@
+{% macro flow_track(index, f, client) %}
+{% if client == f['src'][:f['src'].find(':')] %}
+<div class="card to-right">
+  <div class="card-body">
+    <h5 class="card-title">{{ index }}. Client</h5>
+    <p class="card-text text-monospace">
+      {{ f['data'] }}      
+    </p>
+  </div>
+</div>
+{% else %}
+<div class="card to-left">
+  <div class="card-body">
+    <h5 class="card-title">{{ index }}. Server</h5>
+    <p class="card-text text-monospace">
+      {{ f['data'] }}      
+    </p>
+  </div>
+</div>
+{% endif %}
+{% endmacro %}
+
+{% for f in flow %}
+{{ flow_track(loop.index, f, client) }}
+{% endfor %}
