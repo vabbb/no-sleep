@@ -71,7 +71,7 @@ function pwn(flow_id) {
         url: '/pwn/' + flow_id,
         type: 'GET',
         success: function (response) {
-            console.log(response);
+            alert(response);
         },
         error: function (error) {
             console.log(error);
