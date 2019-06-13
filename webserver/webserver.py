@@ -7,7 +7,7 @@ from flow2pwn import flow2pwn
 app = Flask(__name__)
 
 def get_services():
-    return [s['name'] for s in c.services]    
+    return [c.services[p] for p in c.services]
 
 @app.route("/")
 def hello_world():
@@ -16,7 +16,7 @@ def hello_world():
     starred = db.get_favorite_connections(db.collConnections)
     flows   = db.find_what_u_want(db.collConnections, {})
     services = get_services()
-    return render_template('index.html', starred=starred, flows=flows, services=services)
+    return render_template('index.html', starred=starred, flows=flows, services=services, services_map=c.services)
 
 @app.route("/star/<flow_id>/<sel>", methods=['POST'])
 def star(flow_id, sel):
@@ -26,7 +26,8 @@ def star(flow_id, sel):
 @app.route("/starred", methods=['POST'])
 def starred():
     starred = db.get_favorite_connections(db.collConnections)
-    return render_template('starred.html', starred=starred)
+    pprint(c.services)
+    return render_template('starred.html', starred=starred, services_map=c.services)
 
 @app.route("/flow/<flow_id>", methods=['GET'])
 def get_flow(flow_id):

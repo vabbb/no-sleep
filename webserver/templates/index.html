@@ -21,7 +21,7 @@
   <!-- Custom styles for this template-->
   <link href="{{ url_for('static', filename='css/sb-admin.css') }}" rel="stylesheet">
 
-  {% macro add_flow(flow) %}
+  {% macro add_flow(flow, services) %}
   <li onclick="activate(this, '{{ flow['_id'] }}')" class="list-group-item">
     <div class="container">
       <div class="row">
@@ -31,7 +31,13 @@
         </div>
         <div class="col-9">
           <div class="row font-weight-bold">
-            {{ flow['connID'] }}
+            {% if services[flow['endpoints'][0][1]] %}
+            {{ services[flow['endpoints'][0][1]] }}
+            {% elif services[flow['endpoints'][1][1]] %}
+            {{ services[flow['endpoints'][1][1]] }}
+            {% else %}
+            unknown
+            {% endif %}
           </div>
           <div class="row">
             {{ flow['_id'] }}
@@ -101,7 +107,7 @@
 
     <ul class="list-group">
       {% for flow in flows %}
-      {{ add_flow(flow) }}
+      {{ add_flow(flow, services_map) }}
       {% endfor %}
     </ul>
 

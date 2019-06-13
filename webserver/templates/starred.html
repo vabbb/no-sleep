@@ -1,5 +1,5 @@
-{% macro add_starred(flow) %}
-<li onclick="activate(this, {{ flow['connID'] }})" class="list-group-item">
+{% macro add_starred(flow, services) %}
+<li onclick="activate(this, '{{ flow['_id'] }}')" class="list-group-item">
   <div class="container">
     <div class="row">
       <div class="col">
@@ -7,7 +7,13 @@
       </div>
       <div class="col-9">
         <div class="row font-weight-bold">
-          {{ flow['connID'] }}
+          {% if services[flow['endpoints'][0][1]] %}
+          {{ services[flow['endpoints'][0][1]] }}
+          {% elif services[flow['endpoints'][1][1]] %}
+          {{ services[flow['endpoints'][1][1]] }}
+          {% else %}
+          unknown
+          {% endif %}
         </div>
         <div class="row">
           {{ flow['lastSeen'] }}
@@ -20,5 +26,5 @@
 {% endmacro %}
 
 {% for flow in starred %}
-{{ add_starred(flow) }}
+{{ add_starred(flow, services_map) }}
 {% endfor %}
