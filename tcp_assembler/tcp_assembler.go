@@ -69,9 +69,15 @@ func oldestPcap() (response string, arr error) {
 	if err != nil {
 		log.Fatal("Error looking through files: ", err)
 	}
+
 	if len(pcapFiles) == 0 {
 		log.Warning("No .pcap files found")
-		return "", errors.New("no pcaps found, dawg")
+		return "", errors.New("No pcaps found, dawg")
+	}
+	if len(pcapFiles) == 1 {
+		log.Info("Only 1 .pcap file was found. Waiting for one more, " +
+			"to be sure tcpdump has finished writing on it")
+		return "", errors.New("Only 1 .pcap file, dawg")
 	}
 
 	oldest := int64(^uint64(0) >> 1) // this means "MAX_INT64"
@@ -85,15 +91,15 @@ func oldestPcap() (response string, arr error) {
 
 // init happens before main
 func init() {
+	// Parse command line arguments
+	flag.Parse()
+
 	// DEBUG MODE (?)
-	if *nodebug {
+	if *nodebug == true {
 		log.SetLevel(log.InfoLevel)
 	} else {
 		log.SetLevel(log.DebugLevel)
 	}
-
-	//parse command line arguments
-	flag.Parse()
 
 	// Create archiveDir if it doesnt exist
 	if _, err := os.Stat(*archiveDir); os.IsNotExist(err) {
@@ -125,29 +131,30 @@ func main() {
 
 	decoded := make([]gopacket.LayerType, 0, 4)
 
+	// Look for pcap file. If not found, wait 5s and try again
 	for {
-		// loop until a .pcap file to analyze is found
-		for {
-			fname, err = oldestPcap()
-			if err == nil {
-				break
-			}
-			time.Sleep(time.Second * 10)
+		fname, err = oldestPcap()
+		if err == nil {
+			break
 		}
+		time.Sleep(time.Second * 5)
+	}
 
+	for {
 		// Open file
-		log.Infof("opening file %q", fname)
+		log.Infof("Analyzing file %q", fname)
 		handle, err = pcap.OpenOffline(fname)
+		timeFileWasOpen := time.Now()
 		if err != nil {
-			log.Fatal("error opening pcap handle: ", err)
+			log.Fatal("Error opening pcap handle: ", err)
 		}
 
 		// READ PACKETS FROM PCAP FILE
 		for {
-			// Check to see if we should flush the streams we have
-			// that haven't seen any new data in a while.  Note we set a
-			// timeout on our PCAP handle, so this should happen even if we
-			// never see packet data.
+			/* Check to see if we should flush the streams we have that
+			   haven't seen any new data in a while.  Note we set a timeout
+			   on our PCAP handle, so this should happen even if we never
+			   see packet data. */
 			if time.Now().After(nextFlush) {
 				// flushing all streams that haven't seen packets
 				// in the last 2 minutes
@@ -160,22 +167,21 @@ func main() {
 
 			if err != nil {
 				if err.Error() == "EOF" {
-					//go to next .pcap file (if it exists, else wait around)
+					// File is done, we can exit the loop and close the handle
 					break
 				}
-				log.Tracef("error getting packet: %v", err)
+				log.Tracef("Error getting packet: %v", err)
 				continue
 			}
 
 			err = parser.DecodeLayers(data, &decoded)
 			if err != nil {
-				log.Tracef("error decoding packet: %v", err)
+				log.Tracef("Error decoding packet: %v", err)
 				continue
 			}
 			if *logAllPackets {
-				log.Tracef("decoded the following layers: %v", decoded)
+				log.Tracef("Decoded the following layers: %v", decoded)
 			}
-			// byteCount += int64(len(data))
 
 			// Find either the IPv4 or IPv6 address to use as our network layer.
 			foundNetLayer := false
@@ -196,13 +202,13 @@ func main() {
 							ci.Timestamp,
 						)
 					} else {
-						log.Trace("could not find IPv4 layer, ignoring")
+						log.Trace("Could not find IPv4 layer, ignoring")
 					}
 					continue
 				}
 			}
 		}
-		// close pcap file
+		// Close pcap file
 		handle.Close()
 
 		// Move analyzed pcap files to archive folder (if not in DEBUG MODE)
@@ -216,7 +222,24 @@ func main() {
 			}
 		} else {
 			log.Debugf("We are in debug mode! Analysis will restart in 10s")
-			time.Sleep(time.Second * 60)
+			time.Sleep(time.Second * 10)
 		}
+
+		// Loop until a valid .pcap file is found
+		// timeToSleep is used to syncronize the sleeps with the last file open
+		timeToSleep := timeFileWasOpen.Add(time.Second * 20)
+		for i := 0; true; i++ {
+			fname, err = oldestPcap()
+			if err == nil {
+				break
+			}
+			time.Sleep(time.Until(timeToSleep))
+			timeToSleep = timeToSleep.Add(time.Second * 20)
+			if i >= 3 {
+				log.Warning("At least one minute has passed and no new .pcap " +
+					"files were found!")
+			}
+		}
+
 	}
 }
