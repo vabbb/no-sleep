@@ -62,7 +62,7 @@
       <select name="service" class="browser-default custom-select mx-2">
         <option value="" disabled selected>Services</option>
         {% for s in services %}
-        <option value="{{ loop.index }}">{{s }}</option>
+        <option value="{{ s }}">{{ s }}</option>
         {% endfor %}
       </select>
       <div class="form-group">

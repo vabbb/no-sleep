@@ -1,8 +1,12 @@
 from flask import Flask, render_template, request
 import fake_db as db
 from pprint import pprint
+import configuration as c
 
 app = Flask(__name__)
+
+def get_services():
+    return [s['name'] for s in c.services]    
 
 @app.route("/")
 def hello_world():
@@ -10,7 +14,7 @@ def hello_world():
     pprint(filters)
     starred = db.get_starred()
     flows   = db.get_flow_list()
-    services = ['one', 'two']
+    services = get_services()
     return render_template('index.html', starred=starred, flows=flows, services=services)
 
 @app.route("/star/<int:flow_id>/<sel>", methods=['POST'])
