@@ -11,7 +11,7 @@ The project will be divided into four components:
 * **The Front-end** - This will be the interface through which we will access the data stored in the Database. It can be realized either on python flask, any node-js server, or Nginx. This component will need to have the following features: **real-time traffic updates** (done through ajax requests), **filter by "presence of a flag"** in a TCP stream, **ease of use** in order to make other team's exploit reusable as fast as possible (see how [Flower](https://github.com/secgroup/flower) does it).
 
 Suggestions are very much appreciated, on our Telegram group.
-
+---
 # The Minimum Viable Product (MVP)
 
 ### tcp_assembler
@@ -43,7 +43,7 @@ Suggestions are very much appreciated, on our Telegram group.
 ### Other
 * make a new packet sniffer to provide heuristic analysis to mark bad packets
 * ...
-
+---
 # Flow Structure
 `flowt` data structure, in Go:
 ```go
@@ -83,8 +83,8 @@ connection: {
         "a9334371a38d2095cfdcc9f25a3cd47a"
     ]
 }
-
-
+```
+```json
 flow: {
     "_id" : "6f7197b90c28d1cafd730b82d0ca8f27",
     "size" : NumberLong(63),
@@ -134,7 +134,7 @@ Remove all data from the db:
 r.deleteMany({})
 c.deleteMany({})
 ```
-
+---
 # Build Requirements
 
 * `go` version >=1.12
@@ -148,7 +148,7 @@ $ go get github.com/google/gopacket
 $ go get github.com/sirupsen/logrus
 $ go get go.mongodb.org/mongo-driver/mongo
 ```
-
+---
 # Install Instructions
 
 ### Download
@@ -159,3 +159,15 @@ $ go get go.mongodb.org/mongo-driver/mongo
 
 ### Run
     $ ./bin/tcp_assembler [-d pcaps' directory]
+
+---
+# Production Run
+
+1. Open 4 terminals
+2. cd into bin/ , then `mkdir pcaps archive`
+3. on one terminal, cd into bin/pcaps , the run `sudo tcpdump -i enp0s31f6 -G 60 -w dump_%Y-%m-%d_%H:%M:%S.pcap "tcp port 8080 or 443 or 80"` as root, changing interface and filter if necessary
+4. on the second terminal run `mongod --dbpath /path/to/where/you/want/your/db`
+5. on the third terminal, cd into bin/, then run `./tcp_assembler -nodebug`
+6. on the last terminal, cd into webserver and run `FLASK_APP=webserver.py flask run`
+
+DONE
