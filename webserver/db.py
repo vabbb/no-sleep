@@ -13,12 +13,12 @@ collFlows = db.flows
 # return all docs connection in a descending order by end time
 def get_connections(collConnections):
     cursor = collConnections.find()
-    return cursor.sort('lastSeen', -1)
+    return cursor.sort('lastSeen', -1), cursor.count()
 
 # return all docs flow in a ascending order by time start
 def get_flows(collFlows):
     cursor = collFlows.find()
-    return cursor.sort('time', 1)
+    return cursor.sort('time', 1), cursor.count()
 
 def get_single_connection(collConnections, id):
     return collConnections.find_one({"_id": id})
@@ -28,11 +28,11 @@ def get_single_flow(collFlows, id):
 
 def get_favorite_connections(collConnections):
     cursor = collConnections.find({'favorite': True})
-    return cursor.sort('lastSeen', -1)
+    return cursor.sort('lastSeen', -1), cursor.count()
 
 def get_favorite_flows(collFlows):
     cursor = collFlows.find({'favorite': True})
-    return cursor.sort('time', 1)
+    return cursor.sort('time', 1), cursor.count()
 
 def star_one_connection(collConnections, id):
     filter = {"_id": id}
@@ -47,8 +47,8 @@ def star_one_flow(collFlows, id):
 def get_flows_of_a_conn(collCollections, collFlows, idConn):
     connDoc = collCollections.find_one({"_id": idConn})
     cursor = collFlows.find({"connID": connDoc['_id']})
-    return cursor.sort('time', 1)
+    return cursor.sort('time', 1), cursor.count()
 
 def find_what_u_want(collection, filter):
-    return collection.find(filter)
-
+    cursor = collection.find(filter)
+    return cursor, cursor.count()
