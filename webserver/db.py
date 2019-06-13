@@ -28,15 +28,15 @@ def get_single_flow(collFlows, id):
 
 def get_favorite_connections(collConnections):
     cursor = collConnections.find({'favorite': True})
-    return cursor.sort('lastSeen', -1), cursor.count()
+    return cursor.sort('lastSeen', -1)
 
 def get_favorite_flows(collFlows):
     cursor = collFlows.find({'favorite': True})
-    return cursor.sort('time', 1), cursor.count()
+    return cursor.sort('time', 1)
 
-def star_one_connection(collConnections, id):
+def star_one_connection(collConnections, id, val):
     filter = {"_id": id}
-    update = {"$set": {"favorite": True}}
+    update = {"$set": {"favorite": val}}
     collConnections.update_one(filter, update)
 
 def star_one_flow(collFlows, id):
@@ -51,4 +51,4 @@ def get_flows_of_a_conn(collCollections, collFlows, idConn):
 
 def find_what_u_want(collection, filter):
     cursor = collection.find(filter)
-    return cursor, cursor.count()
+    return cursor#, cursor.count()
