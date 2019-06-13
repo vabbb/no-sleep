@@ -44,6 +44,11 @@ def star_one_flow(collFlows, id):
     update = {"$set": {"favorite": True}}
     collFlows.update_one(filter, update)
 
+def get_flows_of_a_conn(collCollections, collFlows, idConn):
+    connDoc = collCollections.find_one({"_id": idConn})
+    cursor = collFlows.find({"connID": connDoc['_id']})
+    return cursor.sort('time', 1)
+
 def find_what_u_want(collection, filter):
     return collection.find(filter)
 

@@ -174,7 +174,7 @@ connections = [
                 "hasSYN": False,
                 "hasFIN": False,
                 "size": 10,
-                "data": "Vabbè io vado, ciao",
+                "data": "Vabbe io vado, ciao",
                 "hex": "asdas"
             },
             {
