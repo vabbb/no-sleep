@@ -9,13 +9,22 @@ app = Flask(__name__)
 def get_services():
     return [c.services[p] for p in c.services]
 
+def get_service_port(service):
+    for p in c.services:
+        if c.services[p] == service:
+            return p
+
 @app.route("/")
 def hello_world():
     filters = request.args
-    pprint(filters)
-    limit = int(filters['nflows'])
+    limit = int(filters.get('nflows', '20'))    
+    service_port = get_service_port(filters.get('service'))
     starred = db.get_favorite_connections(db.collConnections)
-    flows   = db.find_what_u_want(db.collConnections, {}, limit)
+    f = {}
+    if service_port:
+        f = {'endpoints':{'$elemMatch':{'$elemMatch':{'$in': [service_port]}}}}
+    pprint(f)
+    flows   = db.find_what_u_want(db.collConnections, f, limit)
     services = get_services()
     return render_template('index.html', starred=starred, flows=flows, services=services, services_map=c.services)
 
