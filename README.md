@@ -48,49 +48,54 @@ Suggestions are very much appreciated, on our Telegram group.
 `flowt` data structure, in Go:
 ```go
 type flowt struct {
-    flowID           string
-    connID           string
-    srcIP, dstIP     string
-    srcPort, dstPort uint16
-    start, end       int64 // as is returned by time.Now().UnixNano()
-    hasFlag          bool  // regex find for flag{...} pattern
-    favorite         bool  // defaults to false, can only be changed from the front-end
-    hasSYN, hasFIN   bool
-    size             int64
-    // some redundancy for faster processing
-    data             string // printable representation of the data
-    hex              []byte // hex representation of the data
+	flowID           string
+	connID           string
+	srcIP, dstIP     string
+	srcPort, dstPort uint16
+	start, end       int64 // as is returned by time.Now().UnixNano()
+	hasFlag          bool  // regex find for flag{...} pattern
+	hasSYN, hasFIN   bool
+	size             int64
+	// some redundancy for faster processing
+	data string // printable representation of the data
+	hex  []byte // hex representation of the data
 }
 ```
 
 This structure will be uploaded to mongodb as follows:
-```
-connection {
-    connID           string
-    srcIP, dstIP     string
-    srcPort, dstPort uint16
-    lastSeen         int64 // updated with the latest flowt.end uploaded
-    favorite         bool  // defaults to false, can only be changed from the front-end
-    flows {
-        mongo_flow_type
-        mongo_flow_type
-        mongo_flow_type
-        ...
-    }
+```json
+connection: {
+    "_id" : "192.168.1.133:42478<->216.58.198.35:443",
+    "endpoints" : [
+        [
+            "192.168.1.133",
+            42478
+        ],
+        [
+            "216.58.198.35",
+            443
+        ]
+    ],
+    "lastSeen" : NumberLong("1560376952357534000"),
+    "favorite" : false,
+    "flows" : [
+        "5a818af16fb8bc8d50897b7c07b9ad57",
+        "a9334371a38d2095cfdcc9f25a3cd47a"
+    ]
 }
 
 
-mongo_flow_type {
-    flowID         string
-    connID         string
-    src            string // "IP:port"
-    dst            string // "IP:port"
-    time           int64 // this is the flow's start time
-    favorite       bool
-    hasSYN, hasFIN bool
-    size           int64
-    data           string // printable representation of the data
-    hex            []byte // hex representation of the data
+flow: {
+    "_id" : "6f7197b90c28d1cafd730b82d0ca8f27",
+    "size" : NumberLong(63),
+    "data" : "....\".>....@%b..&.C.C....<.K.~.=.&...................ito.......",
+    "hex" : BinData(0,"FwMDACLFPqOHkZpAJWKo3SbdQ9lDEo2BFTwCS5N+iz0GJhLr668QFwMDABOIpZzj1bPIDa9pdG+c5uq9mAEc"),
+    "connID" : "152.199.19.160:443<->192.168.1.133:53492",
+    "dst" : "152.199.19.160:443",
+    "time" : 53492,
+    "hasSYN" : false,
+    "hasFIN" : true,
+    "src" : "192.168.1.133:53492"
 }
 ```
 # Mongodb Usage

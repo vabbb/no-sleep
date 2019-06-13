@@ -74,10 +74,12 @@ func oldestPcap() (response string, arr error) {
 		log.Warning("No .pcap files found")
 		return "", errors.New("No pcaps found, dawg")
 	}
-	if len(pcapFiles) == 1 {
-		log.Info("Only 1 .pcap file was found. Waiting for one more, " +
-			"to be sure tcpdump has finished writing on it")
-		return "", errors.New("Only 1 .pcap file, dawg")
+	if *nodebug == true {
+		if len(pcapFiles) == 1 {
+			log.Info("Only 1 .pcap file was found. Waiting for one more, " +
+				"to be sure tcpdump has finished writing on it")
+			return "", errors.New("Only 1 .pcap file, dawg")
+		}
 	}
 
 	oldest := int64(^uint64(0) >> 1) // this means "MAX_INT64"
