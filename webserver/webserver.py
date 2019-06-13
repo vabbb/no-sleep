@@ -13,8 +13,9 @@ def get_services():
 def hello_world():
     filters = request.args
     pprint(filters)
+    limit = int(filters['nflows'])
     starred = db.get_favorite_connections(db.collConnections)
-    flows   = db.find_what_u_want(db.collConnections, {})
+    flows   = db.find_what_u_want(db.collConnections, {}, limit)
     services = get_services()
     return render_template('index.html', starred=starred, flows=flows, services=services, services_map=c.services)
 

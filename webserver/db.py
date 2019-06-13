@@ -49,6 +49,8 @@ def get_flows_of_a_conn(collCollections, collFlows, idConn):
     cursor = collFlows.find({"connID": connDoc['_id']})
     return cursor.sort('time', 1), cursor.count()
 
-def find_what_u_want(collection, filter):
+def find_what_u_want(collection, filter, limit=0):
     cursor = collection.find(filter)
+    if limit > 0:
+        cursor.limit(limit)
     return cursor#, cursor.count()
