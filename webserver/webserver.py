@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import fake_db as db
 from pprint import pprint
 import configuration as c
+from flow2pwn import flow2pwn
 
 app = Flask(__name__)
 
@@ -34,3 +35,8 @@ def get_flow(flow_id):
     flow = db.get_flow_data(flow_id)
     pprint(flow)
     return render_template('flow.html', flow=flow, client=c.vm_ip, hex=h)
+
+@app.route("/pwn/<int:flow_id>", methods=['GET'])
+def get_flow2pwn(flow_id):
+    c = db.get_connection(flow_id)
+    return flow2pwn(c)
