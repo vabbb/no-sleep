@@ -1,17 +1,25 @@
-{% macro flow_track(data) %}
-<!-- TODO: select client or server 
-		client -> to-right
-		server -> to-left -->
+{% macro flow_track(index, f, client) %}
+{% if client == f['src'][:f['src'].find(':')] %}
 <div class="card to-right">
-	<div class="card-body">
-		<h5 class="card-title"><!-- TODO -->></h5>
-		<p class="card-text text-monospace">
-			<!-- TODO: insert flow content-->
-		</p>
-	</div>
+  <div class="card-body">
+    <h5 class="card-title">{{ index }}. Client</h5>
+    <p class="card-text text-monospace">
+      {{ f['data'] }}      
+    </p>
+  </div>
 </div>
+{% else %}
+<div class="card to-left">
+  <div class="card-body">
+    <h5 class="card-title">{{ index }}. Server</h5>
+    <p class="card-text text-monospace">
+      {{ f['data'] }}      
+    </p>
+  </div>
+</div>
+{% endif %}
 {% endmacro %}
 
-(% for data in flow %)
-	{{ flow_track(data) }}
-(% endfor %)
+{% for f in flow %}
+{{ flow_track(loop.index, f, client) }}
+{% endfor %}

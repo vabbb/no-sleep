@@ -22,22 +22,23 @@
   <link href="{{ url_for('static', filename='css/sb-admin.css') }}" rel="stylesheet">
 
   {% macro add_flow(flow) %}
-  <li onclick="activate(this, {{ flow['id'] }})" class="list-group-item">
+  <li onclick="activate(this, {{ flow['connID'] }})" class="list-group-item">
     <div class="container">
       <div class="row">
         <div class="col">
-          <i onclick="change_star(this, {{ flow['id'] }})"
+          <i onclick="change_star(this, {{ flow['connID'] }})"
             class="{% if flow['favorite'] %} fas fa-heart {% else %} far fa-heart {% endif %} align-middle"></i>
         </div>
         <div class="col-9">
           <div class="row font-weight-bold">
-            {{ flow['id'] }}
+            {{ flow['connID'] }}
           </div>
           <div class="row">
             {{ flow['srcIP'] }}:{{ flow['srcPort'] }} => {{ flow['dstIP'] }}:{{ flow['dstPort'] }}
           </div>
           <div class="row">
-            {{ flow['time'] }}
+            {{ flow['lastSeen'] }}
+            <!-- TODO: convert in time -->
           </div>
         </div>
       </div>

@@ -3,8 +3,8 @@ function get_flow(id) {
         url: '/flow/' + id,
         type: 'POST',
         success: function (response) {
-            console.log(response)
-            //TODO: visualize flow
+            $(".list-group2").children().each(function (i) { this.remove() })
+            $(".list-group2").append(response)
         },
         error: function (error) {
             console.log(error);

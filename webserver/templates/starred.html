@@ -1,5 +1,5 @@
 {% macro add_starred(flow) %}
-<li onclick="activate(this, {{ flow['id'] }})" class="list-group-item">
+<li onclick="activate(this, {{ flow['connID'] }})" class="list-group-item">
   <div class="container">
     <div class="row">
       <div class="col">
@@ -7,10 +7,11 @@
       </div>
       <div class="col-9">
         <div class="row font-weight-bold">
-          {{ flow['id'] }}
+          {{ flow['connID'] }}
         </div>
         <div class="row">
-          {{ flow['time'] }}
+          {{ flow['lastSeen'] }}
+          <!-- TODO: convert to time -->
         </div>
       </div>
     </div>
