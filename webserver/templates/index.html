@@ -21,29 +21,29 @@
   <!-- Custom styles for this template-->
   <link href="{{ url_for('static', filename='css/sb-admin.css') }}" rel="stylesheet">
 
-  {% macro add_flow(flow, services) %}
-  <li onclick="activate(this, '{{ flow['_id'] }}')" class="list-group-item">
+  {% macro add_conn(conn, services) %}
+  <li onclick="activate(this, '{{ conn['_id'] }}')" class="list-group-item">
     <div class="container">
       <div class="row">
         <div class="col">
-          <i onclick="change_star(this, '{{ flow['_id'] }}')"
-            class="{% if flow['favorite'] %} fas fa-heart {% else %} far fa-heart {% endif %} align-middle"></i>
+          <i onclick="change_star(this, '{{ conn['_id'] }}')"
+            class="{% if conn['favorite'] %} fas fa-heart {% else %} far fa-heart {% endif %} align-middle"></i>
         </div>
         <div class="col-9">
           <div class="row font-weight-bold">
-            {% if services[flow['endpoints'][0][1]] %}
-            {{ services[flow['endpoints'][0][1]] }}
-            {% elif services[flow['endpoints'][1][1]] %}
-            {{ services[flow['endpoints'][1][1]] }}
+            {% if services[conn['endpoints'][0][1]] %}
+            {{ services[conn['endpoints'][0][1]] }}
+            {% elif services[conn['endpoints'][1][1]] %}
+            {{ services[conn['endpoints'][1][1]] }}
             {% else %}
             unknown
             {% endif %}
           </div>
           <div class="row">
-            {{ flow['_id'] }}
+            {{ conn['_id'] }}
           </div>
           <div class="row">
-            {{ flow['lastSeen'] | int_to_time }}
+            {{ conn['lastSeen'] | int_to_time }}
             <!-- TODO: convert in time -->
           </div>
         </div>
@@ -106,8 +106,8 @@
     </ul>
 
     <ul class="list-group">
-      {% for flow in flows %}
-      {{ add_flow(flow, services_map) }}
+      {% for conn in connections %}
+      {{ add_conn(conn, services_map) }}
       {% endfor %}
     </ul>
 

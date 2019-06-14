@@ -1,5 +1,5 @@
-{% macro add_starred(flow, services) %}
-<li onclick="activate(this, '{{ flow['_id'] }}')" class="list-group-item">
+{% macro add_starred(conn, services) %}
+<li onclick="activate(this, '{{ conn['_id'] }}')" class="list-group-item">
   <div class="container">
     <div class="row">
       <div class="col">
@@ -7,16 +7,16 @@
       </div>
       <div class="col-9">
         <div class="row font-weight-bold">
-          {% if services[flow['endpoints'][0][1]] %}
-          {{ services[flow['endpoints'][0][1]] }}
-          {% elif services[flow['endpoints'][1][1]] %}
-          {{ services[flow['endpoints'][1][1]] }}
+          {% if services[conn['endpoints'][0][1]] %}
+          {{ services[conn['endpoints'][0][1]] }}
+          {% elif services[conn['endpoints'][1][1]] %}
+          {{ services[conn['endpoints'][1][1]] }}
           {% else %}
           unknown
           {% endif %}
         </div>
         <div class="row">
-          {{ flow['lastSeen'] }}
+          {{ conn['lastSeen'] | int_to_time }}
           <!-- TODO: convert to time -->
         </div>
       </div>

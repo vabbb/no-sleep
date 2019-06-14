@@ -25,9 +25,9 @@ def hello_world():
     if service_port:
         f = {'endpoints':{'$elemMatch':{'$elemMatch':{'$in': [service_port]}}}}
     pprint(f)
-    flows   = db.find_what_u_want(db.collConnections, f, limit)
+    conns   = db.get_connections(db.collConnections, f, limit)
     services = get_services()
-    return render_template('index.html', starred=starred, flows=flows, services=services, services_map=c.services)
+    return render_template('index.html', starred=starred, connections=conns, services=services, services_map=c.services)
 
 @app.route("/star/<flow_id>/<sel>", methods=['POST'])
 def star(flow_id, sel):
