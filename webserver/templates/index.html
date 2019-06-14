@@ -43,7 +43,7 @@
             {{ flow['_id'] }}
           </div>
           <div class="row">
-            {{ flow['lastSeen'] }}
+            {{ flow['lastSeen'] | int_to_time }}
             <!-- TODO: convert in time -->
           </div>
         </div>

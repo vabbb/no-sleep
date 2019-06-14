@@ -22,6 +22,8 @@ var (
 	archiveDir = flag.String("a", "archive", "Directory where to store archived "+
 		"pcap files")
 
+	nowait = flag.Bool("nowait", false, "dont wait for second pcap in dir")
+
 	logAllPackets         = flag.Bool("w", false, "Logs every packet in great detail")
 	bufferedPerConnection = flag.Int("connection_max_buffer", 0, "Max packets to"+
 		"buffer for a single connection before skipping over a gap in data and "+
@@ -75,10 +77,12 @@ func oldestPcap() (response string, arr error) {
 		return "", errors.New("No pcaps found, dawg")
 	}
 	if *nodebug == true {
-		if len(pcapFiles) == 1 {
-			log.Info("Only 1 .pcap file was found. Waiting for one more, " +
-				"to be sure tcpdump has finished writing on it")
-			return "", errors.New("Only 1 .pcap file, dawg")
+		if *nowait == false {
+			if len(pcapFiles) == 1 {
+				log.Info("Only 1 .pcap file was found. Waiting for one more, " +
+					"to be sure tcpdump has finished writing on it")
+				return "", errors.New("Only 1 .pcap file, dawg")
+			}
 		}
 	}
 

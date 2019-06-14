@@ -3,6 +3,7 @@ import db
 from pprint import pprint
 import configuration as c
 from flow2pwn import flow2pwn
+import time, datetime
 
 app = Flask(__name__)
 
@@ -51,5 +52,8 @@ def get_flow2pwn(flow_id):
     c, _ = db.get_flows_of_a_conn(db.collConnections, db.collFlows, flow_id)
     return flow2pwn(c)
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80)
+@app.template_filter('int_to_time')
+def convert_int_to_time(t):
+    return datetime.datetime.fromtimestamp(t // 1000000000)
+
+app.run(host='0.0.0.0', port=80)

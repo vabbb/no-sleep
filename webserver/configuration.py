@@ -1,7 +1,5 @@
-vm_ip = "2.2.2.2"
+vm_ip = "10.10.18.1"
 
-services = {9876: "timon",
-            80: "beep beep",
-            443: "mufasa",
-            5000: "simba",
-            40510: "pumbaa"}
+services = {9876: "cc_market",
+            80: "maze",
+            }
