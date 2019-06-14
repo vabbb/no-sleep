@@ -61,3 +61,5 @@ settings.json
 # python stuff
 webserver/__pycache__/
 *.pyc
+
+tcp_assembler/obfuscatedboi.py
