@@ -50,4 +50,6 @@ def get_flow(flow_id):
 def get_flow2pwn(flow_id):
     c, _ = db.get_flows_of_a_conn(db.collConnections, db.collFlows, flow_id)
     return flow2pwn(c)
-    
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=80)
