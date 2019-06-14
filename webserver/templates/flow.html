@@ -1,9 +1,14 @@
-{% macro flow_track(index, f, client, hex) %}
-{% if client == f['src'][:f['src'].find(':')] %}
-<div class="card to-right">
+{% macro flow_track(index, f, server, hex) %}
+{% if server == f['src'][:f['src'].find(':')] %}
+<div class="card bg-info">
   <div class="card-body">
-    <h5 class="card-title">{{ index }}. Client</h5>
-    {% if hex == True %}
+      <table>
+          <tr>
+            <td><h5 class="card-title">{{ index }}. Server</h5></td>
+            <td><h5 class="card-title">{% if f['hasSYN'] %}{{ SYN }}{% endif %} {% if f['hasFIN'] %}{{ FIN }}{% endif %}</h5></td>
+          </tr>
+        </table>
+        {% if hex == True %}
     <p id="data" class="card-text text-monospace d-none">
       {{ f['data'] }}
     </p>
@@ -21,9 +26,14 @@
   </div>
 </div>
 {% else %}
-<div class="card to-left">
+<div class="card bg-warning">
   <div class="card-body">
-    <h5 class="card-title">{{ index }}. Server</h5>
+    <table>
+      <tr>
+        <td><h5 class="card-title">{{ index }}. Client</h5></td>
+        <td><h5 class="card-title">{% if f['hasSYN'] %}{{ SYN }}{% endif %} {% if f['hasFIN'] %}{{ FIN }}{% endif %}</h5></td>
+      </tr>
+    </table>
     {% if hex == True %}
     <p id="data" class="card-text text-monospace d-none">
       {{ f['data'] }}
@@ -46,5 +56,5 @@
 
 <button onclick="pwn('{{ flow_id }}')"type="button" class="btn btn-outline-primary mx-2 mt-2">Pwn</button>
 {% for f in flow %}
-{{ flow_track(loop.index, f, client, hex) }}
+{{ flow_track(loop.index, f, server, hex) }}
 {% endfor %}
