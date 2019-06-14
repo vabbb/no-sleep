@@ -13,7 +13,7 @@ collFlows = db.flows
 # return all docs connection in a descending order by end time
 def get_connections(collConnections):
     cursor = collConnections.find()
-    return cursor.sort('lastSeen', -1), cursor.count()
+    return cursor.sort('lastSeen', 1), cursor.count()
 
 # return all docs flow in a ascending order by time start
 def get_flows(collFlows):
@@ -28,7 +28,7 @@ def get_single_flow(collFlows, id):
 
 def get_favorite_connections(collConnections):
     cursor = collConnections.find({'favorite': True})
-    return cursor.sort('lastSeen', -1)
+    return cursor.sort('lastSeen', 1)
 
 def get_favorite_flows(collFlows):
     cursor = collFlows.find({'favorite': True})
