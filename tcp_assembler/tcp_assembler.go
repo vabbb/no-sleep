@@ -15,6 +15,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// timeout is the length of time to wait befor flushing connections and
+// bidirectional stream pairs.
+const timeout time.Duration = time.Minute * 5
+
 var (
 	err error
 
@@ -22,28 +26,18 @@ var (
 	archiveDir = flag.String("a", "archive", "Directory where to store archived "+
 		"pcap files")
 
-	nowait = flag.Bool("nowait", false, "dont wait for second pcap in dir")
+	flagRegex = flag.String("regex", "((?:flag|cci?t?1?9?){[ a-zA-Z0-9-_]*})",
+		"regex to grep flags")
 
-	logAllPackets         = flag.Bool("w", false, "Logs every packet in great detail")
-	bufferedPerConnection = flag.Int("connection_max_buffer", 0, "Max packets to"+
-		"buffer for a single connection before skipping over a gap in data and "+
-		"continuing to stream the connection after the buffer.\nIf zero or less, "+
-		"this is infinite.")
-	bufferedTotal = flag.Int("total_max_buffer", 0, "Max packets to buffer total "+
-		"before skipping over gaps in connections and continuing to stream "+
-		"connection data.\nIf zero or less, this is infinite")
-
+	nowait  = flag.Bool("nowait", false, "dont wait for second pcap in dir")
 	nodebug = flag.Bool("nodebug", false, "If this is set, uses production mode")
 	help    = flag.Bool("help", false, "Shows this output")
 
 	fname string
 
-	handle        *pcap.Handle
-	snapshotLen   int32 = 65536
-	promiscuous         = false
-	flushDuration       = time.Minute * 4
-
-	// byteCount int64
+	handle      *pcap.Handle
+	snapshotLen int32 = 65536
+	promiscuous       = false
 
 	ethLayer     layers.Ethernet
 	ip4Layer     layers.IPv4
@@ -126,14 +120,16 @@ func init() {
 
 func main() {
 	// Set up assembly
-	streamFactory := &tcpStreamFactory{}
+	streamFactory := &bidiFactory{bidiMap: make(map[key]*bidi)}
 	streamPool := tcpassembly.NewStreamPool(streamFactory)
 	assembler := tcpassembly.NewAssembler(streamPool)
-	assembler.MaxBufferedPagesPerConnection = *bufferedPerConnection
-	assembler.MaxBufferedPagesTotal = *bufferedTotal
+	// Limit memory usage by auto-flushing connection state if we get over 100K
+	// packets in memory, or over 1000 for a single stream.
+	assembler.MaxBufferedPagesTotal = 100000
+	assembler.MaxBufferedPagesPerConnection = 1000
 	defer assembler.FlushAll()
 
-	nextFlush := time.Now().Add(flushDuration / 2)
+	nextFlush := time.Now().Add(timeout / 2)
 
 	decoded := make([]gopacket.LayerType, 0, 4)
 
@@ -164,8 +160,8 @@ func main() {
 			if time.Now().After(nextFlush) {
 				// flushing all streams that haven't seen packets
 				// in the last 2 minutes
-				assembler.FlushOlderThan(time.Now().Add(flushDuration))
-				nextFlush = time.Now().Add(flushDuration / 2)
+				assembler.FlushOlderThan(time.Now().Add(timeout))
+				nextFlush = time.Now().Add(timeout / 2)
 			}
 
 			// copy packet from kernel buffers with ReadPacketData
@@ -184,9 +180,6 @@ func main() {
 			if err != nil {
 				log.Tracef("Error decoding packet: %v", err)
 				continue
-			}
-			if *logAllPackets {
-				log.Tracef("Decoded the following layers: %v", decoded)
 			}
 
 			// Find either the IPv4 or IPv6 address to use as our network layer.
