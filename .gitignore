@@ -65,3 +65,4 @@ webserver/__pycache__/
 vendor/tcpflow.elf
 
 tcp_assembler/obfuscatedboi.py
+report.*

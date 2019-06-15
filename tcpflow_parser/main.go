@@ -1,5 +1,12 @@
 package main
 
+import (
+	"bufio"
+	"fmt"
+	"log"
+	"os"
+)
+
 type nodet struct {
 	connID           string
 	srcIP, dstIP     string
@@ -10,6 +17,15 @@ type nodet struct {
 	hex              []byte
 }
 
+//this only works when piped with tcpflow
 func main() {
 
+	scanner := bufio.NewScanner(os.Stdin)
+	for scanner.Scan() {
+		fmt.Println(scanner.Text())
+	}
+
+	if err := scanner.Err(); err != nil {
+		log.Println(err)
+	}
 }
