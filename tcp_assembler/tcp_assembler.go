@@ -120,7 +120,7 @@ func init() {
 
 func main() {
 	// Set up assembly
-	streamFactory := &bidiFactory{bidiMap: make(map[key]*bidi)}
+	streamFactory := &bidiFactory{bidiMap: make(map[key]*bothStreams)}
 	streamPool := tcpassembly.NewStreamPool(streamFactory)
 	assembler := tcpassembly.NewAssembler(streamPool)
 	// Limit memory usage by auto-flushing connection state if we get over 100K
