@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"regexp"
+	"sort"
+	"strconv"
 	"time"
 	"unicode"
 
@@ -14,45 +16,47 @@ import (
 // IsASCIIPrintable will return true if char is printable
 // else it will return false
 func IsASCIIPrintable(r rune) bool {
-	if r > unicode.MaxASCII || !unicode.IsPrint(r) {
-		return false
+	if r < unicode.MaxASCII && unicode.IsPrint(r) || r == '\n' {
+		return true
 	}
-	return true
+	return false
 }
 
 func bytesToUint16(a []byte) uint16 {
 	return uint16(a[0])<<8 + uint16(a[1])
 }
 
-func min(a, b int64) int64 {
-	if a < b {
-		return a
-	}
-	return b
-}
-func max(a, b int64) int64 {
-	if a > b {
-		return a
-	}
-	return b
-}
-
-type nodet struct {
-	nodeID  string
-	time    int64
-	hasFlag bool
-	data    string
-	hex     []byte
-}
-
-type connt struct {
-	connID           string
+type flowt struct {
+	flowID           string
 	srcIP, dstIP     string
 	srcPort, dstPort uint16
 	start, end       int64 // as is returned by time.Now().UnixNano()
 	hasFlag          bool  // regex find for flag{...} pattern
 	// some redundancy for faster processing
-	nodes [][2]nodet // printable representation of the data
+	nodes []nodet // printable representation of the data
+}
+
+func (f flowt) String() string {
+	r := ""
+	r += "flowID: " + f.flowID
+
+	for _, node := range f.nodes {
+		if node.hasSYN {
+			r += "\nSYN"
+		}
+		if node.hasFIN {
+			r += "\nFIN"
+		}
+		r += "\n[" + node.srcIP + ":" + strconv.Itoa(int(node.srcPort))
+		r += "->" + node.dstIP + ":" + strconv.Itoa(int(node.dstPort))
+		r += "]["
+		r += time.Unix(node.time/1000000000, node.time%1000000000).String()
+		r += "]:"
+		r += "\n" + string(node.printableData)
+		r += ("\n******************************")
+	}
+
+	return r
 }
 
 func isFlagPresent(a string) bool {
@@ -73,18 +77,22 @@ func (k key) String() string {
 	return fmt.Sprintf("%v:%v", k.net, k.transport)
 }
 
-type streamPayload struct {
-	size           int64
-	data           []byte
-	hasSYN, hasFIN bool
-	time           int64
+type nodet struct {
+	time             int64
+	srcIP, dstIP     string
+	srcPort, dstPort uint16
+	hasSYN, hasFIN   bool
+	hasFlag          bool
+	blob             []byte
+	printableData    string
 }
 
 // bidiStream will handle tcp packets
 type uniStream struct {
-	bothStrims *bothStreams // maps to my bidirectional twin.
-	payloads   []streamPayload
-	done       bool // if true, we've seen the last packet we're going to for this stream.
+	net, transport gopacket.Flow
+	bothStrims     *bothStreams // maps to my bidirectional twin.
+	payloads       []nodet
+	done           bool // if true, we've seen the last packet we're going to for this stream.
 }
 
 // bidi stores each unidirectional side of a bidirectional stream.
@@ -108,7 +116,10 @@ type bidiFactory struct {
 
 func (factory *bidiFactory) New(netFlow, tcpFlow gopacket.Flow) tcpassembly.Stream {
 	// log.Tracef("New stream %v:%v started", netFlow, tcpFlow)
-	s := &uniStream{}
+	s := &uniStream{
+		net:       netFlow,
+		transport: tcpFlow,
+	}
 
 	// Find the bidi bidirectional struct for this stream, creating a new one if
 	// one doesn't already exist in the map.
@@ -128,13 +139,7 @@ func (factory *bidiFactory) New(netFlow, tcpFlow gopacket.Flow) tcpassembly.Stre
 	} else {
 		log.Debugf("[%v] found second side of bidirectional stream", bd.key)
 		bd.b = s
-		if factory.bidiMap[k].lastSpeaker == true {
-			// last one to talk was a
 
-		} else {
-			// last one to talk was b
-
-		}
 		// Clear out the bidi we're using from the map, just in case.
 		delete(factory.bidiMap, k)
 	}
@@ -146,15 +151,30 @@ func (factory *bidiFactory) New(netFlow, tcpFlow gopacket.Flow) tcpassembly.Stre
 // Reassembly objects contain stream data IN ORDER.
 func (s *uniStream) Reassembled(reassemblies []tcpassembly.Reassembly) {
 	for _, reassembly := range reassemblies {
-		strimPayload := streamPayload{
-			size:   0,
-			hasSYN: reassembly.Start,
-			hasFIN: reassembly.End,
-			time:   reassembly.Seen.UnixNano(),
-			data:   reassembly.Bytes,
+		sPayload := nodet{
+			srcIP:   s.net.Src().String(),
+			dstIP:   s.net.Dst().String(),
+			srcPort: bytesToUint16(s.transport.Src().Raw()),
+			dstPort: bytesToUint16(s.transport.Dst().Raw()),
+			hasSYN:  reassembly.Start,
+			hasFIN:  reassembly.End,
+			time:    reassembly.Seen.UnixNano(),
+			blob:    reassembly.Bytes,
 		}
 
-		s.payloads = append(s.payloads, strimPayload)
+		// generate printableData
+		temp := make([]byte, len(sPayload.blob))
+		for i, octet := range sPayload.blob {
+			//if character is printable, add it; else add a "."
+			if IsASCIIPrintable(rune(octet)) {
+				temp[i] = byte(octet)
+			} else {
+				temp[i] = 0x2e
+			}
+		}
+		sPayload.printableData = string(temp)
+
+		s.payloads = append(s.payloads, sPayload)
 	}
 }
 
@@ -177,22 +197,98 @@ func (factory *bidiFactory) collectOldStreams() {
 	}
 }
 
+// merge 2 nodets into a single nodet
+func (a *nodet) merge(b *nodet) *nodet {
+	r := a
+	r.hasSYN = r.hasSYN || b.hasSYN
+	r.hasFIN = r.hasFIN || b.hasFIN
+	r.printableData += b.printableData
+	r.blob = append(r.blob, b.blob...)
+	return r
+}
+
+// sort nodets (they are already ordered according to time)
+func mergeSort(asp []nodet, bsp []nodet) []nodet {
+	r := make([]nodet, len(asp)+len(bsp))
+	for i, j := 0, 0; i < len(asp) && j < len(bsp); {
+		if asp[i].time < bsp[j].time {
+			r[i+j] = asp[i]
+			i++
+		} else {
+			r[i+j] = bsp[j]
+			j++
+		}
+	}
+	return r
+}
+
+// merge adjacent nodes if both have same endpoints and direction
+// func mergeAdjacent(a []nodet) []nodet {
+// 	if len(a) == 0 {
+// 		return []nodet{}
+// 	}
+// 	r := []nodet{
+// 		a[0],
+// 	}
+// 	i := 1
+// 	for i < len(a)-1 {
+// 		if a[i].srcPort == a[i-1].srcPort && a[i].dstPort == a[i-1].dstPort &&
+// 			a[i].srcIP == a[i-1].srcIP && a[i].dstIP == a[i-1].dstIP {
+// 			r[i-1] = *r[i-1].merge(&a[i])
+// 		} else {
+// 			r = append(r, a[i])
+// 		}
+// 		i++
+// 	}
+// 	return r
+// }
+
 // maybeFinish will wait until both directions are complete, then print out
 // stats.
-func (bd *bothStreams) maybeFinish() {
+func (both *bothStreams) maybeFinish() {
 	switch {
-	case bd.a == nil:
-		log.Fatalf("[%v] a should always be non-nil, since it's set when bidis are created", bd.key)
-	case !bd.a.done:
-		log.Debugf("[%v] still waiting on first stream", bd.key)
-	case bd.b == nil:
-		log.Debugf("[%v] no second stream yet", bd.key)
-	case !bd.b.done:
-		log.Debugf("[%v] still waiting on second stream", bd.key)
+	case both.a == nil:
+		log.Fatalf("[%v] a should always be non-nil, since it's set when bidis are created", both.key)
+	case !both.a.done:
+		log.Debugf("[%v] still waiting on first stream", both.key)
+	case both.b == nil:
+		log.Debugf("[%v] no second stream yet", both.key)
+	case !both.b.done:
+		log.Debugf("[%v] still waiting on second stream", both.key)
 	default:
+		log.Debugf("[%v] FINISHED", both.key)
 		/*UPLOAD FLOWT TO MONGO HERE*/
-		// insertFlowtDoc(flowToUpload)
-		log.Debugf("[%v] FINISHED", bd.key)
+		flowToUpload := &flowt{
+			srcIP:   both.key.net.Src().String(),
+			dstIP:   both.key.net.Dst().String(),
+			srcPort: bytesToUint16(both.key.transport.Src().Raw()),
+			dstPort: bytesToUint16(both.key.transport.Dst().Raw()),
+		}
+
+		flowIDPieces := []string{flowToUpload.srcIP + ":" + strconv.Itoa(int(flowToUpload.srcPort)),
+			flowToUpload.dstIP + ":" + strconv.Itoa(int(flowToUpload.dstPort))}
+		sort.Strings(flowIDPieces)
+		flowToUpload.flowID = flowIDPieces[0] + "<=>" + flowIDPieces[1]
+
+		// flowToUpload.nodes = mergeAdjacent(mergeSort(both.a.payloads, both.b.payloads))
+		flowToUpload.nodes = mergeSort(both.a.payloads, both.b.payloads)
+
+		// fill out hasFlag fields
+		for _, node := range flowToUpload.nodes {
+			if isFlagPresent(node.printableData) == true {
+				node.hasFlag = true
+				flowToUpload.hasFlag = true
+			} else {
+				node.hasFlag = false
+			}
+		}
+
+		flowToUpload.start = flowToUpload.nodes[0].time
+		flowToUpload.end = flowToUpload.nodes[len(flowToUpload.nodes)-1].time
+
+		log.Debug(flowToUpload.String())
+
+		// flowToUpload.uploadToMongo()
 	}
 }
 
@@ -205,8 +301,8 @@ func (s *uniStream) ReassemblyComplete() {
 	log.Debugf("Reassembly of stream %v:%v complete ", //- start:%v end:%v bytes:%v",
 		s.bothStrims.key.net, s.bothStrims.key.transport) // s.start, s.end, s.bytes)
 
-	temp := make([]byte, len(s.payloads[0].data))
-	for i, octet := range s.payloads[0].data {
+	temp := make([]byte, len(s.payloads[0].blob))
+	for i, octet := range s.payloads[0].blob {
 		//if character is printable, add it; else add a "."
 		if IsASCIIPrintable(rune(octet)) {
 			temp[i] = byte(octet)
@@ -215,26 +311,12 @@ func (s *uniStream) ReassemblyComplete() {
 		}
 	}
 
-	// flowToUpload := &connt{
-	// 	srcIP:   s.bidi.key.net.Src().String(),
-	// 	dstIP:   s.bidi.key.net.Dst().String(),
-	// 	srcPort: bytesToUint16(s.bidi.key.transport.Src().Raw()),
-	// 	dstPort: bytesToUint16(s.bidi.key.transport.Dst().Raw()),
-	// 	hasSYN:  s.payloads[0].hasSYN,
-	// 	hasFIN:  s.payloads[0].hasFIN,
-	// 	start:   s.firstPacketSeen,
-	// 	end:     s.lastPacketSeen,
-	// 	size:    s.payloads[0].size,
-	// 	hex:     s.payloads[0].data,
-	// 	data:    string(temp),
-	// }
-
-	// // connID is made of the 2 pairs IP:PORT
-	// // they are SORTED so the connID is the same both ways
-	// connIDPieces := []string{flowToUpload.srcIP + ":" + strconv.Itoa(int(flowToUpload.srcPort)),
+	// // flowID is made of the 2 pairs IP:PORT
+	// // they are SORTED so the flowID is the same both ways
+	// flowIDPieces := []string{flowToUpload.srcIP + ":" + strconv.Itoa(int(flowToUpload.srcPort)),
 	// 	flowToUpload.dstIP + ":" + strconv.Itoa(int(flowToUpload.dstPort))}
-	// sort.Strings(connIDPieces)
-	// flowToUpload.connID = connIDPieces[0] + "<=>" + connIDPieces[1]
+	// sort.Strings(flowIDPieces)
+	// flowToUpload.flowID = flowIDPieces[0] + "<=>" + flowIDPieces[1]
 
 	// // look for flags
 	// flowToUpload.hasFlag = isFlagPresent(flowToUpload.data)
@@ -251,18 +333,6 @@ func (s *uniStream) ReassemblyComplete() {
 	// t = append(t, flowToUpload.hex...)
 	// md5sum := md5.Sum(t)
 	// flowToUpload.flowID = hex.EncodeToString(md5sum[:])
-
-	log.Debug("key: ", s.bothStrims.key)
-	log.Debug("payloads for a:")
-	for _, paeload := range s.bothStrims.a.payloads {
-		log.Debug("[", time.Unix(paeload.time/1000000000, paeload.time%1000000000), "]:", string(paeload.data))
-		log.Debug("-------------------------------\n\n")
-	}
-	log.Debug("payloads for b:")
-	for _, paeload := range s.bothStrims.b.payloads {
-		log.Debug("[", time.Unix(paeload.time/1000000000, paeload.time%1000000000), "]:", string(paeload.data))
-		log.Debug("-------------------------------")
-	}
 
 	s.done = true
 	s.bothStrims.maybeFinish()
