@@ -10,6 +10,7 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"sort"
 	"strconv"
 	"time"
 	"unicode"
@@ -66,15 +67,21 @@ func main() {
 
 	for scanner.Scan() {
 		idLine := scanner.Text()
+
 		nodeToUpload := &nodet{
-			srcIP:  idLine[:15],
-			dstIP:  idLine[22:37],
-			time:   time.Now().UnixNano(),
-			connID: idLine[:len(idLine)-2],
+			srcIP: idLine[:15],
+			dstIP: idLine[22:37],
+			time:  time.Now().UnixNano(),
 		}
 
 		nodeToUpload.srcPort, _ = strconv.Atoi(idLine[16:21])
 		nodeToUpload.dstPort, _ = strconv.Atoi(idLine[38:43])
+
+		connIDPieces := []string{nodeToUpload.srcIP + ":" + strconv.Itoa(int(nodeToUpload.srcPort)),
+			nodeToUpload.dstIP + ":" + strconv.Itoa(int(nodeToUpload.dstPort))}
+		sort.Strings(connIDPieces)
+		nodeToUpload.connID = idLine[:len(idLine)-2]
+		nodeToUpload.connID = connIDPieces[0] + "<=>" + connIDPieces[1]
 
 		runeArray := []rune{}
 		for scanner.Scan() {

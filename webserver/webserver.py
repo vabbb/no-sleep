@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-from db import *
+import db
 from pprint import pprint
 import configuration as c
 from flow2pwn import flow2pwn
