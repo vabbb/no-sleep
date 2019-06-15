@@ -12,5 +12,10 @@ all:
 	@cd $(SRC_DIR)
 	$(GOBUILD) -o $(TCP_A) ./...
 
+tfp:
+	@cd tcpflow_parser
+	$(GOBUILD) -o ../bin/tcpflow_parser main.go db.go
+
+
 clean:
 	rm -rf $(BIN_DIR)
