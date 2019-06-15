@@ -9,6 +9,7 @@ import (
 
 type nodet struct {
 	connID           string
+	nodeID           string
 	srcIP, dstIP     string
 	srcPort, dstPort uint16
 	hasFlag          bool
