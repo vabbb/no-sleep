@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-import db
+from db import *
 from pprint import pprint
 import configuration as c
 from flow2pwn import flow2pwn
@@ -43,13 +43,13 @@ def starred():
 @app.route("/flow/<flow_id>", methods=['GET'])
 def get_flow(flow_id):
     h = True if request.args['hex'] == 'true' else False
-    flow, _ = db.get_flows_of_a_conn(db.collConnections, db.collFlows, flow_id)
+    flow, _ = db.get_nodes_of_a_conn(db.collConnections, db.collNodes, flow_id)
     pprint(flow)
     return render_template('flow.html', flow=flow, server=c.vm_ip, hex=h, flow_id=flow_id)
 
 @app.route("/pwn/<flow_id>", methods=['GET'])
 def get_flow2pwn(flow_id):
-    c, _ = db.get_flows_of_a_conn(db.collConnections, db.collFlows, flow_id)
+    c, _ = db.get_flows_of_a_conn(db.collConnections, db.collNodes, flow_id)
     return flow2pwn(c)
 
 @app.template_filter('int_to_time')
