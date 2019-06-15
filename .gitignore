@@ -62,4 +62,6 @@ settings.json
 webserver/__pycache__/
 *.pyc
 
+vendor/tcpflow.elf
+
 tcp_assembler/obfuscatedboi.py
