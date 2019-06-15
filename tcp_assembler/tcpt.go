@@ -252,19 +252,17 @@ func (s *uniStream) ReassemblyComplete() {
 	// md5sum := md5.Sum(t)
 	// flowToUpload.flowID = hex.EncodeToString(md5sum[:])
 
-	// log.Debug("flowID: ", flowToUpload.flowID)
-	// log.Debug("connID: ", flowToUpload.connID)
-	// log.Debug("srcIP: ", flowToUpload.srcIP)
-	// log.Debug("dstIP: ", flowToUpload.dstIP)
-	// log.Debug("srcPort: ", flowToUpload.srcPort)
-	// log.Debug("dstPort: ", flowToUpload.dstPort)
-	// log.Debug("hasFlag: ", flowToUpload.hasFlag)
-	// log.Debug("hasSYN, hasFIN: ", flowToUpload.hasSYN, ", ", flowToUpload.hasFIN)
-	// log.Debug("start: ", time.Unix(0, flowToUpload.start))
-	// log.Debug("end: ", time.Unix(0, flowToUpload.end))
-	// log.Debug("dataFlow.size: ", flowToUpload.size)
-	// log.Debug("dataFlow.data: ", flowToUpload.data)
-	// log.Debug("-------------------------------\n\n")
+	log.Debug("key: ", s.bothStrims.key)
+	log.Debug("payloads for a:")
+	for _, paeload := range s.bothStrims.a.payloads {
+		log.Debug("[", time.Unix(paeload.time/1000000000, paeload.time%1000000000), "]:", string(paeload.data))
+		log.Debug("-------------------------------\n\n")
+	}
+	log.Debug("payloads for b:")
+	for _, paeload := range s.bothStrims.b.payloads {
+		log.Debug("[", time.Unix(paeload.time/1000000000, paeload.time%1000000000), "]:", string(paeload.data))
+		log.Debug("-------------------------------")
+	}
 
 	s.done = true
 	s.bothStrims.maybeFinish()
