@@ -26,6 +26,13 @@ type nodet struct {
 	hex              []byte
 }
 
+//setup mongodb server
+func init() {
+	connectDB(url) // connected
+	getCollectionsFromDB(client, dbName, connections)
+	getCollectionsFromDB(client, dbName, nodes)
+}
+
 // IsASCIIPrintable will return true if char is printable
 // else it will return false
 func IsASCIIPrintable(r rune) bool {
@@ -127,6 +134,7 @@ func main() {
 		fmt.Println("___________________________________-")
 
 		/**upload to db*/
+		insertNodetDoc(nodeToUpload)
 	}
 
 	if err := scanner.Err(); err != nil {
