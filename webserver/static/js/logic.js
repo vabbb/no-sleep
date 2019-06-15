@@ -1,11 +1,11 @@
 function get_flow(id) {
-    const checkbox = document.getElementById('check_hex')
     $.ajax({
-        url: '/flow/' + id + '?hex=' + checkbox.checked,
+        url: '/flow/' + id,
         type: 'GET',
         success: function (response) {
             $(".list-group2").children().each(function (i) { this.remove() })
-            $(".list-group2").append(response)
+            $(".list-group2").append(response);
+	    mostranascondihex();
         },
         error: function (error) {
             console.log(error);
@@ -81,12 +81,17 @@ function pwn(flow_id) {
 
 const checkbox = document.getElementById('check_hex')
 
-checkbox.addEventListener('change', (event) => {
-  if (event.target.checked) {
-    $('[id=hex]').each(function (i) {this.className = this.className.replace(/ d-none/, '')})
-    $('[id=data]').each(function (i) {this.className += ' d-none'})
+
+function mostranascondihex() {
+  if ($("#check_hex").prop('checked')) {
+	$(".mostradata").css("display", "none");
+	$(".mostrahex").css("display", "block");
   } else {
-    $('[id=data]').each(function (i) {this.className = this.className.replace(/ d-none/, '')})
-    $('[id=hex]').each(function (i) {this.className += ' d-none'})
+	$(".mostradata").css("display", "block");
+	$(".mostrahex").css("display", "none");
   }
+}
+
+checkbox.addEventListener('change', (event) => {
+	mostranascondihex();
 })

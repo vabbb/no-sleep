@@ -4,6 +4,7 @@ from pprint import pprint
 import configuration as c
 from flow2pwn import flow2pwn
 import time, datetime
+import binascii
 
 app = Flask(__name__)
 
@@ -40,12 +41,18 @@ def starred():
     pprint(c.services)
     return render_template('starred.html', starred=starred, services_map=c.services)
 
+def flow_to_hex(cur):
+    res = []
+    for i in range(cur.count()):
+        res.append(binascii.hexlify(cur[i]["hex"]))
+    return res
+
 @app.route("/flow/<flow_id>", methods=['GET'])
 def get_flow(flow_id):
-    h = True if request.args['hex'] == 'true' else False
     flow, _ = db.get_nodes_of_a_conn(db.collConnections, db.collNodes, flow_id)
+    hexdata = flow_to_hex(flow)
     pprint(flow)
-    return render_template('flow.html', flow=flow, server=c.vm_ip, hex=h, flow_id=flow_id)
+    return render_template('flow.html', flow=zip(flow, hexdata), server=c.vm_ip, flow_id=flow_id)
 
 @app.route("/pwn/<flow_id>", methods=['GET'])
 def get_flow2pwn(flow_id):
@@ -56,4 +63,4 @@ def get_flow2pwn(flow_id):
 def convert_int_to_time(t):
     return datetime.datetime.fromtimestamp(t // 1000000000)
 
-app.run(host='0.0.0.0', port=80)
+app.run(host='127.0.0.1', port=5001)

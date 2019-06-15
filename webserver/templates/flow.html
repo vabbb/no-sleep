@@ -1,4 +1,4 @@
-{% macro flow_track(index, f, server, hex) %}
+{% macro flow_track(index, f, server, mhexdata) %}
 {% if server == f['src'][:f['src'].find(':')] %}
 <div class="card bg-info">
   <div class="card-body">
@@ -8,21 +8,12 @@
             <td><h5 class="card-title">{% if f['hasSYN'] %}{{ SYN }}{% endif %} {% if f['hasFIN'] %}{{ FIN }}{% endif %}</h5></td>
           </tr>
         </table>
-        {% if hex == True %}
-    <p id="data" class="card-text text-monospace d-none">
+    <pre id="data" class="card-text text-monospace mostradata">
       {{ f['data'] }}
-    </p>
-    <p id="hex" class="card-text text-monospace">
-      {{ f['hex'] }}
-    </p>
-    {% else %}
-    <p id="data" class="card-text text-monospace">
-      {{ f['data'] }}
-    </p>
-    <p id="hex" class="card-text text-monospace d-none">
-      {{ f['hex'] }}
-    </p>
-    {% endif %}
+    </pre>
+    <pre id="hex" class="card-text text-monospace mostrahex">
+      {{ mhexdata }}
+    </pre>
   </div>
 </div>
 {% else %}
@@ -34,27 +25,18 @@
         <td><h5 class="card-title">{% if f['hasSYN'] %}{{ SYN }}{% endif %} {% if f['hasFIN'] %}{{ FIN }}{% endif %}</h5></td>
       </tr>
     </table>
-    {% if hex == True %}
-    <p id="data" class="card-text text-monospace d-none">
+    <pre id="data" class="card-text text-monospace mostradata">
       {{ f['data'] }}
-    </p>
-    <p id="hex" class="card-text text-monospace">
-      {{ f['hex'] }}
-    </p>
-    {% else %}
-    <p id="data" class="card-text text-monospace">
-      {{ f['data'] }}
-    </p>
-    <p id="hex" class="card-text text-monospace d-none">
-      {{ f['hex'] }}
-    </p>
-    {% endif %}
+    </pre>
+    <pre id="hex" class="card-text text-monospace mostrahex">
+      {{ mhexdata }}
+    </pre>
   </div>
 </div>
 {% endif %}
 {% endmacro %}
 
 <button onclick="pwn('{{ flow_id }}')"type="button" class="btn btn-outline-primary mx-2 mt-2">Pwn</button>
-{% for f in flow %}
-{{ flow_track(loop.index, f, server, hex) }}
+{% for f,mhexdata in flow %}
+{{ flow_track(loop.index, f, server, mhexdata) }}
 {% endfor %}
