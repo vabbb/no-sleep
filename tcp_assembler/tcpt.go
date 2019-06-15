@@ -183,9 +183,9 @@ func (bd *bidi) maybeFinish() {
 	case !bd.b.done:
 		log.Debugf("[%v] still waiting on second stream", bd.key)
 	default:
+		/*UPLOAD FLOWT TO MONGO HERE*/
+		// insertFlowtDoc(flowToUpload)
 		log.Debugf("[%v] FINISHED", bd.key)
-		// log.Debugf("[%v] FINISHED, bytes: %d tx, %d rx", bd.key,
-		// 	bd.a.bytes, bd.b.bytes)
 	}
 }
 
@@ -197,9 +197,6 @@ func (s *bidiStream) ReassemblyComplete() {
 
 	log.Debugf("Reassembly of stream %v:%v complete ", //- start:%v end:%v bytes:%v",
 		s.bidi.key.net, s.bidi.key.transport) // s.start, s.end, s.bytes)
-
-	s.done = true
-	s.bidi.maybeFinish()
 
 	temp := make([]byte, len(s.payloads[0].data))
 	for i, octet := range s.payloads[0].data {
@@ -262,7 +259,7 @@ func (s *bidiStream) ReassemblyComplete() {
 	log.Debug("dataFlow.data: ", flowToUpload.data)
 	log.Debug("-------------------------------\n\n")
 
-	/*UPLOAD FLOWT TO MONGO HERE*/
-	// insertFlowtDoc(flowToUpload)
+	s.done = true
+	s.bidi.maybeFinish()
 
 }
