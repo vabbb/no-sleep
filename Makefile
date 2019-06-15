@@ -10,11 +10,10 @@ TCP_A=$(BIN_DIR)/tcp_assembler
 
 all:
 	@cd $(SRC_DIR)
-	$(GOBUILD) -o $(TCP_A) ./...
+	$(GOBUILD) -o $(TCP_A) $(SRC_DIR)/main.go $(SRC_DIR)/tcpt.go $(SRC_DIR)/db.go
 
 tfp:
-	@cd tcpflow_parser
-	$(GOBUILD) -o ../bin/tcpflow_parser main.go db.go
+	$(GOBUILD) -o ../bin/tcpflow_parser tcpflow_parser/tcpflow_parser.go tcpflow_parser/db.go 
 
 
 clean:

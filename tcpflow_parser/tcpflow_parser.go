@@ -6,14 +6,24 @@ import (
 	"crypto/md5"
 	"encoding/binary"
 	"encoding/hex"
+	"flag"
 	"fmt"
-	"log"
 	"os"
 	"regexp"
 	"sort"
 	"strconv"
 	"time"
 	"unicode"
+
+	log "github.com/sirupsen/logrus"
+)
+
+var (
+	err error
+
+	flagRegex = flag.String("flag", "((?:flag|cci?t?1?9?){[ a-zA-Z0-9-_]*})",
+		"Directory to look into for pcap files")
+	debug = flag.Bool("debug", false, "If this is set, uses debug mode")
 )
 
 type nodet struct {
@@ -27,24 +37,25 @@ type nodet struct {
 	hex              []byte
 }
 
-//setup mongodb server
-func init() {
-	connectDB(url) // connected
-	getCollectionsFromDB(client, dbName, connections)
-	getCollectionsFromDB(client, dbName, nodes)
+func stripIP(s string) string {
+	first, _ := strconv.Atoi(s[0:3])
+	secnd, _ := strconv.Atoi(s[4:7])
+	third, _ := strconv.Atoi(s[8:11])
+	forth, _ := strconv.Atoi(s[12:15])
+	return fmt.Sprintf("%d.%d.%d.%d", first, secnd, third, forth)
 }
 
 // IsASCIIPrintable will return true if char is printable
 // else it will return false
 func IsASCIIPrintable(r rune) bool {
-	if r > unicode.MaxASCII || !unicode.IsPrint(r) {
-		return false
+	if (r < unicode.MaxASCII && unicode.IsPrint(r)) || r == '\n' {
+		return true
 	}
-	return true
+	return false
 }
 
 func isFlagPresent(a string) bool {
-	r, _ := regexp.Compile("((?:flag|cci?t?1?9?){[ a-zA-Z0-9-_]*})")
+	r, _ := regexp.Compile(*flagRegex)
 	return r.MatchString(a)
 }
 
@@ -61,6 +72,23 @@ func bytesToPrintable(ra []byte) []byte {
 	return temp
 }
 
+//setup mongodb server
+func init() {
+	// Parse command line arguments
+	flag.Parse()
+
+	// DEBUG MODE (?)
+	if *debug == true {
+		log.SetLevel(log.DebugLevel)
+	} else {
+		log.SetLevel(log.InfoLevel)
+	}
+
+	connectDB(url) // connected
+	getCollectionsFromDB(client, dbName, connections)
+	getCollectionsFromDB(client, dbName, nodes)
+}
+
 //this only works when piped with tcpflow
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
@@ -69,8 +97,8 @@ func main() {
 		idLine := scanner.Text()
 
 		nodeToUpload := &nodet{
-			srcIP: idLine[:15],
-			dstIP: idLine[22:37],
+			srcIP: stripIP(idLine[:15]),
+			dstIP: stripIP(idLine[22:37]),
 			time:  time.Now().UnixNano(),
 		}
 
@@ -131,20 +159,20 @@ func main() {
 		nodeToUpload.hex = blob
 		nodeToUpload.hasFlag = isFlagPresent(nodeToUpload.data)
 
-		fmt.Println("connid:  " + nodeToUpload.connID)
-		fmt.Println("nodeid:  " + nodeToUpload.nodeID)
-		fmt.Println("src:     "+nodeToUpload.srcIP+"  ", (nodeToUpload.srcPort))
-		fmt.Println("dst:     "+nodeToUpload.dstIP+"  ", (nodeToUpload.dstPort))
-		fmt.Println("time:   ", (nodeToUpload.time))
-		fmt.Println("data:    " + nodeToUpload.data)
-		fmt.Println("hasFalg:", nodeToUpload.hasFlag)
-		fmt.Println("___________________________________-")
+		log.Traceln("connid:  " + nodeToUpload.connID)
+		log.Traceln("nodeid:  " + nodeToUpload.nodeID)
+		log.Traceln("src:     "+nodeToUpload.srcIP+"  ", (nodeToUpload.srcPort))
+		log.Traceln("dst:     "+nodeToUpload.dstIP+"  ", (nodeToUpload.dstPort))
+		log.Traceln("time:   ", (nodeToUpload.time))
+		log.Traceln("data:    " + nodeToUpload.data)
+		log.Traceln("hasFalg:", nodeToUpload.hasFlag)
+		log.Traceln("___________________________________-")
 
 		/**upload to db*/
 		insertNodetDoc(nodeToUpload)
 	}
 
 	if err := scanner.Err(); err != nil {
-		log.Println(err)
+		log.Warning(err)
 	}
 }
