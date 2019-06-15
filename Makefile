@@ -13,7 +13,7 @@ all:
 	$(GOBUILD) -o $(TCP_A) $(SRC_DIR)/main.go $(SRC_DIR)/tcpt.go $(SRC_DIR)/db.go
 
 tfp:
-	$(GOBUILD) -o ../bin/tcpflow_parser tcpflow_parser/tcpflow_parser.go tcpflow_parser/db.go 
+	$(GOBUILD) -o bin/tcpflow_parser tcpflow_parser/tcpflow_parser.go tcpflow_parser/db.go 
 
 
 clean:

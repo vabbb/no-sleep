@@ -42,7 +42,7 @@ func stripIP(s string) string {
 	secnd, _ := strconv.Atoi(s[4:7])
 	third, _ := strconv.Atoi(s[8:11])
 	forth, _ := strconv.Atoi(s[12:15])
-	return fmt.Sprintf("%d.%d.%d.%d", first, secnd, third, forth)
+	return fmt.Sprintf("%v.%v.%v.%v", first, secnd, third, forth)
 }
 
 // IsASCIIPrintable will return true if char is printable
@@ -79,7 +79,7 @@ func init() {
 
 	// DEBUG MODE (?)
 	if *debug == true {
-		log.SetLevel(log.DebugLevel)
+		log.SetLevel(log.TraceLevel)
 	} else {
 		log.SetLevel(log.InfoLevel)
 	}
@@ -92,6 +92,8 @@ func init() {
 //this only works when piped with tcpflow
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
+	// var previousScanned *nodet
+	// itstimetoupload := false
 
 	for scanner.Scan() {
 		idLine := scanner.Text()
@@ -105,11 +107,24 @@ func main() {
 		nodeToUpload.srcPort, _ = strconv.Atoi(idLine[16:21])
 		nodeToUpload.dstPort, _ = strconv.Atoi(idLine[38:43])
 
-		connIDPieces := []string{nodeToUpload.srcIP + ":" + strconv.Itoa(int(nodeToUpload.srcPort)),
-			nodeToUpload.dstIP + ":" + strconv.Itoa(int(nodeToUpload.dstPort))}
+		connIDPieces := []string{nodeToUpload.srcIP + ":" + strconv.Itoa(nodeToUpload.srcPort),
+			nodeToUpload.dstIP + ":" + strconv.Itoa(nodeToUpload.dstPort)}
 		sort.Strings(connIDPieces)
 		nodeToUpload.connID = idLine[:len(idLine)-2]
 		nodeToUpload.connID = connIDPieces[0] + "<=>" + connIDPieces[1]
+
+		//here i have information if it is a new or an old nodet struct
+		// if previousScanned == nil {
+		// 	itstimetoupload = false
+		// } else if previousScanned.connID == nodeToUpload.connID &&
+		// 		previousScanned.srcIP == nodeToUpload.srcIP &&
+		// 		previousScanned.dstIP == nodeToUpload.dstIP &&
+		// 		previousScanned.srcPort == nodeToUpload.srcPort &&
+		// 		previousScanned.dstPort == nodeToUpload.dstPort {
+		// 			itstimetoupload = false
+		// } else {
+		// 	itstimetoupload = true
+		// }
 
 		runeArray := []rune{}
 		for scanner.Scan() {
@@ -159,16 +174,23 @@ func main() {
 		nodeToUpload.hex = blob
 		nodeToUpload.hasFlag = isFlagPresent(nodeToUpload.data)
 
+		log.Traceln("***************************")
 		log.Traceln("connid:  " + nodeToUpload.connID)
 		log.Traceln("nodeid:  " + nodeToUpload.nodeID)
-		log.Traceln("src:     "+nodeToUpload.srcIP+"  ", (nodeToUpload.srcPort))
-		log.Traceln("dst:     "+nodeToUpload.dstIP+"  ", (nodeToUpload.dstPort))
+		log.Traceln("src:     " + nodeToUpload.srcIP + ":" + strconv.Itoa(nodeToUpload.srcPort))
+		log.Traceln("dst:     " + nodeToUpload.dstIP + ":" + strconv.Itoa(nodeToUpload.dstPort))
 		log.Traceln("time:   ", (nodeToUpload.time))
-		log.Traceln("data:    " + nodeToUpload.data)
 		log.Traceln("hasFalg:", nodeToUpload.hasFlag)
-		log.Traceln("___________________________________-")
+		log.Traceln("data:    " + nodeToUpload.data)
+		log.Traceln("***************************")
 
 		/**upload to db*/
+
+		// if itstimetoupload{
+		// 	insertNodetDoc(previousScanned)
+		// 	previousScanned = nodeToUpload
+		// }
+
 		insertNodetDoc(nodeToUpload)
 	}
 
