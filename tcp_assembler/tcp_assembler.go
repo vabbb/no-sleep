@@ -14,7 +14,7 @@ import (
 
 // timeout is the length of time to wait befor flushing connections and
 // bidirectional stream pairs.
-const timeout time.Duration = time.Minute * 2
+const timeout time.Duration = time.Minute * 5
 
 var (
 	err error
@@ -22,8 +22,7 @@ var (
 	readFrom = flag.String("r", "", "Directory to look into for pcap files")
 	iface    = flag.String("i", "any", "Interface to monitor")
 	//"((?:flag|cci?t?1?9?){[ a-zA-Z0-9-_]*})"
-	flagRegex = flag.String("regex", "[A-Z0-9]{31}=",
-		"regex to grep flags")
+	flagRegex = flag.String("regex", "[A-Z0-9]{31}=", "Regex to grep flags")
 
 	debug = flag.Bool("debug", false, "If this is set, uses production mode")
 	help  = flag.Bool("help", false, "Shows this output")
