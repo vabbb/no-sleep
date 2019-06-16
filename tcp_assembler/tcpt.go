@@ -43,11 +43,10 @@ type flowt struct {
 	srcIP, dstIP     string
 	srcPort, dstPort uint16
 	start, end       int64 // as is returned by time.Now().UnixNano()
-	hasFlag          bool  // regex find for flag{...} pattern
+	hasFlag          bool  // whether one of its nodes has a flag
 	seenSYN, seenFIN bool
 	trafficSize      int
-	// some redundancy for faster processing
-	nodes []nodet // printable representation of the data
+	nodes            []nodet // array of nodets
 }
 
 func (f flowt) String() string {
