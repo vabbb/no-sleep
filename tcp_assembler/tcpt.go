@@ -111,7 +111,6 @@ type nodet struct {
 	size             int
 	blob             []byte
 	printableData    string
-	unzippedContent  string
 }
 
 // bidiStream will handle tcp packets
@@ -322,7 +321,7 @@ func (both *bothStreams) maybeFinish() {
 		}
 
 		flowToUpload.flowID = flowToUpload.srcIP + ":" + strconv.Itoa(int(flowToUpload.srcPort)) +
-			"<=>" + flowToUpload.dstIP + ":" + strconv.Itoa(int(flowToUpload.dstPort))
+			" => " + flowToUpload.dstIP + ":" + strconv.Itoa(int(flowToUpload.dstPort))
 
 		temp0 := transferSYNsAndFINsToFlowt(
 			mergeSort(both.a.nodets, both.b.nodets),
