@@ -363,16 +363,6 @@ func (s *uniStream) ReassemblyComplete() {
 	log.Debugf("Reassembly of stream %v:%v complete ", //- start:%v end:%v bytes:%v",
 		s.bothStrims.key.net, s.bothStrims.key.transport) // s.start, s.end, s.bytes)
 
-	temp := make([]byte, len(s.nodets[0].blob))
-	for i, octet := range s.nodets[0].blob {
-		//if character is printable, add it; else add a "."
-		if IsASCIIPrintable(rune(octet)) {
-			temp[i] = byte(octet)
-		} else {
-			temp[i] = 0x2e
-		}
-	}
-
 	s.done = true
 	s.bothStrims.maybeFinish()
 }
