@@ -201,16 +201,6 @@ func (factory *bidiFactory) collectOldStreams() {
 	}
 }
 
-// merge 2 nodets into a single nodet
-func (a *nodet) merge(b *nodet) *nodet {
-	r := a
-	r.hasSYN = r.hasSYN || b.hasSYN
-	r.hasFIN = r.hasFIN || b.hasFIN
-	r.printableData += b.printableData
-	r.blob = append(r.blob, b.blob...)
-	return r
-}
-
 // sort nodets (they are already ordered according to time)
 func mergeSort(asp []nodet, bsp []nodet) []nodet {
 	r := make([]nodet, len(asp)+len(bsp))
@@ -223,6 +213,16 @@ func mergeSort(asp []nodet, bsp []nodet) []nodet {
 			j++
 		}
 	}
+	return r
+}
+
+// merge 2 nodets into a single nodet
+func (a *nodet) merge(b *nodet) *nodet {
+	r := a
+	r.hasSYN = r.hasSYN || b.hasSYN
+	r.hasFIN = r.hasFIN || b.hasFIN
+	r.printableData += b.printableData
+	r.blob = append(r.blob, b.blob...)
 	return r
 }
 
@@ -295,7 +295,6 @@ func (both *bothStreams) maybeFinish() {
 		temp1 := transferSYNsAndFINsToFlowt(temp0, flowToUpload)
 
 		flowToUpload.nodes = mergeAdjacent(temp1)
-		// flowToUpload.nodes = mergeSort(both.a.payloads, both.b.payloads)
 
 		// fill out hasFlag fields
 		for _, node := range flowToUpload.nodes {
@@ -306,14 +305,18 @@ func (both *bothStreams) maybeFinish() {
 				node.hasFlag = false
 			}
 		}
+		if len(flowToUpload.nodes) > 0 {
+			flowToUpload.start = flowToUpload.nodes[0].time
+			flowToUpload.end = flowToUpload.nodes[len(flowToUpload.nodes)-1].time
 
-		flowToUpload.start = flowToUpload.nodes[0].time
-		flowToUpload.end = flowToUpload.nodes[len(flowToUpload.nodes)-1].time
+			log.Debug(flowToUpload.String())
 
-		log.Debug(flowToUpload.String())
-
-		/*UPLOAD FLOWT TO MONGO HERE*/
-		// flowToUpload.uploadToMongo()
+			/*UPLOAD FLOWT TO MONGO HERE*/
+			// flowToUpload.uploadToMongo()
+		} else {
+			log.Warning("No nodes found for flow [" + flowToUpload.flowID + "]" +
+				": Connection was reset right after the 3-way-hand-shake")
+		}
 	}
 }
 

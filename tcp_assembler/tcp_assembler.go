@@ -76,8 +76,8 @@ func main() {
 	assembler := tcpassembly.NewAssembler(streamPool)
 	// Limit memory usage by auto-flushing connection state if we get over 100K
 	// packets in memory, or over 1000 for a single stream.
-	assembler.MaxBufferedPagesTotal = 1000000
-	assembler.MaxBufferedPagesPerConnection = 10000
+	assembler.MaxBufferedPagesTotal = 0
+	assembler.MaxBufferedPagesPerConnection = 0
 	defer assembler.FlushAll()
 
 	nextFlush := time.Now().Add(timeout / 2)
