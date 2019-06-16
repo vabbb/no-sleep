@@ -14,24 +14,15 @@ Suggestions are very much appreciated, on our Telegram group.
 ---
 # The Minimum Viable Product (MVP)
 
-### tcp_assembler
-* ✓ ~~able to parse data from pcap files~~
-* ✓ ~~able to look for pcap files to process (with the format described in the above paragraph)... for now, we are fine with it just sorting pcap files by date, then processing the oldest one, then moving it to an `archive/` folder and start over again.~~
-* ✓ ~~able to assemble data belonging to a single tcp flow~~
-* ✓ ~~able to recognize when a flow is completed~~
-* ✓ ~~able to assign the completed flow to the `flowt` struct~~
-* ✓ ~~able to push a finished tcp flow to mongodb, using the stuct defined later, plus a unique id (which can be the hash of the tcp flow identifiers and its start time)~~
+### tcp_assembler ✓
 
-### Database
-* ✓ ~~having a working instance of `mongodb`~~
+### Database ✓
 
-### Webserver
-* bare-bones webserver able to query the mongodb and display the data that was pushed to it
-
+### Webserver ✓
+---
 # Next steps
 
 ### tcp_assembler
-* ✓ ~~parsing flow contents to check for presence of flags~~
 * ... 
 
 ### Webserver
@@ -100,16 +91,16 @@ flow: {
 ```
 # Mongodb Usage
 
-### Start the db with:
+Start the db with:
 ```pseudocode
 mongod --dbpath /path/to/where_you_want_your_db_to_be
 ```
 
-### Connect to the db with:
+Connect to the db process with:
 ```pseudocode
 mongo
 ```
-### Followed by:
+Followed by:
 ```pseudocode
 use my_db
 ```
@@ -152,14 +143,17 @@ $ go get go.mongodb.org/mongo-driver/mongo
 # Install Instructions
 
 ### Download
-    $ git clone https://gitlab.com/cc19-sapienza/timon.git
-
+```pseudocode
+$ git clone https://gitlab.com/cc19-sapienza/timon.git
+```
 ### Build
-    $ make
-
+```pseudocode
+$ make
+```
 ### Run
-    $ ./bin/tcp_assembler [-d pcaps' directory]
-
+```pseudocode
+$ sudo tcpdump -i enp0s31f6 -w - "tcp port 8080 or 443 or 80" | ./bin/tcp_assembler -r - -debug
+```
 ---
 # Production Run
 

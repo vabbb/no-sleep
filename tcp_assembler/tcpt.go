@@ -27,11 +27,12 @@ func bytesToUint16(a []byte) uint16 {
 }
 
 type flowt struct {
-	flowID           string
-	srcIP, dstIP     string
-	srcPort, dstPort uint16
-	start, end       int64 // as is returned by time.Now().UnixNano()
-	hasFlag          bool  // regex find for flag{...} pattern
+	flowID             string
+	srcIP, dstIP       string
+	srcPort, dstPort   uint16
+	start, end         int64 // as is returned by time.Now().UnixNano()
+	hasFlag            bool  // regex find for flag{...} pattern
+	seenStart, seenEnd bool
 	// some redundancy for faster processing
 	nodes []nodet // printable representation of the data
 }
@@ -39,21 +40,24 @@ type flowt struct {
 func (f flowt) String() string {
 	r := ""
 	r += "flowID: " + f.flowID
-
+	if f.hasFlag {
+		r += "\nHAS FLAG"
+	}
+	if f.seenStart {
+		r += "\nstarted with SYN"
+	}
+	if f.seenEnd {
+		r += "\nended with FIN"
+	}
 	for _, node := range f.nodes {
-		if node.hasSYN {
-			r += "\nSYN"
-		}
-		if node.hasFIN {
-			r += "\nFIN"
-		}
+
 		r += "\n[" + node.srcIP + ":" + strconv.Itoa(int(node.srcPort))
 		r += "->" + node.dstIP + ":" + strconv.Itoa(int(node.dstPort))
 		r += "]["
 		r += time.Unix(node.time/1000000000, node.time%1000000000).String()
 		r += "]:"
 		r += "\n" + string(node.printableData)
-		r += ("\n******************************")
+		r += ("\n")
 	}
 
 	return r
@@ -223,25 +227,43 @@ func mergeSort(asp []nodet, bsp []nodet) []nodet {
 }
 
 // merge adjacent nodes if both have same endpoints and direction
-// func mergeAdjacent(a []nodet) []nodet {
-// 	if len(a) == 0 {
-// 		return []nodet{}
-// 	}
-// 	r := []nodet{
-// 		a[0],
-// 	}
-// 	i := 1
-// 	for i < len(a)-1 {
-// 		if a[i].srcPort == a[i-1].srcPort && a[i].dstPort == a[i-1].dstPort &&
-// 			a[i].srcIP == a[i-1].srcIP && a[i].dstIP == a[i-1].dstIP {
-// 			r[i-1] = *r[i-1].merge(&a[i])
-// 		} else {
-// 			r = append(r, a[i])
-// 		}
-// 		i++
-// 	}
-// 	return r
-// }
+func mergeAdjacent(a []nodet) []nodet {
+	if len(a) == 0 {
+		return []nodet{}
+	}
+	r := []nodet{
+		a[0],
+	}
+	i, j := 1, 1
+	for i < len(a)-1 {
+		if a[i].srcPort == a[i-1].srcPort && a[i].dstPort == a[i-1].dstPort &&
+			a[i].srcIP == a[i-1].srcIP && a[i].dstIP == a[i-1].dstIP {
+			r[j-1] = *r[j-1].merge(&a[i])
+		} else {
+			r = append(r, a[i])
+			j++
+		}
+		i++
+	}
+	return r
+}
+
+// remove SYN, SYN/ACK and FIN packets
+func transferSYNsAndFINsToFlowt(a []nodet, f *flowt) []nodet {
+	r := []nodet{}
+	for i := 0; i < len(a)-1; i++ {
+		if a[i].hasSYN {
+			f.seenStart = true
+		}
+		if a[i].hasFIN {
+			f.seenEnd = true
+		}
+		if len(a[i].blob) > 0 {
+			r = append(r, a[i])
+		}
+	}
+	return r
+}
 
 // maybeFinish will wait until both directions are complete, then print out
 // stats.
@@ -257,7 +279,6 @@ func (both *bothStreams) maybeFinish() {
 		log.Debugf("[%v] still waiting on second stream", both.key)
 	default:
 		log.Debugf("[%v] FINISHED", both.key)
-		/*UPLOAD FLOWT TO MONGO HERE*/
 		flowToUpload := &flowt{
 			srcIP:   both.key.net.Src().String(),
 			dstIP:   both.key.net.Dst().String(),
@@ -270,8 +291,11 @@ func (both *bothStreams) maybeFinish() {
 		sort.Strings(flowIDPieces)
 		flowToUpload.flowID = flowIDPieces[0] + "<=>" + flowIDPieces[1]
 
-		// flowToUpload.nodes = mergeAdjacent(mergeSort(both.a.payloads, both.b.payloads))
-		flowToUpload.nodes = mergeSort(both.a.payloads, both.b.payloads)
+		temp0 := mergeSort(both.a.payloads, both.b.payloads)
+		temp1 := transferSYNsAndFINsToFlowt(temp0, flowToUpload)
+
+		flowToUpload.nodes = mergeAdjacent(temp1)
+		// flowToUpload.nodes = mergeSort(both.a.payloads, both.b.payloads)
 
 		// fill out hasFlag fields
 		for _, node := range flowToUpload.nodes {
@@ -288,6 +312,7 @@ func (both *bothStreams) maybeFinish() {
 
 		log.Debug(flowToUpload.String())
 
+		/*UPLOAD FLOWT TO MONGO HERE*/
 		// flowToUpload.uploadToMongo()
 	}
 }

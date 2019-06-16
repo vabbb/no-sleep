@@ -14,15 +14,15 @@ import (
 
 // timeout is the length of time to wait befor flushing connections and
 // bidirectional stream pairs.
-const timeout time.Duration = time.Minute * 5
+const timeout time.Duration = time.Minute * 2
 
 var (
 	err error
 
 	readFrom = flag.String("r", "", "Directory to look into for pcap files")
 	iface    = flag.String("i", "any", "Interface to monitor")
-
-	flagRegex = flag.String("regex", "((?:flag|cci?t?1?9?){[ a-zA-Z0-9-_]*})",
+	//"((?:flag|cci?t?1?9?){[ a-zA-Z0-9-_]*})"
+	flagRegex = flag.String("regex", "[A-Z0-9]{31}=",
 		"regex to grep flags")
 
 	debug = flag.Bool("debug", false, "If this is set, uses production mode")
@@ -76,8 +76,8 @@ func main() {
 	assembler := tcpassembly.NewAssembler(streamPool)
 	// Limit memory usage by auto-flushing connection state if we get over 100K
 	// packets in memory, or over 1000 for a single stream.
-	assembler.MaxBufferedPagesTotal = 100000
-	assembler.MaxBufferedPagesPerConnection = 1000
+	assembler.MaxBufferedPagesTotal = 1000000
+	assembler.MaxBufferedPagesPerConnection = 10000
 	defer assembler.FlushAll()
 
 	nextFlush := time.Now().Add(timeout / 2)
