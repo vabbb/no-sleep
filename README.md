@@ -154,6 +154,10 @@ $ make
 ```pseudocode
 $ sudo tcpdump -i enp0s31f6 -w - "tcp port 8080 or 443 or 80" | ./bin/tcp_assembler -r - -debug
 ```
+or
+```pseudocode
+$ ./bin/tcp_assembler -r pcaps/dump_2019-06-14_15\:45\:30.pcap -debug
+```
 ---
 # Production Run
 
