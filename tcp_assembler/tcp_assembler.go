@@ -63,9 +63,8 @@ func init() {
 	}
 
 	// Connection to mongoDB server
-	// connectDB(url)
-	// getCollectionsFromDB(client, dbName, connections)
-	// getCollectionsFromDB(client, dbName, flows)
+	connectDB(url)
+	getCollectionsFromDB(client, dbName, flows)
 }
 
 func main() {

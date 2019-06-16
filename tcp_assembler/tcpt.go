@@ -346,7 +346,7 @@ func (both *bothStreams) maybeFinish() {
 			log.Debug(flowToUpload.String())
 
 			/*UPLOAD FLOWT TO MONGO HERE*/
-			// flowToUpload.uploadToMongo()
+			addNewFlowToDB(flowToUpload)
 		} else {
 			/*dont upload to mongo empty flows*/
 			log.Warning("No nodes found for flow [" + flowToUpload.flowID + "]" +
