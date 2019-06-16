@@ -117,7 +117,7 @@ func main() {
 
 		if err != nil {
 			if err.Error() == "EOF" {
-				// File is done, we can exit the loop and close the handle
+				// File reached EOF, we can exit the loop and close the handle
 				break
 			}
 			log.Tracef("Error getting packet: %v", err)

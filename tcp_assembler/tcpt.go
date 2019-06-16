@@ -33,6 +33,7 @@ type flowt struct {
 	start, end         int64 // as is returned by time.Now().UnixNano()
 	hasFlag            bool  // regex find for flag{...} pattern
 	seenStart, seenEnd bool
+	trafficSize        int
 	// some redundancy for faster processing
 	nodes []nodet // printable representation of the data
 }
@@ -49,6 +50,8 @@ func (f flowt) String() string {
 	if f.seenEnd {
 		r += "\nended with FIN"
 	}
+	r += "\nTRAFFIC: " + strconv.Itoa(f.trafficSize) + " Bytes"
+	r += "\nNODES :"
 	for _, node := range f.nodes {
 
 		r += "\n[" + node.srcIP + ":" + strconv.Itoa(int(node.srcPort))
@@ -227,15 +230,22 @@ func (a *nodet) merge(b *nodet) *nodet {
 }
 
 // merge adjacent nodes if both have same endpoints and direction
-func mergeAdjacent(a []nodet) []nodet {
+// also calulate total traffic bytes <- this is an optimization to only have
+// one for loop that does it all
+func mergeAdjacentAndCalcTraffic(a []nodet) ([]nodet, int) {
+	traffic := 0
 	if len(a) == 0 {
-		return []nodet{}
+		return []nodet{}, traffic
 	}
 	r := []nodet{
 		a[0],
 	}
+	traffic += len(a[0].blob)
 	i, j := 1, 1
-	for i < len(a)-1 {
+	for i < len(a) {
+		traffic += len(a[i].blob)
+
+		// if same dest and same src
 		if a[i].srcPort == a[i-1].srcPort && a[i].dstPort == a[i-1].dstPort &&
 			a[i].srcIP == a[i-1].srcIP && a[i].dstIP == a[i-1].dstIP {
 			r[j-1] = *r[j-1].merge(&a[i])
@@ -245,7 +255,7 @@ func mergeAdjacent(a []nodet) []nodet {
 		}
 		i++
 	}
-	return r
+	return r, traffic
 }
 
 // remove SYN, SYN/ACK and FIN packets
@@ -291,12 +301,15 @@ func (both *bothStreams) maybeFinish() {
 		sort.Strings(flowIDPieces)
 		flowToUpload.flowID = flowIDPieces[0] + "<=>" + flowIDPieces[1]
 
-		temp0 := mergeSort(both.a.payloads, both.b.payloads)
-		temp1 := transferSYNsAndFINsToFlowt(temp0, flowToUpload)
+		temp0 := transferSYNsAndFINsToFlowt(
+			mergeSort(both.a.payloads, both.b.payloads),
+			flowToUpload,
+		)
 
-		flowToUpload.nodes = mergeAdjacent(temp1)
+		flowToUpload.nodes, flowToUpload.trafficSize =
+			mergeAdjacentAndCalcTraffic(temp0)
 
-		// fill out hasFlag fields
+		// fill hasFlag fields for each nodet, and for flowt too
 		for _, node := range flowToUpload.nodes {
 			if isFlagPresent(node.printableData) == true {
 				node.hasFlag = true
@@ -314,6 +327,7 @@ func (both *bothStreams) maybeFinish() {
 			/*UPLOAD FLOWT TO MONGO HERE*/
 			// flowToUpload.uploadToMongo()
 		} else {
+			/*dont upload to mongo empty flows*/
 			log.Warning("No nodes found for flow [" + flowToUpload.flowID + "]" +
 				": Connection was reset right after the 3-way-hand-shake")
 		}
