@@ -105,14 +105,23 @@ function pwn(flow_id) {
     });
 }
 */
-const checkbox = document.getElementById('hexdump')
+const checkboxHex = document.getElementById('hexdump')
+const checkboxFlags = document.getElementById('flagsOnly')
 
-checkbox.addEventListener('change', (event) => {
+checkboxHex.addEventListener('change', (event) => {
   if (event.target.checked) {
-    $('[id=hex]').each(function (i) {this.className = this.className.replace(/ d-none/, '')})
-    $('[id=data]').each(function (i) {this.className += ' d-none'})
+    $('.blob').removeClass('d-none')
+    $('.printableData').addClass('d-none')
   } else {
-    $('[id=data]').each(function (i) {this.className = this.className.replace(/ d-none/, '')})
-    $('[id=hex]').each(function (i) {this.className += ' d-none'})
+    $('.blob').addClass('d-none')
+    $('.printableData').removeClass('d-none')
+  }
+})
+
+checkboxFlags.addEventListener('change', (event) => {
+  if (event.target.checked) {
+    $('li.flow').not('li.flow.hasflag').addClass('d-none')
+  } else {
+    $('li.flow').not('li.flow.hasflag').removeClass('d-none')
   }
 })

@@ -1,12 +1,13 @@
 {% macro add_flow(flow, services) %}
-<li class="nav-item" onclick="activate(this, '{{ flow['_id'] }}')">
+{% if flow['hasFlag'] == True %}
+<li class="nav-item flow hasflag" onclick="activate(this, '{{ flow['_id'] }}')">
 <a class="nav-link" href="javascript:void(0);">
     <table class="text-center ns-table">
     <tr>
         <td colspan="2">
         {% if services[flow['srcPort']] %}{{ services[flow['srcPort']] }}{% elif services[flow['dstPort']] %}{{ services[flow['dstPort']] }}{% else %}unknown{% endif %}
         </td>
-        <td>{% if flow['hasFlag'] == True %}<span class="green" data-feather="flag"></span>{% endif %}</td>
+        <td><span class="green" data-feather="flag"></span></td>
     </tr>
     <tr>
         <td>
@@ -27,6 +28,36 @@
     </table>
 </a>
 </li>
+{% else %}
+<li class="nav-item flow" onclick="activate(this, '{{ flow['_id'] }}')">
+    <a class="nav-link" href="javascript:void(0);">
+        <table class="text-center ns-table">
+        <tr>
+            <td colspan="2">
+            {% if services[flow['srcPort']] %}{{ services[flow['srcPort']] }}{% elif services[flow['dstPort']] %}{{ services[flow['dstPort']] }}{% else %}unknown{% endif %}
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>
+            <red>SRC</red>
+            </td>
+            <td>{{ flow['srcIP'] }} : <red>{{ flow['srcPort'] }}</red>
+            </td>
+            <td>+{{ flow['time'] // 10000000 % 30000 / 100 }}s{# TIME PASSED SINCE START OF THE ROUND #}</td>
+        </tr>
+        <tr>
+            <td>
+            <cyan>DST</cyan>
+            </td>
+            <td>{{ flow['dstIP'] }} : <cyan>{{ flow['dstPort'] }}</cyan>
+            </td>
+            <td>{{ flow['trafficSize'] }}B</td>
+        </tr>
+        </table>
+    </a>
+    </li>
+{% endif %}
 {% endmacro %}
 {% for flow in flows %}
 {{ add_flow(flow, services_map) }}

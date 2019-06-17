@@ -1,8 +1,8 @@
-<li onclick="activate_round(this, 'ongoing')" class="nav-item ongoing">
+<li onclick="activate_round(this, 'ongoing')" class="nav-item ongoing round">
   <a id="ongoing" class="nav-link text-center" href="javascript:void(0);">ongoing | 420KB</a>
 </li>
 {% for round, traffic in rounds.items() %}
-<li onclick="activate_round(this, '{{ round }}')" class="nav-item">
+<li onclick="activate_round(this, '{{ round }}')" class="nav-item round">
   <a class="nav-link text-center" href="javascript:void(0);">{{ round | int_to_round_time }} | {{ traffic // 1000 }}KB</a>
 </li>
 {% endfor %}

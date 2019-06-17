@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-import db, math
+import db, math, binascii
 from pprint import pprint
 import configuration as c
 # from flow2pwn import flow2pwn
@@ -51,10 +51,17 @@ def index():
                             services_map={},
                             services={})
 
+def modify_blobs(flow):
+    nodes = flow['nodes']
+    for i in range(len(nodes)):
+        nodes[i]['blob'] = binascii.hexlify(nodes[i]['blob'])
+    return flow
+
 @application.route("/flow/<flow_id>", methods=['GET'])
 def slash_flow(flow_id):
     flow = db.get_flow(flow_id)
     pprint(flow)
+    flow = modify_blobs(flow)
     return render_template( 'flow.html',
                             flow=flow,
                             server="replace this", 

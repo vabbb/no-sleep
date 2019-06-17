@@ -2,19 +2,19 @@
 {% if node['fromSrc'] == True %}
 
 {% if hex == True %}
-<pre id="printableData" class=" text-monospace d-none ns-light-text"><reddump>{{ node['printableData'] }}</reddump></pre>
-<p id="blob" class=" text-monospace">{{ node['blob'] }}</p>
+<pre class=" text-monospace d-none ns-light-text printableData"><reddump>{{ node['printableData'] }}</reddump></pre>
+<pre class=" text-monospace blob"><reddump>{{ node['blob'] }}</reddump></pre>
 {% else %}
-<pre id="printableData" class=" text-monospace ns-light-text"><reddump>{{ node['printableData'] }}</reddump></pre>
-<p id="blob" class=" text-monospace d-none">{{ node['blob'] }}</p>
+<pre class=" text-monospace ns-light-text printableData"><reddump>{{ node['printableData'] }}</reddump></pre>
+<pre class=" text-monospace d-none blob"><reddump>{{ node['blob'] }}</reddump></pre>
 {% endif %}
 {% else %}
 {% if hex == True %}
-<pre id="printableData" class=" text-monospace d-none ns-light-text"><cyandump>{{ node['printableData'] }}</cyandump></pre>
-<p id="blob" class=" text-monospace">{{ node['blob'] }}</p>
+<pre class=" text-monospace d-none ns-light-text printableData"><cyandump>{{ node['printableData'] }}</cyandump></pre>
+<pre  class=" text-monospace blob"><cyandump>{{ node['blob'] }}</cyandump></pre>
 {% else %}
-<pre id="printableData" class=" text-monospace ns-light-text"><cyandump>{{ node['printableData'] }}</cyandump></pre>
-<p id="blob" class=" text-monospace d-none">{{ node['blob'] }}</p>
+<pre class=" text-monospace ns-light-text printableData"><cyandump>{{ node['printableData'] }}</cyandump></pre>
+<pre class=" text-monospace d-none blob"><cyandump>{{ node['blob'] }}</cyandump></pre>
 {% endif %}
 {% endif %}
 {% endmacro %}
