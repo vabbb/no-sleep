@@ -65,3 +65,6 @@ webserver/__pycache__/
 tcp_assembler/obfuscatedboi.py
 tcpflow_parser/
 report*
+
+*.swp
+flowlist.html
