@@ -25,25 +25,25 @@ def flow_time_to_round(flow_time):
 #     return [x for x in my_list if not (x in seen or seen_add(x))]
 
 def get_rounds(flows=None):
-    rounds = OrderedDict({})
+    rounds = {}
     f = {}
     if flows == None:
-        flows = db.get_flows(f, sorteh=-1)
+        flows = db.get_unsorted_flows(f)
 
     for flow in flows:
         curr_round = flow['time'] // 1000000000 - flow['time'] // 1000000000 % 300
         if curr_round not in rounds.keys():
             rounds[curr_round] = 0
         rounds[curr_round] += flow['trafficSize']
-    return rounds
 
+    return OrderedDict(sorted(rounds.items(), reverse=True))
 
 @app.route("/")
 def index():
     filters = request.args
     limit = int(filters.get('nflows', '20'))
     f = {}
-    flows = db.get_flows(f, limit)
+    flows = db.get_unsorted_flows(f)
     # pprint(flows)
     return render_template( 'index.html',
                             flows=flows,

@@ -15,6 +15,13 @@ def get_flows(filter, limit=0, sorteh=-1):
         cursor.limit(limit)
     return cursor.sort('time', sorteh)#, cursor.count()
 
+# return all docs flow in a descending order by end time
+def get_unsorted_flows(filter, limit=0):
+    cursor = collFlows.find(filter)
+    if limit > 0:
+        cursor.limit(limit)
+    return cursor#, cursor.count()
+
 # return all docs node in a ascending order by time start
 def get_nodes(collNodes):
     cursor = collNodes.find()
