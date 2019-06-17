@@ -10,13 +10,10 @@
   <!-- Custom fonts for this template-->
   <link href="{{ url_for('static', filename='vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet"
     type="text/css">
-
   <!-- Page level plugin CSS-->
   <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
   <!-- Custom styles for this template-->
   <link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">
-
-
 </head>
 
 <body>
@@ -26,11 +23,11 @@
     <div class="navbar navbar-dark sticky-top ns-bg-dark flex-md-nowrap p-0 fixeeOpts">
       <ul class="navbar-nav px-3 pl-4">
         <li class="nav-item text-nowrap">
-          <div class="dropdown ">
+          <div class="dropdown">
             <select id="selectService" class="nav-link ns-nohover">
-              <option value="all" onclick="alert('apply filter for '+$(this).val());" selected>all services</option>
+              <option value="all" selected>all services</option>
               {% for s in services %}
-              <option value="{{ s }}" onclick="alert('apply filter for '+$(this).val());">{{ s }}</option>
+              <option value="{{ s }}">{{ s }}</option>
               {% endfor %}
             </select>
           </div>
@@ -64,14 +61,14 @@
   <div class="container-fluid ns-height">
     <div class="row h-100">
       <nav class="d-none d-md-block sidebar fixee0 ns-bg-dark">
-        <div class="sidebar-sticky ns-thin-scroll">
+        <div class="sidebar-sticky h-100 ns-thin-scroll">
           <ul id="round-list" class="nav flex-column">
             {% include 'rounds.html' %}
           </ul>
         </div>
       </nav>
       <nav class="d-none d-md-block sidebar fixee1 ns-bg-dark">
-        <div class="sidebar-sticky ns-thin-scroll">
+        <div class="sidebar-sticky h-100 ns-thin-scroll">
           <ul id="flow-list" class="nav flex-column">
             {% include 'round.html' %}
           </ul>

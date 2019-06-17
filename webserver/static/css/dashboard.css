@@ -12,6 +12,10 @@ pre {
   font-family: monospace;
 }
 
+select {
+  background-color: rgb(49, 54, 59);
+}
+
 .ns-height {
   height: calc(100% - 48px);
 }
@@ -82,13 +86,15 @@ cyandump {
 }
 
 ::-webkit-scrollbar {
-  background-color:#1c1e1f;
+  background-color: #1c1e1f;
   width: 5px;
 }
+
 ::-webkit-scrollbar-thumb {
-  background-color:rgb(51, 51, 51);
-  border:none;
+  background-color: rgb(51, 51, 51);
+  border: none;
 }
+
 .ns-light-text {
   color: rgb(214, 211, 205);
 }
@@ -164,21 +170,20 @@ cyandump {
   top: 0;
   bottom: 0;
   left: 9rem;
-  width: 27rem;
+  width: 18rem;
 }
 
 .fixeeOpts {
   top: 0;
   bottom: 0;
-  margin-left: 36rem;
   /* Firefox */
-  width: -moz-calc(100% - 36rem);
+  width: -moz-calc(100% - 27rem);
   /* WebKit */
-  width: -webkit-calc(100% - 36rem);
+  width: -webkit-calc(100% - 27rem);
   /* Opera */
-  width: -o-calc(100% - 36rem);
+  width: -o-calc(100% - 27rem);
   /* Standard */
-  width: calc(100% - 36rem);
+  width: calc(100% - 27rem);
 
 }
 
