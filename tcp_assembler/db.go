@@ -40,33 +40,33 @@ func getCollectionsFromDB(client *mongo.Client, dbName string, collName string) 
 	collFlows = resCollection
 }
 
-func addNewFlowToDB(flowt *flowt)  {
+func addNewFlowToDB(flowt *flowt) {
 
 	var nodes []bson.M
-	for i:=0; i<len(flowt.nodes); i++{
+	for i := 0; i < len(flowt.nodes); i++ {
 		toAppend := bson.M{
-			"fromSrc": flowt.nodes[i].isSrc,
-			"time": flowt.nodes[i].time,
+			"fromSrc":       flowt.nodes[i].isSrc,
+			"time":          flowt.nodes[i].time,
 			"printableData": flowt.nodes[i].printableData,
-			"blob": flowt.nodes[i].blob,
-			"hasFlag": flowt.nodes[i].hasFlag}
+			"blob":          flowt.nodes[i].blob,
+			"hasFlag":       flowt.nodes[i].hasFlag}
 
 		nodes = append(nodes, toAppend)
-	} 
+	}
 
 	insertResult, err := collFlows.InsertOne(context.TODO(), bson.M{
-		"time": flowt.start,
-		"duration": flowt.end - flowt.start,// flowt.end - flowt.start
-        "srcIP": flowt.srcIP,
-        "srcPort": flowt.srcPort ,
-        "dstIP": flowt.dstIP,
-        "dstPort": flowt.dstPort,
-        "hasFlag": flowt.hasFlag,
-        "trafficSize": flowt.trafficSize, //measured in bytes
-        "favorite": false,
-        "seenSYN": flowt.seenSYN,
-        "seenFIN": flowt.seenFIN,
-        "nodes": nodes})
+		"time":        flowt.start,
+		"duration":    flowt.end - flowt.start, // flowt.end - flowt.start
+		"srcIP":       flowt.srcIP,
+		"srcPort":     flowt.srcPort,
+		"dstIP":       flowt.dstIP,
+		"dstPort":     flowt.dstPort,
+		"hasFlag":     flowt.hasFlag,
+		"trafficSize": flowt.trafficSize, //measured in bytes
+		"favorite":    false,
+		"seenSYN":     flowt.seenSYN,
+		"seenFIN":     flowt.seenFIN,
+		"nodes":       nodes})
 
 	if err != nil {
 		log.Debugln("Error in insert flowt", flowt.flowID)
