@@ -81,6 +81,14 @@ cyandump {
   scrollbar-color: rgb(51, 51, 51) #1c1e1f;
 }
 
+::-webkit-scrollbar {
+  background-color:#1c1e1f;
+  width: 2px;
+}
+::-webkit-scrollbar-thumb {
+  background-color:rgb(51, 51, 51);
+  border:none;
+}
 .ns-light-text {
   color: rgb(214, 211, 205);
 }
