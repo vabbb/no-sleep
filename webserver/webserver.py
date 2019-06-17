@@ -101,4 +101,5 @@ def slash_round(rt):
 def int_to_round_time(t):
     return datetime.datetime.fromtimestamp(t).strftime("%H:%M")
 
-app.run(host='0.0.0.0', port=5001)
+if __name__ == "__main__":
+	app.run(host='0.0.0.0', port=5001)
