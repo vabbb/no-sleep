@@ -13,6 +13,21 @@ function get_flow(id) {
     });
 }
 
+function get_round(time) {
+    $.ajax({
+        url: '/round/' + time,
+        type: 'POST',
+        success: function (response) {
+            $("#flow-list").children().each(function (i) { this.remove() });
+            console.log(response);
+            $("#flow-list").append(response);
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    });
+}
+/*
 function update_starred() {
     $(".list-group-star").children().each(function (i) { this.remove() })
     $.ajax({
@@ -48,7 +63,7 @@ function change_star(icon, id) {
     });
     update_starred()
 }
-
+*/
 function deactivate_all() {
     $("#flow-list").children().each(function (i) {
         this.className = this.className.replace(/ active/, '')
@@ -63,6 +78,20 @@ function activate(o, id) {
     get_flow(id)
 }
 
+function deactivate_all_rounds() {
+    $("#round-list").children().each(function (i) {
+        this.className = this.className.replace(/ active/, '')
+    })
+}
+
+function activate_round(o, time) {
+    deactivate_all_rounds()
+    if (!o.className.match(/active/)) {
+        o.className += ' active'
+    }
+    get_round(time)
+}
+/*
 function pwn(flow_id) {
     $.ajax({
         url: '/pwn/' + flow_id,
@@ -75,7 +104,7 @@ function pwn(flow_id) {
         }
     });
 }
-
+*/
 const checkbox = document.getElementById('hexdump')
 
 checkbox.addEventListener('change', (event) => {

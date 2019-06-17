@@ -9,11 +9,11 @@ db = client.my_db
 collFlows = db.flows
 
 # return all docs flow in a descending order by end time
-def get_flows(collection, filter, limit=0):
-    cursor = collection.find(filter)
+def get_flows(filter, limit=0, sorteh=-1):
+    cursor = collFlows.find(filter)
     if limit > 0:
         cursor.limit(limit)
-    return cursor.sort('time', -1)#, cursor.count()
+    return cursor.sort('time', sorteh)#, cursor.count()
 
 # return all docs node in a ascending order by time start
 def get_nodes(collNodes):
@@ -24,26 +24,14 @@ def get_flow(idFlow):
     flowDoc = collFlows.find_one({"_id": ObjectId(idFlow)})
     return flowDoc
 
-def get_single_node(collNodes, id):
-    return collNodes.find_one({"_id": id})
-
 def get_favorite_flows(collFlows):
     cursor = collFlows.find({'favorite': True})
     return cursor.sort('lastSeen', -1)
-
-def get_favorite_nodes(collNodes):
-    cursor = collNodes.find({'favorite': True})
-    return cursor.sort('time', 1)
 
 def star_one_flow(collFlows, id, val):
     filter = {"_id": id}
     update = {"$set": {"favorite": val}}
     collFlows.update_one(filter, update)
-
-def star_one_node(collNodes, id):
-    filter = {"_id": id}
-    update = {"$set": {"favorite": True}}
-    collNodes.update_one(filter, update)
 
 def find_what_u_want(collection, filter, limit=0):
     cursor = collection.find(filter)

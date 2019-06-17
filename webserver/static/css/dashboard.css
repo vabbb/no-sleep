@@ -12,6 +12,15 @@ pre {
   font-family: monospace;
 }
 
+.ns-height {
+  height: calc(100% - 48px);
+}
+
+.ongoing {
+  color: rgb(214, 211, 205);
+  background-color: #2c4d4d;
+}
+
 .active {
   color: rgb(214, 211, 205);
   background-color: #313c47;
@@ -78,6 +87,7 @@ cyandump {
 
 
 .ns-logo {
+  height: 48px;
   size: 18rem;
 }
 
@@ -116,14 +126,52 @@ cyandump {
   top: 0;
   bottom: 0;
   left: 0;
-
+  width: 9rem;
 }
 
 .fixee1 {
   position: fixed;
   top: 0;
   bottom: 0;
-  left: 8.333334%;
+  left: 9rem;
+  width: 18rem;
+}
+
+.fixee2 {
+  top: 0;
+  bottom: 0;
+  margin-left: 27rem;
+  /* Firefox */
+  width: -moz-calc(100% - 27rem);
+  /* WebKit */
+  width: -webkit-calc(100% - 27rem);
+  /* Opera */
+  width: -o-calc(100% - 27rem);
+  /* Standard */
+  width: calc(100% - 27rem);
+}
+
+.fixeeSearchBar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 9rem;
+  width: 27rem;
+}
+
+.fixeeOpts {
+  top: 0;
+  bottom: 0;
+  margin-left: 36rem;
+  /* Firefox */
+  width: -moz-calc(100% - 36rem);
+  /* WebKit */
+  width: -webkit-calc(100% - 36rem);
+  /* Opera */
+  width: -o-calc(100% - 36rem);
+  /* Standard */
+  width: calc(100% - 36rem);
+
 }
 
 .sidebar-sticky {

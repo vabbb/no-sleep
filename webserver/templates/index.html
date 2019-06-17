@@ -1,150 +1,95 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
-
   <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
-  <meta name="author" content="">
-
-  <title>Timon</title>
-
+  <meta name="author" content="ROPperoni">
+  <title>n05133p</title>
   <!-- Custom fonts for this template-->
   <link href="{{ url_for('static', filename='vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet"
     type="text/css">
 
   <!-- Page level plugin CSS-->
-  <link href="{{ url_for('static', filename='vendor/datatables/dataTables.bootstrap4.css') }}" rel="stylesheet">
-
+  <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
   <!-- Custom styles for this template-->
-  <link href="{{ url_for('static', filename='css/sb-admin.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">
 
-  {% macro add_conn(conn, services) %}
-  <li onclick="activate(this, '{{ conn['_id'] }}')" class="list-group-item">
-    <div class="container">
-      <div class="row">
-        <div class="col">
-          <i onclick="change_star(this, '{{ conn['_id'] }}')"
-            class="{% if conn['favorite'] %} fas fa-heart {% else %} far fa-heart {% endif %} align-middle"></i>
-        </div>
-        <div class="col-9">
-          <div class="row font-weight-bold">
-            {% if services[conn['endpoints'][0][1]] %}
-            {{ services[conn['endpoints'][0][1]] }}
-            {% elif services[conn['endpoints'][1][1]] %}
-            {{ services[conn['endpoints'][1][1]] }}
-            {% else %}
-            unknown
-            {% endif %}
-          </div>
-          <div class="row">
-            {{ conn['_id'] }}
-          </div>
-          <div class="row">
-            {{ conn['lastSeen'] | int_to_time }}
-            <!-- TODO: convert in time -->
-          </div>
-        </div>
-      </div>
-    </div>
-  </li>
-  {% endmacro %}
 
 </head>
 
-<body id="page-top">
-
-  <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
-
-    <span class="navbar-brand mr-1">Timon</span>
-
-    <div class="checkbox ml-auto">
-      <label><input id="check_hex" type="checkbox"><span class="text-light">Hexdump</span></label>
+<body>
+  <nav class="navbar navbar-dark sticky-top ns-bg-dark flex-md-nowrap p-0">
+    <a class="navbar-brand mr-0 text-center ns-light-text ns-logo fixee0" href="javascript:void(0)">n05133p</a>
+    <input class="form-control form-control-dark fixeeSearchBar" type="text" placeholder="Search" aria-label="Search">
+    <div class="navbar navbar-dark sticky-top ns-bg-dark flex-md-nowrap p-0 fixeeOpts">
+      <ul class="navbar-nav px-3 pl-4">
+        <li class="nav-item text-nowrap">
+          <div class="dropdown ">
+            <select class="nav-link ns-nohover">
+              <option value="all" onclick="alert('apply filter for '+$(this).val());" selected>all services</option>
+              {% for s in services %}
+              <option value="{{ s }}" onclick="alert('apply filter for '+$(this).val());">{{ s }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </li>
+      </ul>
+      <ul class="navbar-nav px-2">
+        <li class="nav-item text-nowrap">
+          <a class="nav-link ns-nohover">
+            <input type="checkbox" name="flagsOnly" id="flagsOnly" value="flagsOnly"
+              class="ns-light-text ns-big-checkbox" />
+            <label for="flagsOnly">flags only</label>
+          </a>
+        </li>
+      </ul>
+      <ul class="navbar-nav px-2">
+        <li class="nav-item text-nowrap">
+          <a class="nav-link ns-nohover">
+            <input type="checkbox" name="hexdump" id="hexdump" value="hexdump" class="ns-light-text ns-big-checkbox" />
+            <label for="hexdump">hexdump</label>
+          </a>
+        </li>
+      </ul>
+      <ul class="navbar-nav">
+        <li class="nav-item text-nowrap">
+          <span class="nav-link pr-2 ns-nohover">Copyright © ROPperoni 2019</span>
+        </li>
+      </ul>
     </div>
-
-    <!-- Navbar Search -->
-    <form class="form-inline ml-auto" action="/" method="GET">
-      <select name="service" class="browser-default custom-select mx-2">
-        <option value="" disabled selected>Services</option>
-        {% for s in services %}
-        <option value="{{ s }}">{{ s }}</option>
-        {% endfor %}
-      </select>
-      <div class="form-group">
-        <input name="srcIP" class="form-control" placeholder="SrcIP" style="width: 100px">
-      </div>
-      <div class="form-group">
-        <input name="srcPort" class="form-control" placeholder="SrcPort" style="width: 100px">
-      </div>
-      <div class="form-group pl-2">
-        <input name="dstIP" class="form-control" placeholder="DstIP" style="width: 100px">
-      </div>
-      <div class="form-group">
-        <input name="dstPort" class="form-control" placeholder="DstPort" style="width: 100px">
-      </div>
-      <div class="form-group px-2">
-        <input name="nflows" type="number" class="form-control" value="20" style="width: 100px">
-      </div>
-      <input name="data" type="text" class="form-control" placeholder="Type here to search" aria-label="Search"
-        aria-describedby="basic-addon2">
-      <div class="input-group-append">
-        <button class="btn btn-primary" type="submit">
-          <i class="fas fa-search"></i>
-        </button>
-      </div>
-    </form>
-
   </nav>
 
-  <div id="wrapper">
-
-    <!-- Starred flows
-    <ul class="list-group-star">
-      {% include 'starred.html' %}
-    </ul> -->
-
-    <ul class="list-group">
-      {% for conn in connections %}
-      {{ add_conn(conn, services_map) }}
-      {% endfor %}
-    </ul>
-
-    <ul class="list-group2">
-      <button type="button" class="btn btn-outline-primary mx-2 mt-2">Pwn</button>
-      <div class="card to-right">
-        <div class="card-body">
-          <h5 class="card-title">1. Server +45 ms</h5>
-          <p class="card-text text-monospace">Some quick example text to build on the card title and make up the
-            bulk of
-            the card's
-            content.</p>
+  <div class="container-fluid ns-height">
+    <div class="row h-100">
+      <nav class="d-none d-md-block sidebar fixee0 ns-bg-dark">
+        <div class="sidebar-sticky ns-thin-scroll">
+          <ul id="round-list" class="nav flex-column">
+            {% include 'rounds.html' %}
+          </ul>
         </div>
-      </div>
-
-      <div class="card to-left">
-        <div class="card-body">
-          <h5 class="card-title">2. Client +50 ms</h5>
-          <p class="card-text text-monospace">Some quick example text to build on the card title and make up the
-            bulk of
-            the card's
-            content.</p>
+      </nav>
+      <nav class="d-none d-md-block sidebar fixee1 ns-bg-dark">
+        <div class="sidebar-sticky ns-thin-scroll">
+          <ul id="flow-list" class="nav flex-column">
+            {% include 'round.html' %}
+          </ul>
         </div>
-      </div>
-
-    </ul>
-
-    <!-- Sticky Footer -->
-    <footer class="sticky-footer">
-      <div class="container my-auto">
-        <div class="copyright text-center my-auto">
-          <span>Copyright © ROPperoni 2019</span>
-        </div>
-      </div>
-    </footer>
-
+      </nav>
+      <main role="main" id="main" class="ns-light-text pt-3 px-4 fixee2">
+        <h1 class="text-center" style="font-family:'Courier-new', monospace;font-size: 100px;">
+          n05133p</h1>
+        {# <p>
+          <a class="btn" href="#">View details »</a>
+        </p> #}
+      </main>
+    </div>
   </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <script>
+    window.jQuery || document.write('<script src="/docs/4.3/assets/js/vendor/jquery-slim.min.js"><\/script>')
+  </script>
 
   <!-- Bootstrap core JavaScript-->
   <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
@@ -152,7 +97,6 @@
 
   <!-- Core plugin JavaScript-->
   <script src="{{ url_for('static', filename='vendor/jquery-easing/jquery.easing.min.js') }}"></script>
-
   <script src="{{ url_for('static', filename='js/logic.js') }}"></script>
 
 </body>

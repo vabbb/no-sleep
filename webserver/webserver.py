@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request
-import db
+import db, math
 from pprint import pprint
 import configuration as c
 # from flow2pwn import flow2pwn
 import time, datetime
+from collections import OrderedDict
 
 app = Flask(__name__)
 
@@ -15,18 +16,43 @@ def get_service_port(service):
         if c.services[p] == service:
             return p
 
+def flow_time_to_round(flow_time):
+    return datetime.datetime.fromtimestamp(flow_time // 1000000000 - flow_time // 1000000000 % 300)
+
+# def remove_duplicates_and_keep_order(my_list):
+#     seen = set()
+#     seen_add = seen.add
+#     return [x for x in my_list if not (x in seen or seen_add(x))]
+
+def get_rounds(flows=None):
+    rounds = OrderedDict({})
+    f = {}
+    if flows == None:
+        flows = db.get_flows(f, sorteh=-1)
+
+    for flow in flows:
+        curr_round = flow['time'] // 1000000000 - flow['time'] // 1000000000 % 300
+        if curr_round not in rounds.keys():
+            rounds[curr_round] = 0
+        rounds[curr_round] += flow['trafficSize']
+    return rounds
+
+
 @app.route("/")
 def index():
     filters = request.args
     limit = int(filters.get('nflows', '20'))
     f = {}
-    pprint(f)
-    flows = db.get_flows(db.collFlows, f, limit)
-    pprint(flows)
-    return render_template('nuindex.html', flows=flows, services_map={},services={})
+    flows = db.get_flows(f, limit)
+    # pprint(flows)
+    return render_template( 'index.html',
+                            flows=flows,
+                            rounds=get_rounds(),
+                            services_map={},
+                            services={})
 
 @app.route("/flow/<flow_id>", methods=['GET'])
-def get_flow(flow_id):
+def slash_flow(flow_id):
     flow = db.get_flow(flow_id)
     pprint(flow)
     return render_template( 'flow.html',
@@ -35,20 +61,25 @@ def get_flow(flow_id):
                             hex=request.args['hex'], 
                             flow_id=flow_id)
 
+@app.route("/rounds", methods=['POST'])
+def slash_rounds():
+    rounds = get_rounds()
+    # pprint (rounds)
+    return render_template('rounds.html', rounds=rounds)
 
-# @app.route("/")
-# def hello_world():
-#     filters = request.args
-#     limit = int(filters.get('nflows', '20'))    
-#     service_port = get_service_port(filters.get('service'))
-#     starred = db.get_favorite_connections(db.collConnections)
-#     f = {}
-#     if service_port:
-#         f = {'endpoints':{'$elemMatch':{'$elemMatch':{'$in': [service_port]}}}}
-#     pprint(f)
-#     conns   = db.get_connections(db.collConnections, f, limit)
-#     services = get_services()
-#     return render_template('index.html', starred=starred, connections=conns, services=services, services_map=c.services)
+@app.route("/round/<rt>", methods=['POST'])
+@app.route("/round/<rt>", methods=['GET'])
+def slash_round(rt):
+    if rt == 'ongoing':
+        return render_template('round.html', flows={})
+    f = { 'time': { '$gte': int(rt)*1000000000, '$lt': (int(rt)+300)*1000000000},  }
+    pprint(f)
+    flows = db.get_flows(f)
+    return render_template( 'round.html',
+                            flows=flows,
+                            services_map={},
+                            services={})
+
 
 # @app.route("/star/<flow_id>/<sel>", methods=['POST'])
 # def star(flow_id, sel):
@@ -61,20 +92,13 @@ def get_flow(flow_id):
 #     pprint(c.services)
 #     return render_template('starred.html', starred=starred, services_map=c.services)
 
-# @app.route("/flow/<flow_id>", methods=['GET'])
-# def get_flow(flow_id):
-#     h = True if request.args['hex'] == 'true' else False
-#     flow, _ = db.get_flows_of_a_conn(db.collConnections, db.collFlows, flow_id)
-#     pprint(flow)
-#     return render_template('flow.html', flow=flow, server=c.vm_ip, hex=h, flow_id=flow_id)
-
 # @app.route("/pwn/<flow_id>", methods=['GET'])
 # def get_flow2pwn(flow_id):
 #     c, _ = db.get_flows_of_a_conn(db.collConnections, db.collFlows, flow_id)
 #     return flow2pwn(c)
 
-@app.template_filter('int_to_time')
-def convert_int_to_time(t):
-    return datetime.datetime.fromtimestamp(t // 1000000000)
+@app.template_filter('int_to_round_time')
+def int_to_round_time(t):
+    return datetime.datetime.fromtimestamp(t).strftime("%H:%M")
 
 app.run(host='0.0.0.0', port=5001)
