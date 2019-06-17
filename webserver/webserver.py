@@ -6,7 +6,7 @@ import configuration as c
 import time, datetime
 from collections import OrderedDict
 
-app = Flask(__name__)
+application = Flask(__name__)
 
 def get_services():
     return [c.services[p] for p in c.services]
@@ -38,7 +38,7 @@ def get_rounds(flows=None):
 
     return OrderedDict(sorted(rounds.items(), reverse=True))
 
-@app.route("/")
+@application.route("/")
 def index():
     filters = request.args
     limit = int(filters.get('nflows', '20'))
@@ -51,7 +51,7 @@ def index():
                             services_map={},
                             services={})
 
-@app.route("/flow/<flow_id>", methods=['GET'])
+@application.route("/flow/<flow_id>", methods=['GET'])
 def slash_flow(flow_id):
     flow = db.get_flow(flow_id)
     pprint(flow)
@@ -61,14 +61,14 @@ def slash_flow(flow_id):
                             hex=request.args['hex'], 
                             flow_id=flow_id)
 
-@app.route("/rounds", methods=['POST'])
+@application.route("/rounds", methods=['POST'])
 def slash_rounds():
     rounds = get_rounds()
     # pprint (rounds)
     return render_template('rounds.html', rounds=rounds)
 
-@app.route("/round/<rt>", methods=['POST'])
-@app.route("/round/<rt>", methods=['GET'])
+@application.route("/round/<rt>", methods=['POST'])
+@application.route("/round/<rt>", methods=['GET'])
 def slash_round(rt):
     if rt == 'ongoing':
         return render_template('round.html', flows={})
@@ -81,25 +81,25 @@ def slash_round(rt):
                             services={})
 
 
-# @app.route("/star/<flow_id>/<sel>", methods=['POST'])
+# @application.route("/star/<flow_id>/<sel>", methods=['POST'])
 # def star(flow_id, sel):
 #     db.star_one_connection(db.collConnections, flow_id, True if sel == 'true' else False)
 #     return "ok"
 
-# @app.route("/starred", methods=['POST'])
+# @application.route("/starred", methods=['POST'])
 # def starred():
 #     starred = db.get_favorite_connections(db.collConnections)
 #     pprint(c.services)
 #     return render_template('starred.html', starred=starred, services_map=c.services)
 
-# @app.route("/pwn/<flow_id>", methods=['GET'])
+# @application.route("/pwn/<flow_id>", methods=['GET'])
 # def get_flow2pwn(flow_id):
 #     c, _ = db.get_flows_of_a_conn(db.collConnections, db.collFlows, flow_id)
 #     return flow2pwn(c)
 
-@app.template_filter('int_to_round_time')
+@application.template_filter('int_to_round_time')
 def int_to_round_time(t):
     return datetime.datetime.fromtimestamp(t).strftime("%H:%M")
 
 if __name__ == "__main__":
-	app.run(host='0.0.0.0', port=5001)
+	application.run(host='0.0.0.0', port=5001)
