@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="ROPperoni">
+  <title>n05133p</title>
+  <!-- Custom fonts for this template-->
+  <link href="{{ url_for('static', filename='vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet"
+    type="text/css">
+
+  <!-- Page level plugin CSS-->
+  <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+  <!-- Custom styles for this template-->
+  <link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">
+
+  {% macro add_flow(flow, services) %}
+  <li class="nav-item" onclick="activate(this, '{{ flow['_id'] }}')">
+    <a class="nav-link" href="javascript:void(0);">
+      <table class="text-center ns-table">
+        <tr>
+          <td colspan="2">
+            {% if services[flow['srcPort']] %}{{ services[flow['srcPort']] }}{% elif services[flow['dstPort']] %}{{ services[flow['dstPort']] }}{% else %}unknown{% endif %}
+          </td>
+          <td>{% if flow['hasFlag'] == True %}<span class="green" data-feather="flag"></span>{% endif %}</td>
+        </tr>
+        <tr>
+          <td><cyan>SRC<cyan></td>
+          <td>{{ flow['srcIP'] }} : <cyan>{{ flow['srcPort'] }}</cyan></td>
+          <td>{{ flow['time'] % 300 }}s{# TIME PASSED SINCE START OF THE ROUND #}</td>
+        </tr>
+        <tr>
+          <td><red>DST</red></td>
+          <td>{{ flow['dstIP'] }} : <red>{{ flow['dstPort'] }}</red></td>
+          <td>{{ flow['trafficSize'] }}B</td>
+        </tr>
+      </table>
+    </a>
+  </li>
+  {% endmacro %}
+
+</head>
+
+<body>
+  <nav class="navbar navbar-dark sticky-top ns-bg-dark flex-md-nowrap p-0">
+    <a class="navbar-brand col-sm-2 col-md-2 col-lg-2 mr-0 text-center ns-light-text ns-logo"
+      href="javascript:void(0)">n05133p</a>
+    <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
+    <ul class="navbar-nav px-3 pl-4">
+      <li class="nav-item text-nowrap">
+        <div class="dropdown ">
+          <select class="nav-link ns-nohover">
+            <option value="all">All</option>
+            <option value="service1">service1</option>
+            <option value="service2">service2</option>
+            <option value="service3">service3</option>
+          </select>
+        </div>
+      </li>
+    </ul>
+    <ul class="navbar-nav px-3">
+      <li class="nav-item text-nowrap">
+        <a class="nav-link ns-nohover">
+          <input type="checkbox" name="flagsOnly" id="flagsOnly" value="flagsOnly"
+            class="ns-light-text ns-big-checkbox" />
+          <label for="flagsOnly">flags only</label>
+        </a>
+      </li>
+    </ul>
+    <ul class="navbar-nav px-3">
+      <li class="nav-item text-nowrap">
+        <a class="nav-link ns-nohover">
+          <input type="checkbox" name="hexdump" id="hexdump" value="hexdump" class="ns-light-text ns-big-checkbox" />
+          <label for="hexdump">hexdump</label>
+        </a>
+      </li>
+    </ul>
+    <ul class="navbar-nav px-3">
+      <li class="nav-item text-nowrap">
+        <span class="nav-link px-5" href="#"></span>
+      </li>
+    </ul>
+    <ul class="navbar-nav">
+      <li class="nav-item text-nowrap">
+        <span class="nav-link px-4 ns-nohover">Copyright © ROPperoni 2019</span>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row">
+      <nav class="col-md-1 d-none d-md-block col-lg-1 sidebar fixee0 ns-bg-dark">
+        <div class="sidebar-sticky ns-thin-scroll">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link text-center active" href="#">
+                12:30 &nbsp;|&nbsp; 416KB<span class="sr-only">(current)</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-center" href="#">
+                12:25 &nbsp;|&nbsp; 416KB
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-center" href="#">
+                12:20 &nbsp;|&nbsp; 416KB
+              </a>
+            </li>
+            <li class="nav-item text-center">
+              <a class="nav-link" href="#">
+                12:15 &nbsp;|&nbsp; 416KB
+              </a>
+            </li>
+            <li class="nav-item text-center">
+              <a class="nav-link" href="#">
+                12:10 &nbsp;|&nbsp; 416KB
+              </a>
+            </li>
+            <li class="nav-item text-center">
+              <a class="nav-link" href="#">
+                12:05 &nbsp;|&nbsp; 416KB
+              </a>
+            </li>
+            <li class="nav-item text-center">
+              <a class="nav-link" href="#">
+                12:00 &nbsp;|&nbsp; 416KB
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <nav class="col-md-2 d-none d-md-block col-lg-2 sidebar fixee1 ns-bg-dark">
+        <div class="sidebar-sticky ns-thin-scroll">
+          <ul id="flow-list" class="nav flex-column">
+            {% for flow in flows %}
+            {{ add_flow(flow, services_map) }}
+            {% endfor %}
+          </ul>
+        </div>
+      </nav>
+      <main role="main" id="main" class="ns-light-text col-md-9 ml-sm-auto col-lg-9 pt-3 px-4">
+        <h2>
+          Heading
+        </h2>
+        <pre class="ns-light-text">
+GET /list.php?pump_id=3 HTTP/1.1
+Host: 10.10.3.1:8080
+Connection: keep-alive
+Accept-Encoding: gzip, deflate
+Accept: */*
+User-Agent: python-requests/2.19.1
+Session-Guid: .
+
+HTTP/1.1 200 OK
+Date: Wed, 27 Jun 2018 11:26:29 GMT
+Server: nginx/1.14.0 (Ubuntu)
+Content-Type: text/html; charset=UTF-8
+Content-Length: 0
+Keep-Alive: timeout=5, max=100
+Connection: Keep-Alive
+GET /list.php?pump_id=3 HTTP/1.1
+Host: 10.10.3.1:8080
+Connection: keep-alive
+Accept-Encoding: gzip, deflate
+Accept: */*
+User-Agent: python-requests/2.19.1
+Session-Guid: .
+
+HTTP/1.1 200 OK
+Date: Wed, 27 Jun 2018 11:26:29 GMT
+Server: nginx/1.14.0 (Ubuntu)
+Content-Type: text/html; charset=UTF-8
+Content-Length: 0
+Keep-Alive: timeout=5, max=100
+Connection: Keep-Alive
+        </pre>
+        <p>
+          <a class="btn" href="#">View details »</a>
+        </p>
+      </main>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <script>
+    window.jQuery || document.write('<script src="/docs/4.3/assets/js/vendor/jquery-slim.min.js"><\/script>')
+  </script>
+  <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+  <script>
+    feather.replace()
+  </script>
+  <!-- Bootstrap core JavaScript-->
+  <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="{{ url_for('static', filename='vendor/jquery-easing/jquery.easing.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/logic.js') }}"></script>
+
+</body>
+
+</html>

@@ -1,11 +1,11 @@
 function get_flow(id) {
-    const checkbox = document.getElementById('check_hex')
+    const checkbox = document.getElementById('hexdump')
     $.ajax({
         url: '/flow/' + id + '?hex=' + checkbox.checked,
         type: 'GET',
         success: function (response) {
-            $(".list-group2").children().each(function (i) { this.remove() })
-            $(".list-group2").append(response)
+            $("#main").children().each(function (i) { this.remove() })
+            $("#main").append(response)
         },
         error: function (error) {
             console.log(error);
@@ -50,10 +50,7 @@ function change_star(icon, id) {
 }
 
 function deactivate_all() {
-    $(".list-group").children().each(function (i) {
-        this.className = this.className.replace(/ active/, '')
-    })
-    $(".list-group-star").children().each(function (i) {
+    $("#flow-list").children().each(function (i) {
         this.className = this.className.replace(/ active/, '')
     })
 }
@@ -79,7 +76,7 @@ function pwn(flow_id) {
     });
 }
 
-const checkbox = document.getElementById('check_hex')
+const checkbox = document.getElementById('hexdump')
 
 checkbox.addEventListener('change', (event) => {
   if (event.target.checked) {

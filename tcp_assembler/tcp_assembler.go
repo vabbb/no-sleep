@@ -22,16 +22,14 @@ var (
 	readFrom = flag.String("r", "", "Directory to look into for pcap files")
 	iface    = flag.String("i", "any", "Interface to monitor")
 	//"((?:flag|cci?t?1?9?){[ a-zA-Z0-9-_]*})"
-	flagRegex = flag.String("regex", "[A-Z0-9]{31}=", "Regex to grep flags")
+	flagRegex = flag.String("regex", "([A-Z0-9]{31}=)", "Regex to grep flags")
 
 	debug = flag.Bool("debug", false, "If this is set, uses production mode")
 	help  = flag.Bool("help", false, "Shows this output")
 
 	file = &os.File{}
 
-	handle      *pcap.Handle
-	snapshotLen int32 = 65536
-	promiscuous       = false
+	handle *pcap.Handle
 
 	ethLayer     layers.Ethernet
 	ip4Layer     layers.IPv4
