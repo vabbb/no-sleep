@@ -8,18 +8,23 @@ pre {
   font-family: monospace;
 }
 
+.active, [role="main"] {
+  color: rgb(214, 211, 205);
+  background-color: #313c47;
+}
+
 .container-fluid a:hover {
-  color: rgb(30, 32, 34) !important;
-  background-color: rgb(250, 241, 158) !important;
+  color: rgb(214, 211, 205) !important;
+  background-color: #424b57 !important;
 }
 
-a:hover red, a:hover cyan {
+/* a:hover red, a:hover cyan {
   color: inherit;
-}
+} */
 
-a:hover .green {
+/* a:hover .green {
   color: rgb(12, 92, 12);
-}
+} */
 
 red {
   color: rgb(192, 51, 51);
@@ -130,10 +135,6 @@ cyan {
   /* color: #999; */
 }
 
-.active, [role="main"] {
-  color: rgb(214, 211, 205);
-  background-color: #313c47;
-}
 
 /* .sidebar .nav-link:hover .feather,
 .sidebar .nav-link.active .feather {
