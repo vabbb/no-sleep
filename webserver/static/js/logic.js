@@ -1,11 +1,11 @@
 function get_flow(id) {
-    const checkbox = document.getElementById('check_hex')
+    const checkbox = document.getElementById('hexdump')
     $.ajax({
         url: '/flow/' + id + '?hex=' + checkbox.checked,
         type: 'GET',
         success: function (response) {
-            $(".list-group2").children().each(function (i) { this.remove() })
-            $(".list-group2").append(response)
+            $("#main").children().each(function (i) { this.remove() })
+            $("#main").append(response)
         },
         error: function (error) {
             console.log(error);
@@ -13,6 +13,21 @@ function get_flow(id) {
     });
 }
 
+function get_round(time) {
+    $.ajax({
+        url: '/round/' + time,
+        type: 'POST',
+        success: function (response) {
+            $("#flow-list").children().each(function (i) { this.remove() });
+            console.log(response);
+            $("#flow-list").append(response);
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    });
+}
+/*
 function update_starred() {
     $(".list-group-star").children().each(function (i) { this.remove() })
     $.ajax({
@@ -48,12 +63,9 @@ function change_star(icon, id) {
     });
     update_starred()
 }
-
+*/
 function deactivate_all() {
-    $(".list-group").children().each(function (i) {
-        this.className = this.className.replace(/ active/, '')
-    })
-    $(".list-group-star").children().each(function (i) {
+    $("#flow-list").children().each(function (i) {
         this.className = this.className.replace(/ active/, '')
     })
 }
@@ -66,6 +78,20 @@ function activate(o, id) {
     get_flow(id)
 }
 
+function deactivate_all_rounds() {
+    $("#round-list").children().each(function (i) {
+        this.className = this.className.replace(/ active/, '')
+    })
+}
+
+function activate_round(o, time) {
+    deactivate_all_rounds()
+    if (!o.className.match(/active/)) {
+        o.className += ' active'
+    }
+    get_round(time)
+}
+/*
 function pwn(flow_id) {
     $.ajax({
         url: '/pwn/' + flow_id,
@@ -78,15 +104,48 @@ function pwn(flow_id) {
         }
     });
 }
+*/
+const checkboxHex = document.getElementById('hexdump')
+const checkboxFlags = document.getElementById('flagsOnly')
+const selectService = document.getElementById('selectService')
 
-const checkbox = document.getElementById('check_hex')
-
-checkbox.addEventListener('change', (event) => {
+checkboxHex.addEventListener('change', (event) => {
   if (event.target.checked) {
-    $('[id=hex]').each(function (i) {this.className = this.className.replace(/ d-none/, '')})
-    $('[id=data]').each(function (i) {this.className += ' d-none'})
+    $('.blob').removeClass('d-none')
+    $('.printableData').addClass('d-none')
   } else {
-    $('[id=data]').each(function (i) {this.className = this.className.replace(/ d-none/, '')})
-    $('[id=hex]').each(function (i) {this.className += ' d-none'})
+    $('.blob').addClass('d-none')
+    $('.printableData').removeClass('d-none')
   }
 })
+
+checkboxFlags.addEventListener('change', (event) => {
+	serviceActived = selectService.value
+  if (event.target.checked) {
+		if(serviceActived == "all") $('li.flow').not('li.flow.hasflag').addClass('d-none')
+		else $('li.flow.'+serviceActived).not('li.flow.hasflag.'+serviceActived).addClass('d-none')
+  } else {
+		if(serviceActived == "all") $('li.flow').removeClass('d-none')
+		else $('li.flow.'+serviceActived).removeClass('d-none')		
+  }
+})
+
+selectService.addEventListener('change', (event) => {
+    service = event.target.value
+    if (service == "all") {
+			if(!checkboxFlags.checked) $('li.flow').removeClass('d-none')
+			else {
+				$('li.flow').removeClass("d-none")
+				$('li.flow').not('li.flow.hasflag').addClass('d-none')
+			}
+    } else {
+			if(!checkboxFlags.checked){
+				$('li.flow').removeClass("d-none")
+				$('li.flow').not('li.flow.'+service).addClass("d-none")
+			} 
+			else {
+				$('li.flow').removeClass("d-none")
+				$('li.flow').not('li.flow.hasflag.'+service).addClass('d-none')
+			}
+    }
+  })

@@ -1,0 +1,275 @@
+body {
+  font-size: .875rem;
+}
+
+pre {
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+  font-size: .9rem;
+  font-family: monospace;
+}
+
+.ns-height {
+  height: calc(100% - 48px);
+}
+
+.ongoing {
+  color: rgb(214, 211, 205);
+  background-color: #2c4d4d;
+}
+
+.active {
+  color: rgb(214, 211, 205);
+  background-color: #313c47;
+}
+
+body,
+[role="main"],
+.ns-bg-dark {
+  background-color: rgb(30, 32, 34);
+
+  color: rgb(214, 211, 205);
+}
+
+
+.container-fluid a:hover {
+  color: rgb(214, 211, 205) !important;
+  background-color: #424b57 !important;
+}
+
+/* a:hover red, a:hover cyan {
+  color: inherit;
+} */
+
+/* a:hover .green {
+  color: rgb(12, 92, 12);
+} */
+
+red {
+  color: rgb(192, 51, 51);
+}
+
+cyan {
+  color: rgb(27, 178, 189);
+}
+
+reddump {
+  color: rgb(216, 102, 102);
+}
+
+cyandump {
+  color: rgb(102, 211, 219);
+}
+
+.feather {
+  width: 16px;
+  height: 16px;
+  vertical-align: text-bottom;
+}
+
+.green {
+  width: 20px;
+  height: 20px;
+  color: rgb(47, 223, 12)
+}
+
+.ns-thin-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(51, 51, 51) #1c1e1f;
+}
+
+::-webkit-scrollbar {
+  background-color:#1c1e1f;
+  width: 5px;
+}
+::-webkit-scrollbar-thumb {
+  background-color:rgb(51, 51, 51);
+  border:none;
+}
+.ns-light-text {
+  color: rgb(214, 211, 205);
+}
+
+
+.ns-logo {
+  height: 48px;
+  size: 18rem;
+}
+
+.ns-table {
+  width: 100%;
+  height: 100%;
+}
+
+.ns-data-feather {
+  width: 30px;
+  height: 30px;
+}
+
+.ns-big-checkbox {
+  vertical-align: middle;
+  font-family: FontAwesome;
+  /* content: "\f14a";  width: 30px;
+  height: 30px; */
+  padding: 10px;
+}
+
+/*
+   * Sidebar
+   */
+
+.sidebar {
+  z-index: 100;
+  /* Behind the navbar */
+  padding: 40px 0 0;
+  /* Height of navbar */
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+}
+
+.fixee0 {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 9rem;
+}
+
+.fixee1 {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 9rem;
+  width: 18rem;
+}
+
+.fixee2 {
+  top: 0;
+  bottom: 0;
+  margin-left: 27rem;
+  /* Firefox */
+  width: -moz-calc(100% - 27rem);
+  /* WebKit */
+  width: -webkit-calc(100% - 27rem);
+  /* Opera */
+  width: -o-calc(100% - 27rem);
+  /* Standard */
+  width: calc(100% - 27rem);
+}
+
+.fixeeSearchBar {
+  position: inherit;
+  top: 0;
+  bottom: 0;
+  left: 9rem;
+  width: 27rem;
+}
+
+.fixeeOpts {
+  top: 0;
+  bottom: 0;
+  margin-left: 36rem;
+  /* Firefox */
+  width: -moz-calc(100% - 36rem);
+  /* WebKit */
+  width: -webkit-calc(100% - 36rem);
+  /* Opera */
+  width: -o-calc(100% - 36rem);
+  /* Standard */
+  width: calc(100% - 36rem);
+
+}
+
+.sidebar-sticky {
+  position: relative;
+  top: 0;
+  height: calc(100vh - 48px);
+  padding-top: .5rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  /* Scrollable contents if viewport is shorter than content. */
+}
+
+@supports ((position: -webkit-sticky) or (position: sticky)) {
+  .sidebar-sticky {
+    position: -webkit-sticky;
+    position: sticky;
+  }
+}
+
+.sidebar,
+.nav-link {
+  font-weight: 500;
+  color: rgb(214, 211, 205);
+}
+
+.sidebar .nav-link .feather {
+  margin-right: 4px;
+  /* color: #999; */
+}
+
+
+/* .sidebar .nav-link:hover .feather,
+.sidebar .nav-link.active .feather {
+  color: inherit;
+} */
+
+.sidebar-heading {
+  font-size: .75rem;
+  text-transform: uppercase;
+}
+
+/*
+   * Content
+   */
+
+[role="main"] {
+  padding-top: 133px;
+  /* Space for fixed navbar */
+}
+
+@media (min-width: 768px) {
+  [role="main"] {
+    padding-top: 48px;
+    /* Space for fixed navbar */
+  }
+}
+
+/*
+ * Navbar
+ */
+
+.ns-nohover,
+.ns-nohover:focus,
+.ns-nohover:hover {
+  color: rgb(214, 211, 205) !important;
+}
+
+.navbar-brand {
+  padding-top: .75rem;
+  padding-bottom: .75rem;
+  font-size: 1rem;
+  background-color: rgba(0, 0, 0, .25);
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
+}
+
+.navbar,
+.form-control {
+  padding: .75rem 1rem;
+  border-width: 0;
+  border-radius: 0;
+}
+
+.form-control-dark {
+  color: rgb(214, 211, 205);
+  background-color: rgba(255, 255, 255, .1);
+  border-color: rgba(255, 255, 255, .1);
+}
+
+.form-control-dark:focus {
+  border-color: rgba(0, 0, 0, 0);
+  background-color: rgb(214, 211, 205);
+  box-shadow: 0 0 0 0px rgba(0, 0, 0, 0);
+}
