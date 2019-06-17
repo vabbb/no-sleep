@@ -152,7 +152,7 @@ cyandump {
 }
 
 .fixeeSearchBar {
-  position: fixed;
+  position: inherit;
   top: 0;
   bottom: 0;
   left: 9rem;
