@@ -27,13 +27,13 @@
           <td>{% if flow['hasFlag'] == True %}<span class="green" data-feather="flag"></span>{% endif %}</td>
         </tr>
         <tr>
-          <td><cyan>SRC<cyan></td>
-          <td>{{ flow['srcIP'] }} : <cyan>{{ flow['srcPort'] }}</cyan></td>
-          <td>{{ flow['time'] // 1000000000 % 300 }}s{# TIME PASSED SINCE START OF THE ROUND #}</td>
+          <td><red>SRC</red></td>
+          <td>{{ flow['srcIP'] }} : <red>{{ flow['srcPort'] }}</red></td>
+          <td>+{{ flow['time'] // 1000000000 % 300 }}s{# TIME PASSED SINCE START OF THE ROUND #}</td>
         </tr>
         <tr>
-          <td><red>DST</red></td>
-          <td>{{ flow['dstIP'] }} : <red>{{ flow['dstPort'] }}</red></td>
+          <td><cyan>DST</cyan></td>
+          <td>{{ flow['dstIP'] }} : <cyan>{{ flow['dstPort'] }}</cyan></td>
           <td>{{ flow['trafficSize'] }}B</td>
         </tr>
       </table>

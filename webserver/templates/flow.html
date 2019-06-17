@@ -21,7 +21,7 @@
 
 <button onclick="pwn('{{ flow_id }}')" type="button" class="btn btn-outline-primary mx-2 mt-2">Pwn</button>
 <br /><br />
-<h4>{{ flow["srcIP"] }} : <cyandump>{{ flow["srcPort"] }}</cyandump> => {{ flow["dstIP"] }} : <reddump>{{ flow["dstPort"] }}</reddump></h4>
+<h4>{{ flow["srcIP"] }} : <reddump>{{ flow["srcPort"] }}</reddump> => {{ flow["dstIP"] }} : <cyandump>{{ flow["dstPort"] }}</cyandump></h4>
 <h5>{% if flow['seenSYN'] %}Seen{% else %}Didn't see{% endif %} flow's SYN packet<br />
   {% if flow['seenFIN'] %}Seen{% else %}Didn't see{% endif %} flow's FIN packet</h5>
 
