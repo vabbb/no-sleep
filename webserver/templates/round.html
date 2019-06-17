@@ -1,6 +1,12 @@
 {% macro add_flow(flow, services) %}
 {% if flow['hasFlag'] == True %}
-<li class="nav-item flow hasflag" onclick="activate(this, '{{ flow['_id'] }}')">
+{% if services[flow['srcPort']] %}
+<li class="nav-item flow hasflag {{ services[flow['srcPort']] }}" onclick="activate(this, '{{ flow['_id'] }}')">
+{% elif services[flow['dstPort']] %}
+<li class="nav-item flow hasflag {{ services[flow['dstPort']] }}" onclick="activate(this, '{{ flow['_id'] }}')">
+{% else %}
+<li class="nav-item flow hasflag " onclick="activate(this, '{{ flow['_id'] }}')">
+{% endif %}
 <a class="nav-link" href="javascript:void(0);">
     <table class="text-center ns-table">
     <tr>
@@ -29,7 +35,13 @@
 </a>
 </li>
 {% else %}
+{% if services[flow['srcPort']] %}
+<li class="nav-item flow {{ services[flow['srcPort']] }}" onclick="activate(this, '{{ flow['_id'] }}')">
+{% elif services[flow['dstPort']] %}
+<li class="nav-item flow {{ services[flow['dstPort']] }}" onclick="activate(this, '{{ flow['_id'] }}')">
+{% else %}
 <li class="nav-item flow" onclick="activate(this, '{{ flow['_id'] }}')">
+{% endif %}
     <a class="nav-link" href="javascript:void(0);">
         <table class="text-center ns-table">
         <tr>

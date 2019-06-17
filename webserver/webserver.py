@@ -48,8 +48,8 @@ def index():
     return render_template( 'index.html',
                             flows=flows,
                             rounds=get_rounds(),
-                            services_map={},
-                            services={})
+                            services_map=c.services,
+                            services=get_services())
 
 def modify_blobs(flow):
     nodes = flow['nodes']
@@ -84,8 +84,8 @@ def slash_round(rt):
     flows = db.get_flows(f)
     return render_template( 'round.html',
                             flows=flows,
-                            services_map={},
-                            services={})
+                            services_map=c.services,
+                            services=get_services())
 
 
 # @application.route("/star/<flow_id>/<sel>", methods=['POST'])

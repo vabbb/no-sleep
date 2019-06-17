@@ -27,7 +27,7 @@
       <ul class="navbar-nav px-3 pl-4">
         <li class="nav-item text-nowrap">
           <div class="dropdown ">
-            <select class="nav-link ns-nohover">
+            <select id="selectService" class="nav-link ns-nohover">
               <option value="all" onclick="alert('apply filter for '+$(this).val());" selected>all services</option>
               {% for s in services %}
               <option value="{{ s }}" onclick="alert('apply filter for '+$(this).val());">{{ s }}</option>

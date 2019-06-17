@@ -107,6 +107,7 @@ function pwn(flow_id) {
 */
 const checkboxHex = document.getElementById('hexdump')
 const checkboxFlags = document.getElementById('flagsOnly')
+const selectService = document.getElementById('selectService')
 
 checkboxHex.addEventListener('change', (event) => {
   if (event.target.checked) {
@@ -119,9 +120,32 @@ checkboxHex.addEventListener('change', (event) => {
 })
 
 checkboxFlags.addEventListener('change', (event) => {
+	serviceActived = selectService.value
   if (event.target.checked) {
-    $('li.flow').not('li.flow.hasflag').addClass('d-none')
+		if(serviceActived == "all") $('li.flow').not('li.flow.hasflag').addClass('d-none')
+		else $('li.flow.'+serviceActived).not('li.flow.hasflag.'+serviceActived).addClass('d-none')
   } else {
-    $('li.flow').not('li.flow.hasflag').removeClass('d-none')
+		if(serviceActived == "all") $('li.flow').removeClass('d-none')
+		else $('li.flow.'+serviceActived).removeClass('d-none')		
   }
 })
+
+selectService.addEventListener('change', (event) => {
+    service = event.target.value
+    if (service == "all") {
+			if(!checkboxFlags.checked) $('li.flow').removeClass('d-none')
+			else {
+				$('li.flow').removeClass("d-none")
+				$('li.flow').not('li.flow.hasflag').addClass('d-none')
+			}
+    } else {
+			if(!checkboxFlags.checked){
+				$('li.flow').removeClass("d-none")
+				$('li.flow').not('li.flow.'+service).addClass("d-none")
+			} 
+			else {
+				$('li.flow').removeClass("d-none")
+				$('li.flow').not('li.flow.hasflag.'+service).addClass('d-none')
+			}
+    }
+  })
