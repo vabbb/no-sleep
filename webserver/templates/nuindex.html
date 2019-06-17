@@ -29,7 +29,7 @@
         <tr>
           <td><cyan>SRC<cyan></td>
           <td>{{ flow['srcIP'] }} : <cyan>{{ flow['srcPort'] }}</cyan></td>
-          <td>{{ flow['time'] % 300 }}s{# TIME PASSED SINCE START OF THE ROUND #}</td>
+          <td>{{ flow['time'] // 1000000000 % 300 }}s{# TIME PASSED SINCE START OF THE ROUND #}</td>
         </tr>
         <tr>
           <td><red>DST</red></td>
