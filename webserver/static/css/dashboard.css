@@ -1,17 +1,30 @@
 body {
   font-size: .875rem;
-  background-color: #313c47;
 }
 
 pre {
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
   font-size: .9rem;
   font-family: monospace;
 }
 
-.active, [role="main"] {
+.active {
   color: rgb(214, 211, 205);
   background-color: #313c47;
 }
+
+body,
+[role="main"],
+.ns-bg-dark {
+  background-color: rgb(30, 32, 34);
+
+  color: rgb(214, 211, 205);
+}
+
 
 .container-fluid a:hover {
   color: rgb(214, 211, 205) !important;
@@ -34,11 +47,20 @@ cyan {
   color: rgb(27, 178, 189);
 }
 
+reddump {
+  color: rgb(216, 102, 102);
+}
+
+cyandump {
+  color: rgb(102, 211, 219);
+}
+
 .feather {
   width: 16px;
   height: 16px;
   vertical-align: text-bottom;
 }
+
 .green {
   width: 20px;
   height: 20px;
@@ -54,9 +76,6 @@ cyan {
   color: rgb(214, 211, 205);
 }
 
-.ns-bg-dark {
-  background-color: rgb(30, 32, 34);
-}
 
 .ns-logo {
   size: 18rem;

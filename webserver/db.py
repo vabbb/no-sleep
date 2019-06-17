@@ -1,4 +1,5 @@
 from pymongo import MongoClient, collection, cursor
+from bson.objectid import ObjectId
 from pprint import pprint
 
 url = "mongodb://localhost:27017"
@@ -19,8 +20,9 @@ def get_nodes(collNodes):
     cursor = collNodes.find()
     return cursor.sort('time', 1), cursor.count()
 
-def get_single_flow(collFlows, id):
-    return collFlows.find_one({"_id": id})
+def get_flow(idFlow):
+    flowDoc = collFlows.find_one({"_id": ObjectId(idFlow)})
+    return flowDoc
 
 def get_single_node(collNodes, id):
     return collNodes.find_one({"_id": id})
@@ -42,11 +44,6 @@ def star_one_node(collNodes, id):
     filter = {"_id": id}
     update = {"$set": {"favorite": True}}
     collNodes.update_one(filter, update)
-
-def get_nodes_of_a_conn(collCollections, collNodes, idConn):
-    connDoc = collCollections.find_one({"_id": idConn})
-    cursor = collNodes.find({"connID": connDoc['_id']})
-    return cursor.sort('time', 1), cursor.count()
 
 def find_what_u_want(collection, filter, limit=0):
     cursor = collection.find(filter)

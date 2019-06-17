@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request
 import db
 from pprint import pprint
-# import configuration as c
+import configuration as c
 # from flow2pwn import flow2pwn
 import time, datetime
 
@@ -24,6 +24,16 @@ def index():
     flows = db.get_flows(db.collFlows, f, limit)
     pprint(flows)
     return render_template('nuindex.html', flows=flows, services_map={},services={})
+
+@app.route("/flow/<flow_id>", methods=['GET'])
+def get_flow(flow_id):
+    flow = db.get_flow(flow_id)
+    pprint(flow)
+    return render_template( 'flow.html',
+                            flow=flow,
+                            server="replace this", 
+                            hex=request.args['hex'], 
+                            flow_id=flow_id)
 
 
 # @app.route("/")

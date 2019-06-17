@@ -1,60 +1,30 @@
-{% macro flow_track(index, f, server, hex) %}
-{% if server == f['src'][:f['src'].find(':')] %}
-<div class="card bg-info">
-  <div class="card-body">
-      <table>
-          <tr>
-            <td><h5 class="card-title">{{ index }}. Server</h5></td>
-            <td><h5 class="card-title">{% if f['hasSYN'] %}{{ SYN }}{% endif %} {% if f['hasFIN'] %}{{ FIN }}{% endif %}</h5></td>
-          </tr>
-        </table>
-        {% if hex == True %}
-    <p id="data" class="card-text text-monospace d-none">
-      {{ f['data'] }}
-    </p>
-    <p id="hex" class="card-text text-monospace">
-      {{ f['hex'] }}
-    </p>
-    {% else %}
-    <p id="data" class="card-text text-monospace">
-      {{ f['data'] }}
-    </p>
-    <p id="hex" class="card-text text-monospace d-none">
-      {{ f['hex'] }}
-    </p>
-    {% endif %}
-  </div>
-</div>
+{% macro flow_track(index, node, hex) %}
+{% if node['fromSrc'] == True %}
+
+{% if hex == True %}
+<pre id="printableData" class=" text-monospace d-none ns-light-text"><reddump>{{ node['printableData'] }}</reddump></pre>
+<p id="blob" class=" text-monospace">{{ node['blob'] }}</p>
 {% else %}
-<div class="card bg-warning">
-  <div class="card-body">
-    <table>
-      <tr>
-        <td><h5 class="card-title">{{ index }}. Client</h5></td>
-        <td><h5 class="card-title">{% if f['hasSYN'] %}{{ SYN }}{% endif %} {% if f['hasFIN'] %}{{ FIN }}{% endif %}</h5></td>
-      </tr>
-    </table>
-    {% if hex == True %}
-    <p id="data" class="card-text text-monospace d-none">
-      {{ f['data'] }}
-    </p>
-    <p id="hex" class="card-text text-monospace">
-      {{ f['hex'] }}
-    </p>
-    {% else %}
-    <p id="data" class="card-text text-monospace">
-      {{ f['data'] }}
-    </p>
-    <p id="hex" class="card-text text-monospace d-none">
-      {{ f['hex'] }}
-    </p>
-    {% endif %}
-  </div>
-</div>
+<pre id="printableData" class=" text-monospace ns-light-text"><reddump>{{ node['printableData'] }}</reddump></pre>
+<p id="blob" class=" text-monospace d-none">{{ node['blob'] }}</p>
+{% endif %}
+{% else %}
+{% if hex == True %}
+<pre id="printableData" class=" text-monospace d-none ns-light-text"><cyandump>{{ node['printableData'] }}</cyandump></pre>
+<p id="blob" class=" text-monospace">{{ node['blob'] }}</p>
+{% else %}
+<pre id="printableData" class=" text-monospace ns-light-text"><cyandump>{{ node['printableData'] }}</cyandump></pre>
+<p id="blob" class=" text-monospace d-none">{{ node['blob'] }}</p>
+{% endif %}
 {% endif %}
 {% endmacro %}
 
-<button onclick="pwn('{{ flow_id }}')"type="button" class="btn btn-outline-primary mx-2 mt-2">Pwn</button>
-{% for f in flow %}
-{{ flow_track(loop.index, f, server, hex) }}
+<button onclick="pwn('{{ flow_id }}')" type="button" class="btn btn-outline-primary mx-2 mt-2">Pwn</button>
+<br /><br />
+<h4>{{ flow["srcIP"] }} : <cyandump>{{ flow["srcPort"] }}</cyandump> => {{ flow["dstIP"] }} : <reddump>{{ flow["dstPort"] }}</reddump></h4>
+<h5>{% if flow['seenSYN'] %}Seen{% else %}Didn't see{% endif %} flow's SYN packet<br />
+  {% if flow['seenFIN'] %}Seen{% else %}Didn't see{% endif %} flow's FIN packet</h5>
+
+{% for node in flow['nodes'] %}
+{{ flow_track(loop.index, node, hex) }}
 {% endfor %}
