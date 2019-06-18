@@ -83,6 +83,25 @@ cyandump {
   color: rgb(192, 51, 51);
 }
 
+.strikethrough {
+  position: relative;
+}
+.strikethrough:before {
+  position: absolute;
+  content: "";
+  left: 0;
+  top: 40%;
+  right: 10%;
+  border-top: 2px solid;
+  border-color: inherit;
+
+  -webkit-transform:rotate(-25deg);
+  -moz-transform:rotate(-25deg);
+  -ms-transform:rotate(-25deg);
+  -o-transform:rotate(-25deg);
+  transform:rotate(-25deg);
+}
+
 .feather {
   width: 16px;
   height: 16px;

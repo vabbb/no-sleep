@@ -33,10 +33,10 @@
   </tr>
   <tr>
     <td class="d-inline-block">
-      <h5 class="pr-2 {% if flow['seenSYN'] %}green-text{% else %}red-text{% endif %}">SYN</h5>
+      <h5 class="pr-2 {% if flow['seenSYN'] %}green-text{% else %}red-text strikethrough{% endif %}">SYN</h5>
     </td>
     <td class="d-inline-block">
-      <h5 class="pr-2 {% if flow['seenFIN'] %}green-text{% else %}red-text{% endif %}">FIN</h5>
+      <h5 class="pr-2 {% if flow['seenFIN'] %}green-text{% else %}red-text strikethrough{% endif %}">FIN</h5>
     </td>
     <td class="d-inline-block"><h5 class="pr-2">{{ flow['nodes'] | length }} NODES</h5></td>
     <td class="d-inline-block"><h5 class="pr-2"><span class="ns-data-feather" data-feather="activity"></span>{{ flow['trafficSize'] | thousand_comma }}B</h5></td>
