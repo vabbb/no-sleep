@@ -162,3 +162,60 @@ selectService.addEventListener('change', (event) => {
 		}
 	}
 })
+
+/* *****************************************************************************************************************
+   ***************************************************************************************************************** */
+
+var request = self.indexedDB.open('EXAMPLE_DB', 1);
+var db;
+var lastUpdate = 0
+
+request.onsuccess = function (event) {
+	console.log('[onsuccess]', request.result);
+	db = event.target.result;
+};
+
+request.onerror = function (event) {
+	console.log('[onerror]', request.error);
+};
+
+request.onupgradeneeded = function (event) {
+	var db = event.target.result;
+	var store = db.createObjectStore('flows', { keyPath: '_id' });
+	store.createIndex('time', 'time', { unique: false });
+};
+
+function add_flows_to_db(flows) {
+	var transaction = db.transaction('flows', 'readwrite');
+	transaction.onsuccess = function (event) {
+		console.log('[Transaction] ALL DONE!');
+	};
+	var flowsStore = transaction.objectStore('flows');
+
+	flows.forEach(function (flow) {
+		temp = { _id: flow['_id']["$oid"], time: flow['time'], flow: flow }
+		//time_l.push(flow['time'])
+		var db_op_req = flowsStore.add(temp);
+	});
+}
+
+function get_new_flows() {
+	$.ajax({
+		url: '/flows/' + lastUpdate,
+		type: 'GET',
+		success: function (response) {
+
+			flows = JSON.parse(response);
+			//time_l = []
+			add_flows_to_db(flows)
+
+			//lastUpdate = Math.max(...time_l)
+		},
+		error: function (error) {
+			console.log(error);
+		}
+	});
+}
+
+get_new_flows()
+//setInterval(get_new_flows, 1000)
