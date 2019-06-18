@@ -15,9 +15,17 @@ pre {
 select {
   background-color: rgb(49, 54, 59);
 }
-
+hr {
+  border: none;
+  background-color: rgb(51, 51, 51);
+  height: 2px;
+}
 .ns-height {
   height: calc(100% - 48px);
+}
+
+.ns-bold {
+  font-weight: 900;
 }
 
 .ongoing {
@@ -68,6 +76,13 @@ cyandump {
   color: rgb(102, 211, 219);
 }
 
+.green-text {
+  color: rgb(47, 223, 12)
+}
+.red-text {
+  color: rgb(192, 51, 51);
+}
+
 .feather {
   width: 16px;
   height: 16px;
@@ -77,16 +92,16 @@ cyandump {
 .green {
   width: 20px;
   height: 20px;
-  color: rgb(47, 223, 12)
+  color: rgb(47, 223, 12);
 }
 
 .ns-thin-scroll {
   scrollbar-width: thin;
-  scrollbar-color: rgb(51, 51, 51) #1c1e1f;
+  scrollbar-color: rgb(51, 51, 51) rgb(30, 32, 34);;
 }
 
 ::-webkit-scrollbar {
-  background-color: #1c1e1f;
+  background-color: rgb(30, 32, 34);;
   width: 5px;
 }
 
@@ -111,8 +126,8 @@ cyandump {
 }
 
 .ns-data-feather {
-  width: 30px;
-  height: 30px;
+  width: 22px;
+  height: 22px;
 }
 
 .ns-big-checkbox {

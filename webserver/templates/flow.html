@@ -11,7 +11,7 @@
 {% else %}
 {% if hex == 'true' %}
 <pre class=" text-monospace d-none ns-light-text printableData"><cyandump>{{ node['printableData'] }}</cyandump></pre>
-<pre  class=" text-monospace blob"><cyandump>{{ node['blob'] }}</cyandump></pre>
+<pre class=" text-monospace blob"><cyandump>{{ node['blob'] }}</cyandump></pre>
 {% else %}
 <pre class=" text-monospace ns-light-text printableData"><cyandump>{{ node['printableData'] }}</cyandump></pre>
 <pre class=" text-monospace d-none blob"><cyandump>{{ node['blob'] }}</cyandump></pre>
@@ -19,12 +19,37 @@
 {% endif %}
 {% endmacro %}
 
-<button onclick="pwn('{{ flow_id }}')" type="button" class="btn btn-outline-primary mx-2 mt-2">Pwn</button>
-<br /><br />
-<h4>{{ flow["srcIP"] }} : <reddump>{{ flow["srcPort"] }}</reddump> => {{ flow["dstIP"] }} : <cyandump>{{ flow["dstPort"] }}</cyandump></h4>
-<h5>{% if flow['seenSYN'] %}Seen{% else %}Didn't see{% endif %} flow's SYN packet<br />
-  {% if flow['seenFIN'] %}Seen{% else %}Didn't see{% endif %} flow's FIN packet</h5>
-
+<table class="w-100">
+  <tr colspan="5">
+    <td class="d-inline-block">
+      <h4 class="my-auto" style="vertical-align: baseline;">{{ flow["srcIP"] }} : <reddump>{{ flow["srcPort"] }}
+        </reddump> => {{ flow["dstIP"] }} : <cyandump>{{ flow["dstPort"] }}</cyandump>
+      </h4>
+    </td>
+    <td > </td>
+    <td class="text-right" style="width:62px;"><button onclick="pwn('{{ flow_id }}')" type="button"
+        class="btn btn-outline-light py-1">PWN</button>
+    </td>
+  </tr>
+  <tr>
+    <td class="d-inline-block">
+      <h5 class="pr-2 {% if flow['seenSYN'] %}green-text{% else %}red-text{% endif %}">SYN</h5>
+    </td>
+    <td class="d-inline-block">
+      <h5 class="pr-2 {% if flow['seenFIN'] %}green-text{% else %}red-text{% endif %}">FIN</h5>
+    </td>
+    <td class="d-inline-block"><h5 class="pr-2">{{ flow['nodes'] | length }} NODES</h5></td>
+    <td class="d-inline-block"><h5 class="pr-2"><span class="ns-data-feather" data-feather="activity"></span>{{ flow['trafficSize'] | thousand_comma }}B</h5></td>
+    <td class="d-inline-block"><h5 class="pr-2">{{ flow['time'] | unix_to_human_time | safe }}</h5></td>
+    <td> </td>
+    <td> </td>
+  </tr>
+</table>
+<hr size="2" class="mt-2 mb-3">
 {% for node in flow['nodes'] %}
 {{ flow_track(loop.index, node, hex) }}
 {% endfor %}
+<script src="{{ url_for('static', filename='vendor/feather/feather.min.js') }}"></script>
+<script>
+  feather.replace()
+</script>

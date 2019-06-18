@@ -43,7 +43,7 @@ def index():
     filters = request.args
     limit = int(filters.get('nflows', '20'))
     f = {}
-    flows = db.get_unsorted_flows(f)
+    flows = db.get_flows(f, limit, -1)
     # pprint(flows)
     return render_template( 'index.html',
                             flows=flows,
@@ -107,6 +107,17 @@ def slash_round(rt):
 @application.template_filter('int_to_round_time')
 def int_to_round_time(t):
     return datetime.datetime.fromtimestamp(t).strftime("%H:%M")
+
+@application.template_filter('unix_to_human_time')
+def unix_to_human_time(t):
+    unix = t // 1000000000
+    nano = t % 1000000000
+    ms = nano // 1000000
+    return datetime.datetime.fromtimestamp(unix).strftime("%H:%M:%S")+".<small>"+str(ms)+"</small>"
+
+@application.template_filter('thousand_comma')
+def thousand_comma(s):
+    return "{:,}".format(s)
 
 if __name__ == "__main__":
 	application.run(host='0.0.0.0', port=5001)
