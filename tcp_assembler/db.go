@@ -38,6 +38,32 @@ func connectDB(url string) {
 func getCollectionsFromDB(client *mongo.Client, dbName string, collName string) {
 	resCollection := client.Database(dbName).Collection(collName)
 	collFlows = resCollection
+	log.Infoln("Created collection of flows!")
+}
+
+func createIndexOnTime(collFlows *mongo.Collection) {
+	key := bson.M{"_id": 1}
+	index := mongo.IndexModel{}
+	index.Keys = key
+
+	_, err := collFlows.Indexes().CreateOne(context.TODO(), index)
+
+	if err != nil{
+		log.Debugln(err)
+	}
+	log.Infoln("Created index on time field!")
+	
+	// to print indexes present on collFLows
+	// var cur *mongo.Cursor
+	// cur, err = collFlows.Indexes().List(context.TODO())
+
+	// for cur.Next(context.TODO()) {
+	// 	elem := &bson.D{}
+	// 	if err := cur.Decode(elem); err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// 	log.Infoln(elem)
+	// }
 }
 
 func addNewFlowToDB(flowt *flowt) {

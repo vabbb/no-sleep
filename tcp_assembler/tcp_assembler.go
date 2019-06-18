@@ -64,6 +64,7 @@ func init() {
 	// Connection to mongoDB server
 	connectDB(url)
 	getCollectionsFromDB(client, dbName, flows)
+	createIndexOnTime(collFlows)
 }
 
 func main() {
