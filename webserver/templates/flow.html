@@ -39,7 +39,7 @@
       <h5 class="pr-2 {% if flow['seenFIN'] %}green-text{% else %}red-text strikethrough{% endif %}">FIN</h5>
     </td>
     <td class="d-inline-block"><h5 class="pr-2">{{ flow['nodes'] | length }} NODES</h5></td>
-    <td class="d-inline-block"><h5 class="pr-2"><span class="ns-data-feather" data-feather="activity"></span>{{ flow['trafficSize'] | thousand_comma }}B</h5></td>
+    <td class="d-inline-block"><h5 class="pr-2"><span class="ns-data-feather" data-feather="activity"></span>{{ flow['trafficSize'] | format_bytes }}</h5></td>
     <td class="d-inline-block"><h5 class="pr-2">{{ flow['time'] | unix_to_human_time | safe }}</h5></td>
     <td> </td>
     <td> </td>

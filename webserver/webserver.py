@@ -119,5 +119,14 @@ def unix_to_human_time(t):
 def thousand_comma(s):
     return "{:,}".format(s)
 
+@application.template_filter('format_bytes')
+def format_bytes(num):
+    suffix='B'
+    for unit in ['','K','M','G','T','P','E','Z']:
+        if abs(num) < 1000.0:
+            return "%3.1f%s%s" % (num, unit, suffix)
+        num /= 1000.0
+    return "%.1f%s%s" % (num, 'Y', suffix)
+
 if __name__ == "__main__":
 	application.run(host='0.0.0.0', port=5001)

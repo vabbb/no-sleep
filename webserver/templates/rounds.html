@@ -3,6 +3,6 @@
 </li>
 {% for round, traffic in rounds.items() %}
 <li onclick="activate_round(this, '{{ round }}')" class="nav-item round">
-  <a class="nav-link text-center" href="javascript:void(0);">{{ round | int_to_round_time }} | {{ (traffic // 1000) | thousand_comma }}KB</a>
+  <a class="nav-link text-center" href="javascript:void(0);">{{ round | int_to_round_time }} | {{ traffic | format_bytes }}</a>
 </li>
 {% endfor %}
