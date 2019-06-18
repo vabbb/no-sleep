@@ -99,11 +99,13 @@ function activate_round(o, time) {
 }
 
 function showFlagsOnly() {
+	serviceActived = selectService.value
 	if (serviceActived == "all") $('li.flow').not('li.flow.hasflag').addClass('d-none')
 	else $('li.flow.' + serviceActived).not('li.flow.hasflag.' + serviceActived).addClass('d-none')
 }
 
 function undoShowFlagsOnly() {
+	serviceActived = selectService.value
 	if (serviceActived == "all") $('li.flow').removeClass('d-none')
 	else $('li.flow.' + serviceActived).removeClass('d-none')
 }
@@ -125,18 +127,25 @@ const checkboxHex = document.getElementById('hexdump')
 const checkboxFlags = document.getElementById('flagsOnly')
 const selectService = document.getElementById('selectService')
 
+function onlyShowPrintable() {
+	$('.blob').addClass('d-none')
+	$('.printableData').removeClass('d-none')
+}
+
+function onlyShowHexDump() {
+	$('.blob').removeClass('d-none')
+	$('.printableData').addClass('d-none')
+}
+
 checkboxHex.addEventListener('change', (event) => {
 	if (event.target.checked) {
-		$('.blob').removeClass('d-none')
-		$('.printableData').addClass('d-none')
+		onlyShowHexDump();
 	} else {
-		$('.blob').addClass('d-none')
-		$('.printableData').removeClass('d-none')
+		onlyShowPrintable();
 	}
 })
 
 checkboxFlags.addEventListener('change', (event) => {
-	serviceActived = selectService.value
 	if (event.target.checked) {
 		showFlagsOnly();
 	} else {
@@ -162,3 +171,32 @@ selectService.addEventListener('change', (event) => {
 		}
 	}
 })
+
+document.onkeydown = function (e) {
+	switch (e.keyCode) {
+		case 70: // f
+			if (checkboxFlags.checked) {
+				$('#flagsOnly').prop('checked', false);
+				undoShowFlagsOnly();
+				break
+			}
+			$('#flagsOnly').prop('checked', true);
+			showFlagsOnly();
+			break;
+		case 88: // x
+			if (checkboxHex.checked) {
+				$('#hexdump').prop('checked', false);
+				onlyShowPrintable();
+				break;
+			}
+			$('#hexdump').prop('checked', true);
+			onlyShowHexDump();
+			break;
+		case 38: // arrow up
+			// alert('up');
+			break;
+		case 40: // arrow down
+			// alert('down');
+			break;
+	}
+}

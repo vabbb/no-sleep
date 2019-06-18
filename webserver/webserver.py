@@ -38,14 +38,12 @@ def update_cached_rounds(flows):
         cached_rounds[curr_round][0] += flow['trafficSize']
         cached_rounds[curr_round][1] = max(cached_rounds[curr_round][1], flow['time'])
 
-def get_rounds(flows=None):
+def get_rounds():
     global cached_rounds
-    f = {}
 
     if cached_rounds == {}:
         pprint("CACHE MISS!")
-        if flows == None:
-            flows = db.get_unsorted_flows(f)
+        flows = db.get_unsorted_flows({})
 
         update_cached_rounds(flows)
     else:
