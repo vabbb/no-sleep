@@ -155,36 +155,36 @@ cyandump {
   top: 0;
   bottom: 0;
   left: 0;
-  width: 9rem;
+  width: 12rem;
 }
 
 .fixee1 {
   position: fixed;
   top: 0;
   bottom: 0;
-  left: 9rem;
+  left: 12rem;
   width: 18rem;
 }
 
 .fixee2 {
   top: 0;
   bottom: 0;
-  margin-left: 27rem;
+  margin-left: 30rem;
   /* Firefox */
-  width: -moz-calc(100% - 27rem);
+  width: -moz-calc(100% - 30rem);
   /* WebKit */
-  width: -webkit-calc(100% - 27rem);
+  width: -webkit-calc(100% - 30rem);
   /* Opera */
-  width: -o-calc(100% - 27rem);
+  width: -o-calc(100% - 30rem);
   /* Standard */
-  width: calc(100% - 27rem);
+  width: calc(100% - 30rem);
 }
 
 .fixeeSearchBar {
   position: inherit;
   top: 0;
   bottom: 0;
-  left: 9rem;
+  left: 12rem;
   width: 18rem;
 }
 
@@ -192,13 +192,13 @@ cyandump {
   top: 0;
   bottom: 0;
   /* Firefox */
-  width: -moz-calc(100% - 27rem);
+  width: -moz-calc(100% - 30rem);
   /* WebKit */
-  width: -webkit-calc(100% - 27rem);
+  width: -webkit-calc(100% - 30rem);
   /* Opera */
-  width: -o-calc(100% - 27rem);
+  width: -o-calc(100% - 30rem);
   /* Standard */
-  width: calc(100% - 27rem);
+  width: calc(100% - 30rem);
 
 }
 
