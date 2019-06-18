@@ -20,7 +20,8 @@ var (
 	err error
 
 	readFrom = flag.String("r", "", "Directory to look into for pcap files")
-	iface    = flag.String("i", "any", "Interface to monitor")
+	iface    = flag.String("i", "", "Interface to monitor")
+	filter   = flag.String("filter", "", "BPF filter")
 	//"((?:flag|cci?t?1?9?){[ a-zA-Z0-9-_]*})"
 	flagRegex = flag.String("regex", "([A-Z0-9]{31}=)", "Regex to grep flags")
 
@@ -80,21 +81,34 @@ func main() {
 
 	decoded := make([]gopacket.LayerType, 0, 4)
 
-	if *readFrom != "" {
+	if *iface != "" {
+		// Open file
+		log.Infof("Opening interface %q", *iface)
+		handle, err = pcap.OpenLive(*iface, int32(262144), false, pcap.BlockForever)
+		if err != nil {
+			log.Fatal("Error opening pcap handle: ", err)
+		}
+		if err := handle.SetBPFFilter(*filter); err != nil {
+			log.Fatal("error setting BPF filter: ", err)
+		}
+
+	} else if *readFrom != "" {
 		if *readFrom == "-" {
 			file = os.Stdin
 		} else {
 			file, err = os.Open(*readFrom)
 		}
-	}
 
-	// Open file
-	log.Infof("Analyzing file %v", file.Name())
-	handle, err = pcap.OpenOfflineFile(file)
-	if err != nil {
-		log.Fatal("Error opening pcap handle: ", err)
+		// Open file
+		log.Infof("Analyzing file %v", file.Name())
+		handle, err = pcap.OpenOfflineFile(file)
+		if err != nil {
+			log.Fatal("Error opening pcap handle: ", err)
+		}
+	} else {
+		flag.PrintDefaults()
+		log.Fatal("Specify where you want to capture from!")
 	}
-
 	// READ PACKETS
 	for {
 		/* Check to see if we should flush the streams we have that
