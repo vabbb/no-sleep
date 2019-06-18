@@ -10,7 +10,7 @@ collFlows = db.flows
 
 # return all docs flow in a descending order by end time
 def get_flows(filter, limit=0, sorteh=-1):
-    cursor = collFlows.find(filter)
+    cursor = collFlows.find(filter, {'nodes': False})
     if limit > 0:
         cursor.limit(limit)
     return cursor.sort('time', sorteh)#, cursor.count()
