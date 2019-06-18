@@ -5,6 +5,7 @@ import configuration as c
 # from flow2pwn import flow2pwn
 import time, datetime
 from collections import OrderedDict
+from bson.json_util import dumps
 
 application = Flask(__name__)
 
@@ -74,8 +75,7 @@ def slash_rounds():
     # pprint (rounds)
     return render_template('rounds.html', rounds=rounds)
 
-@application.route("/round/<rt>", methods=['POST'])
-@application.route("/round/<rt>", methods=['GET'])
+@application.route("/round/<rt>", methods=['GET', 'POST'])
 def slash_round(rt):
     if rt == 'ongoing':
         return render_template('round.html', flows={})
@@ -87,6 +87,11 @@ def slash_round(rt):
                             services_map=c.services,
                             services=get_services())
 
+@application.route("/flows/<start_time>", methods=['GET'])
+def get_flows_from_starttime(start_time):
+    f = {}
+    flow = db.get_flows(f)
+    return dumps(flow)
 
 # @application.route("/star/<flow_id>/<sel>", methods=['POST'])
 # def star(flow_id, sel):
