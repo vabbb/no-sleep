@@ -219,6 +219,11 @@ document.onkeydown = function (e) {
 			break;
 		case 'k':
 			var curr = $("#flow-list > li.active")
+			if (curr.length == 0) { // select first in list
+				var first = $("#flow-list > li")[0]
+				first.className += " active"
+				break;
+			}
 			var next = findNext(curr)
 			if (next.hasClass("nav-item")) {
 				curr.removeClass("active")
@@ -238,6 +243,12 @@ document.onkeydown = function (e) {
 			break;
 		case 's':
 			var curr = $("#round-list > li.active")
+			if (curr.length == 0) { // select first in list
+				var first = $("#round-list > li")[0]
+				first.className += " active"
+				first.click()
+				break;
+			}
 			if (curr.next().hasClass("nav-item")) {
 				curr.removeClass("active")
 				curr.next().addClass("active")
