@@ -198,5 +198,17 @@ document.onkeydown = function (e) {
 		case 'Enter':
 			$("#flow-list > li.active").click()
 			break;
+		case 'w':
+			var curr = $("#round-list > li.active")
+			curr.removeClass("active")
+			curr.prev().addClass("active")
+			curr.prev().click()
+			break;
+		case 's':
+			var curr = $("#round-list > li.active")
+			curr.removeClass("active")
+			curr.next().addClass("active")
+			curr.next().click()
+			break;
 	}
 }
