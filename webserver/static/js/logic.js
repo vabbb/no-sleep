@@ -165,6 +165,30 @@ selectService.addEventListener('change', (event) => {
 	}
 })
 
+function findPrev(e) {
+	if (checkboxFlags.checked) {
+		while (e.prev()) {
+			if (!e.prev().hasClass("d-none"))
+				return e.prev()
+			e = e.prev()
+		}
+		return null
+	}
+	return e.prev()
+}
+
+function findNext(e) {
+	if (checkboxFlags.checked) {
+		while (e.next()) {
+			if (!e.next().hasClass("d-none"))
+				return e.next()
+			e = e.next()
+		}
+		return null
+	}
+	return e.next()
+}
+
 document.onkeydown = function (e) {
 	switch (e.key) {
 		case 'f':
@@ -187,29 +211,18 @@ document.onkeydown = function (e) {
 			break;
 		case 'j':
 			var curr = $("#flow-list > li.active")
-			if (curr.prev().hasClass("nav-item")) {
+			var prev = findPrev(curr)
+			if (prev.hasClass("nav-item")) {
 				curr.removeClass("active")
-				curr.prev().addClass("active")
-
-				var $container = $('#flow-list'),
-					$scrollTo = $('#flow-list > li.active');
-
-				$container.scrollTop(
-					$scrollTo.offset().top - $container.offset().top + $container.scrollTop()
-				);
+				prev.addClass("active")
 			}
 			break;
 		case 'k':
 			var curr = $("#flow-list > li.active")
-			if (curr.next().hasClass("nav-item")) {
+			var next = findNext(curr)
+			if (next.hasClass("nav-item")) {
 				curr.removeClass("active")
-				curr.next().addClass("active")
-				var $container = $('#flow-list'),
-					$scrollTo = $('#flow-list > li.active');
-
-				$container.scrollTop(
-					$scrollTo.offset().top - $container.offset().top + $container.scrollTop()
-				);
+				next.addClass("active")
 			}
 			break;
 		case 'Enter':
