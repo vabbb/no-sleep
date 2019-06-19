@@ -192,6 +192,7 @@ document.onkeydown = function (e) {
 				curr.removeClass("active")
 				prev.addClass("active")
 			}
+			document.activeElement.blur()
 			break;
 		case 'k':
 			var curr = $("#flow-list > li.active")
@@ -205,6 +206,7 @@ document.onkeydown = function (e) {
 				curr.removeClass("active")
 				next.addClass("active")
 			}
+			document.activeElement.blur()
 			break;
 		case 'Enter':
 			$("#flow-list > li.active").click()
@@ -216,6 +218,7 @@ document.onkeydown = function (e) {
 				curr.prev().addClass("active")
 				curr.prev().click()
 			}
+			document.activeElement.blur()
 			break;
 		case 's':
 			var curr = $("#round-list > li.active")
@@ -230,6 +233,7 @@ document.onkeydown = function (e) {
 				curr.next().addClass("active")
 				curr.next().click()
 			}
+			document.activeElement.blur()
 			break;
 	}
 }
