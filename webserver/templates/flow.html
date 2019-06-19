@@ -1,21 +1,21 @@
 {% macro flow_track(index, node, hex) %}
 {% if node['fromSrc'] == True %}
 
-{% if hex == 'true' %}
-<pre class=" text-monospace d-none ns-light-text printableData"><reddump>{{ node['printableData'] }}</reddump></pre>
-<pre class=" text-monospace blob"><reddump>{{ node['blob'] }}</reddump></pre>
+  {% if hex == 'true' %}
+    <pre class=" text-monospace d-none ns-light-text printableData"><reddump>{{ node['printableData'] }}</reddump></pre>
+    <pre class=" text-monospace blob"><reddump>{{ node['blob'] }}</reddump></pre>
+  {% else %}
+    <pre class=" text-monospace ns-light-text printableData"><reddump>{{ node['printableData'] }}</reddump></pre>
+    <pre class=" text-monospace d-none blob"><reddump>{{ node['blob'] }}</reddump></pre>
+  {% endif %}
 {% else %}
-<pre class=" text-monospace ns-light-text printableData"><reddump>{{ node['printableData'] }}</reddump></pre>
-<pre class=" text-monospace d-none blob"><reddump>{{ node['blob'] }}</reddump></pre>
-{% endif %}
-{% else %}
-{% if hex == 'true' %}
-<pre class=" text-monospace d-none ns-light-text printableData"><cyandump>{{ node['printableData'] }}</cyandump></pre>
-<pre class=" text-monospace blob"><cyandump>{{ node['blob'] }}</cyandump></pre>
-{% else %}
-<pre class=" text-monospace ns-light-text printableData"><cyandump>{{ node['printableData'] }}</cyandump></pre>
-<pre class=" text-monospace d-none blob"><cyandump>{{ node['blob'] }}</cyandump></pre>
-{% endif %}
+  {% if hex == 'true' %}
+    <pre class=" text-monospace d-none ns-light-text printableData"><cyandump>{{ node['printableData'] }}</cyandump></pre>
+    <pre class=" text-monospace blob"><cyandump>{{ node['blob'] }}</cyandump></pre>
+  {% else %}
+    <pre class=" text-monospace ns-light-text printableData"><cyandump>{{ node['printableData'] }}</cyandump></pre>
+    <pre class=" text-monospace d-none blob"><cyandump>{{ node['blob'] }}</cyandump></pre>
+  {% endif %}
 {% endif %}
 {% endmacro %}
 

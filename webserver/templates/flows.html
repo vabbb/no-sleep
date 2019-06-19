@@ -1,0 +1,56 @@
+{% macro add_flow(flow, services) %}
+<li class="
+  nav-item flow
+  {{ services[flow['dstPort']] }}
+  {{ services[flow['srcPort']] }}
+  {% if services[flow['hasflag']] %} hasflag {% endif %}
+   "
+    id=  "{{ flow['_id'] }}"
+    onclick="setActiveFlow('{{ flow['_id'] }}')">
+    <a href="javscript:void(0)" class='nav-link'>
+    <table class="text-center ns-table">
+      <tr>
+        <td>
+          <i class="far fa-heart"></i>
+
+        {% if services[flow['hasflag']] %} 
+          <i class="far fa-flag"></i>
+        {% endif %}
+          
+        </td><td colspan="2" class="ns-bold">
+        {% if services[flow['srcPort']] %}
+          {{ services[flow['srcPort']] }}
+        {% elif services[flow['dstPort']] %}
+          {{ services[flow['dstPort']] }}
+        {% else %}
+          unknown
+        {% endif %}
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <red>SRC</red>
+        </td><td>
+          {{ flow['srcIP'] }} : <red>{{ flow['srcPort'] }}</red>
+        </td><td>
+          +{{ flow['time'] // 10000000 % 30000 / 100 }}s{# TIME PASSED SINCE START OF THE ROUND #}</td>
+      </tr>
+
+      <tr>
+        <td>
+          <cyan>DST</cyan>
+        </td><td>
+          {{ flow['dstIP'] }} : <cyan>{{ flow['dstPort'] }}</cyan>
+        </td><td>
+          {{ flow['trafficSize'] | format_bytes }}</td>
+      </tr>
+    </table>
+  </a>  
+</li>
+
+{% endmacro %}
+
+{% for flow in flows %}
+  {{ add_flow(flow, services_map) }}
+{% endfor %}

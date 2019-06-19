@@ -7,13 +7,21 @@
   <meta name="description" content="">
   <meta name="author" content="ROPperoni">
   <title>n05133p</title>
-  <!-- Custom fonts for this template-->
-  <link href="{{ url_for('static', filename='vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet"
-    type="text/css">
-  <!-- Page level plugin CSS-->
+
+  <!-- Bootstrap CSS-->
   <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-  <!-- Custom styles for this template-->
+  <!-- Bootstrap Theme CSS-->
   <link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">
+
+  <!-- Font awesome Icons  JS-->
+  <script src="{{ url_for('static', filename='vendor/fontawesome/all.min.js') }}"></script>
+
+  <!-- Bootstrap core JS-->
+  <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+  <!-- jquery Core JS -->
+  <script src="{{ url_for('static', filename='vendor/jquery-easing/jquery.easing.min.js') }}"></script>
+
 </head>
 
 <body>
@@ -26,7 +34,7 @@
           <div class="dropdown">
             <select id="selectService" class="nav-link ns-nohover">
               <option value="all" selected>all services</option>
-              {% for s in services %}
+              {% for s in services.values() %}
               <option value="{{ s }}">{{ s }}</option>
               {% endfor %}
             </select>
@@ -70,7 +78,7 @@
       <nav class="d-none d-md-block sidebar fixee1 ns-bg-dark">
         <div class="sidebar-sticky h-100 ns-thin-scroll">
           <ul id="flow-list" class="nav flex-column">
-            {% include 'round.html' %}
+            {% include 'flows.html' %}
           </ul>
         </div>
       </nav>
@@ -79,18 +87,11 @@
       </main>
     </div>
   </div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-  <script>
-    window.jQuery || document.write('<script src="/docs/4.3/assets/js/vendor/jquery-slim.min.js"><\/script>')
-  </script>
 
-  <!-- Bootstrap core JavaScript-->
-  <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-
-  <!-- Core plugin JavaScript-->
-  <script src="{{ url_for('static', filename='vendor/jquery-easing/jquery.easing.min.js') }}"></script>
+  <!-- Cusom Logic JS-->
   <script src="{{ url_for('static', filename='js/logic.js') }}"></script>
+  
+  
 
 </body>
 
