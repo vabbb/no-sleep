@@ -120,7 +120,7 @@ function pwn(flow_id) {
 		type: 'GET',
 		success: function (response) {
 			$(".modal-body").html("<pre><code>"+
-				response.replace(/\n/g, "<br>")+
+				response+
 				"</code></pre>")
 			$("#exploit").modal()
 		},
