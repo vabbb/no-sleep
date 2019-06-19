@@ -21,17 +21,12 @@ def get_service_port(service):
             return p
 
 def flow_time_to_round(flow_time):
-    return datetime.fromtimestamp(flow_time // 1000000000 - flow_time // 1000000000 % 300)
-
-# def remove_duplicates_and_keep_order(my_list):
-#     seen = set()
-#     seen_add = seen.add
-#     return [x for x in my_list if not (x in seen or seen_add(x))]
+    return datetime.fromtimestamp(flow_time // 1_000_000_000 - flow_time // 1_000_000_000 % 300)
 
 def update_cached_rounds(flows):
     global cached_rounds
     for flow in flows:
-        curr_round = flow['time'] // 1000000000 - flow['time'] // 1000000000 % 300
+        curr_round = flow['time'] // 1_000_000_000 - flow['time'] // 1_000_000_000 % 300
         if curr_round not in cached_rounds.keys():
             cached_rounds[curr_round] = [0, flow['time']]
         cached_rounds[curr_round][0] += flow['trafficSize']
@@ -106,8 +101,7 @@ def slash_rounds():
     # pprint (rounds)
     return render_template('rounds.html', rounds=rounds)
 
-@application.route("/round/<rt>", methods=['POST'])
-@application.route("/round/<rt>", methods=['GET'])
+@application.route("/round/<rt>", methods=['GET', 'POST'])
 def slash_round(rt):
     if rt == 'ongoing':
         return render_template('round.html', flows={})
@@ -130,9 +124,9 @@ def int_to_round_time(t):
 
 @application.template_filter('unix_to_human_time')
 def unix_to_human_time(t):
-    unix = t // 1000000000
-    nano = t % 1000000000
-    ms = nano // 1000000
+    unix = t // 1_000_000_000
+    nano = t % 1_000_000_000
+    ms = nano // 1_000_000
     return datetime.fromtimestamp(unix).strftime("%H:%M:%S")+".<small>"+str(ms)+"</small>"
 
 @application.template_filter('thousand_comma')
