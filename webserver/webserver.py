@@ -5,10 +5,9 @@ import configuration as c
 # from flow2pwn import flow2pwn
 from datetime import datetime
 from collections import OrderedDict
-
+from xxd import xxd
 
 application = Flask(__name__)
-
 
 #"round_time": ["trafficSize", "time_of_latest_flow_analyzed"]
 cached_rounds = OrderedDict({})
@@ -86,8 +85,8 @@ def index():
 
 def modify_blobs(flow):
     nodes = flow['nodes']
-    for i in range(len(nodes)):
-        nodes[i]['blob'] = binascii.hexlify(nodes[i]['blob'])
+    for node in nodes:
+        node['blob'] = xxd("".join(map(chr, node['blob'])), n=32)
     return flow
 
 @application.route("/flow/<flow_id>", methods=['GET'])
