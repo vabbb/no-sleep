@@ -185,7 +185,7 @@ document.onkeydown = function (e) {
 			$('#hexdump').prop('checked', true);
 			onlyShowHexDump();
 			break;
-		case 'j':
+		case 'k':
 			var curr = $("#flow-list > li.active")
 			var prev = $("#flow-list > li.active").prevAll().not(".d-none").filter(":first")
 			if (prev.hasClass("nav-item")) {
@@ -194,7 +194,7 @@ document.onkeydown = function (e) {
 			}
 			document.activeElement.blur()
 			break;
-		case 'k':
+		case 'j':
 			var curr = $("#flow-list > li.active")
 			if (curr.length == 0) { // select first in list
 				var first = $("#flow-list > li:not(.d-none)").filter(":first")
