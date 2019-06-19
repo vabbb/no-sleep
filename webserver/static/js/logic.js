@@ -189,13 +189,14 @@ document.onkeydown = function (e) {
 			var curr = $("#flow-list > li.active")
 			curr.removeClass("active")
 			curr.prev().addClass("active")
-			curr.prev().click()
 			break;
 		case 'k':
 			var curr = $("#flow-list > li.active")
 			curr.removeClass("active")
 			curr.next().addClass("active")
-			curr.next().click()
+			break;
+		case 'Enter':
+			$("#flow-list > li.active").click()
 			break;
 	}
 }
