@@ -187,28 +187,49 @@ document.onkeydown = function (e) {
 			break;
 		case 'j':
 			var curr = $("#flow-list > li.active")
-			curr.removeClass("active")
-			curr.prev().addClass("active")
+			if (curr.prev().hasClass("nav-item")) {
+				curr.removeClass("active")
+				curr.prev().addClass("active")
+
+				var $container = $('#flow-list'),
+					$scrollTo = $('#flow-list > li.active');
+
+				$container.scrollTop(
+					$scrollTo.offset().top - $container.offset().top + $container.scrollTop()
+				);
+			}
 			break;
 		case 'k':
 			var curr = $("#flow-list > li.active")
-			curr.removeClass("active")
-			curr.next().addClass("active")
+			if (curr.next().hasClass("nav-item")) {
+				curr.removeClass("active")
+				curr.next().addClass("active")
+				var $container = $('#flow-list'),
+					$scrollTo = $('#flow-list > li.active');
+
+				$container.scrollTop(
+					$scrollTo.offset().top - $container.offset().top + $container.scrollTop()
+				);
+			}
 			break;
 		case 'Enter':
 			$("#flow-list > li.active").click()
 			break;
 		case 'w':
 			var curr = $("#round-list > li.active")
-			curr.removeClass("active")
-			curr.prev().addClass("active")
-			curr.prev().click()
+			if (curr.prev().hasClass("nav-item")) {
+				curr.removeClass("active")
+				curr.prev().addClass("active")
+				curr.prev().click()
+			}
 			break;
 		case 's':
 			var curr = $("#round-list > li.active")
-			curr.removeClass("active")
-			curr.next().addClass("active")
-			curr.next().click()
+			if (curr.next().hasClass("nav-item")) {
+				curr.removeClass("active")
+				curr.next().addClass("active")
+				curr.next().click()
+			}
 			break;
 	}
 }
