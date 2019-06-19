@@ -100,14 +100,18 @@ function activate_round(o, time) {
 
 function showFlagsOnly() {
 	serviceActived = selectService.value
+	$('li.flow').removeClass("d-none")
 	if (serviceActived == "all") $('li.flow').not('li.flow.hasflag').addClass('d-none')
-	else $('li.flow.' + serviceActived).not('li.flow.hasflag.' + serviceActived).addClass('d-none')
+	else $('li.flow').not('li.flow.hasflag.' + serviceActived).addClass('d-none')
 }
 
 function undoShowFlagsOnly() {
 	serviceActived = selectService.value
 	if (serviceActived == "all") $('li.flow').removeClass('d-none')
-	else $('li.flow.' + serviceActived).removeClass('d-none')
+	else {
+		$('li.flow').removeClass('d-none')
+		$('li.flow').not('li.flow.' + serviceActived).addClass('d-none')
+	}
 }
 /*
 function pwn(flow_id) {
@@ -154,21 +158,10 @@ checkboxFlags.addEventListener('change', (event) => {
 })
 
 selectService.addEventListener('change', (event) => {
-	service = event.target.value
-	if (service == "all") {
-		if (!checkboxFlags.checked) $('li.flow').removeClass('d-none')
-		else {
-			$('li.flow').removeClass("d-none")
-			$('li.flow').not('li.flow.hasflag').addClass('d-none')
-		}
+	if(checkboxFlags.checked){
+		showFlagsOnly()
 	} else {
-		if (!checkboxFlags.checked) {
-			$('li.flow').removeClass("d-none")
-			$('li.flow').not('li.flow.' + service).addClass("d-none")
-		} else {
-			$('li.flow').removeClass("d-none")
-			$('li.flow').not('li.flow.hasflag.' + service).addClass('d-none')
-		}
+		undoShowFlagsOnly()
 	}
 })
 
