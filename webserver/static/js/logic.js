@@ -119,7 +119,7 @@ function pwn(flow_id) {
 		url: '/pwn/' + flow_id,
 		type: 'GET',
 		success: function (response) {
-			$(".modal-body").html(response.replace(/\np/g, "<br>p"))
+			$(".modal-body").html(response.replace(/\n/g, "<br>"))
 			$("#exploit").modal()
 		},
 		error: function (error) {
