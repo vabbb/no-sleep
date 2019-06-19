@@ -220,7 +220,7 @@ document.onkeydown = function (e) {
 		case 'k':
 			var curr = $("#flow-list > li.active")
 			if (curr.length == 0) { // select first in list
-				var first = $("#flow-list > li")[0]
+				var first = $("#flow-list > li:not(.d-none)")[0]
 				first.className += " active"
 				break;
 			}
