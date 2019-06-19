@@ -4,6 +4,7 @@ def flow2pwn(flow):
 
     script = 'from pwn import *\n'
     script += "proc = remote('{}', {})\n\n".format(ip, port)
+    script += "context.log_level = 'DEBUG'\n"
 
     for message in flow['nodes']:
         if message['fromSrc']:
