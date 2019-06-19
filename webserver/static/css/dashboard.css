@@ -10,11 +10,23 @@ pre {
   word-wrap: break-word;
   font-size: .9rem;
   font-family: monospace;
+  color: inherit;
+}
+
+pre code {
+  font-size: .85rem;
+  color: inherit;
 }
 
 select {
   background-color: rgb(49, 54, 59);
 }
+
+.modal-dialog {
+  max-width: 800px;
+  /* height: 80%; */
+}
+
 hr {
   border: none;
   background-color: rgb(51, 51, 51);
@@ -40,12 +52,16 @@ hr {
 
 body,
 [role="main"],
-.ns-bg-dark {
+.ns-bg-dark,
+.modal-content {
   background-color: rgb(30, 32, 34);
-
+  border-color: rgb(30, 32, 34);
   color: rgb(214, 211, 205);
 }
 
+.modal-footer {
+  border-color: rgb(51, 51, 51);
+}
 
 .container-fluid a:hover {
   color: rgb(214, 211, 205) !important;
