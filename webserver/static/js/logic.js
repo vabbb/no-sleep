@@ -158,7 +158,7 @@ checkboxFlags.addEventListener('change', (event) => {
 })
 
 selectService.addEventListener('change', (event) => {
-	if(checkboxFlags.checked){
+	if (checkboxFlags.checked) {
 		showFlagsOnly()
 	} else {
 		undoShowFlagsOnly()
@@ -166,8 +166,8 @@ selectService.addEventListener('change', (event) => {
 })
 
 document.onkeydown = function (e) {
-	switch (e.keyCode) {
-		case 70: // f
+	switch (e.key) {
+		case 'f':
 			if (checkboxFlags.checked) {
 				$('#flagsOnly').prop('checked', false);
 				undoShowFlagsOnly();
@@ -176,7 +176,7 @@ document.onkeydown = function (e) {
 			$('#flagsOnly').prop('checked', true);
 			showFlagsOnly();
 			break;
-		case 88: // x
+		case 'x':
 			if (checkboxHex.checked) {
 				$('#hexdump').prop('checked', false);
 				onlyShowPrintable();
@@ -185,11 +185,17 @@ document.onkeydown = function (e) {
 			$('#hexdump').prop('checked', true);
 			onlyShowHexDump();
 			break;
-		case 38: // arrow up
-			// alert('up');
+		case 'j':
+			var curr = $("#flow-list > li.active")
+			curr.removeClass("active")
+			curr.prev().addClass("active")
+			curr.prev().click()
 			break;
-		case 40: // arrow down
-			// alert('down');
+		case 'k':
+			var curr = $("#flow-list > li.active")
+			curr.removeClass("active")
+			curr.next().addClass("active")
+			curr.next().click()
 			break;
 	}
 }
