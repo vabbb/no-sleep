@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 import db, math, binascii, time
 from pprint import pprint
 import configuration as c
-# from flow2pwn import flow2pwn
+from flow2pwn import flow2pwn
 from datetime import datetime
 from collections import OrderedDict
 from xxd import xxd
@@ -119,10 +119,10 @@ def slash_round(rt):
                             services_map=c.services,
                             services=get_services())
 
-# @application.route("/pwn/<flow_id>", methods=['GET'])
-# def get_flow2pwn(flow_id):
-#     c, _ = db.get_flows_of_a_conn(db.collConnections, db.collFlows, flow_id)
-#     return flow2pwn(c)
+@application.route("/pwn/<flow_id>", methods=['GET'])
+def get_flow2pwn(flow_id):
+    flow = db.get_flow(flow_id)
+    return flow2pwn(flow)
 
 @application.template_filter('int_to_round_time')
 def int_to_round_time(t):

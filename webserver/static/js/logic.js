@@ -113,20 +113,20 @@ function undoShowFlagsOnly() {
 		$('li.flow').not('li.flow.' + serviceActived).addClass('d-none')
 	}
 }
-/*
+
 function pwn(flow_id) {
-    $.ajax({
-        url: '/pwn/' + flow_id,
-        type: 'GET',
-        success: function (response) {
-            alert(response);
-        },
-        error: function (error) {
-            console.log(error);
-        }
-    });
+	$.ajax({
+		url: '/pwn/' + flow_id,
+		type: 'GET',
+		success: function (response) {
+			alert(response);
+		},
+		error: function (error) {
+			console.log(error);
+		}
+	});
 }
-*/
+
 const checkboxHex = document.getElementById('hexdump')
 const checkboxFlags = document.getElementById('flagsOnly')
 const selectService = document.getElementById('selectService')
