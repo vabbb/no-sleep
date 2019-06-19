@@ -1,5 +1,3 @@
-from configuration import vm_ip
-
 def flow2pwn(flow):
     ip = flow["dstIP"]
     port = flow["dstPort"]
