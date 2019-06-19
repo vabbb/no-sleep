@@ -4,17 +4,22 @@ def flow2pwn(flow):
     ip = flow["dstIP"]
     port = flow["dstPort"]
 
-    script = """from pwn import *
-proc = remote('{}', {})
-""".format(ip, port)
+    script = 'from pwn import *\n'
+    script += "proc = remote('{}', {})\n\n".format(ip, port)
 
     for message in flow['nodes']:
         if message['fromSrc']:
-            script += """proc.writeline("{}")\n""".format(message['printableData'][:-1])
+                script += 'proc.send('
+                script += str(message['blob'])[1:]
+                script += ')\n'
 
         else:
-            for _ in range(len(message['printableData'])):
-                script += """proc.recvuntil("{}")\n""".format(message['printableData'][-20:].replace("\n","\\n"))
+            for _ in range(len(message['blob'])):
+                script += 'proc.recvuntil('
+                script += str(message['blob'][-20:]).replace('\n','\\n')[1:]
+                script += ')\n'
                 break
+
+    script += '\nproc.interactive()\n'
 
     return script
