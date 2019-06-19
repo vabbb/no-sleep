@@ -165,30 +165,6 @@ selectService.addEventListener('change', (event) => {
 	}
 })
 
-function findPrev(e) {
-	if (checkboxFlags.checked) {
-		while (e.prev()) {
-			if (!e.prev().hasClass("d-none"))
-				return e.prev()
-			e = e.prev()
-		}
-		return null
-	}
-	return e.prev()
-}
-
-function findNext(e) {
-	if (checkboxFlags.checked) {
-		while (e.next()) {
-			if (!e.next().hasClass("d-none"))
-				return e.next()
-			e = e.next()
-		}
-		return null
-	}
-	return e.next()
-}
-
 document.onkeydown = function (e) {
 	switch (e.key) {
 		case 'f':
@@ -211,7 +187,7 @@ document.onkeydown = function (e) {
 			break;
 		case 'j':
 			var curr = $("#flow-list > li.active")
-			var prev = findPrev(curr)
+			var prev = $("#flow-list > li.active").prevAll().not(".d-none").filter(":first")
 			if (prev.hasClass("nav-item")) {
 				curr.removeClass("active")
 				prev.addClass("active")
@@ -220,11 +196,11 @@ document.onkeydown = function (e) {
 		case 'k':
 			var curr = $("#flow-list > li.active")
 			if (curr.length == 0) { // select first in list
-				var first = $("#flow-list > li:not(.d-none)")[0]
-				first.className += " active"
+				var first = $("#flow-list > li:not(.d-none)").filter(":first")
+				first.addClass("active")
 				break;
 			}
-			var next = findNext(curr)
+			var next = $("#flow-list > li.active").nextAll().not(".d-none").filter(":first")
 			if (next.hasClass("nav-item")) {
 				curr.removeClass("active")
 				next.addClass("active")
@@ -244,8 +220,8 @@ document.onkeydown = function (e) {
 		case 's':
 			var curr = $("#round-list > li.active")
 			if (curr.length == 0) { // select first in list
-				var first = $("#round-list > li")[0]
-				first.className += " active"
+				var first = $("#round-list > li").filter(":first")
+				first.addClass("active")
 				first.click()
 				break;
 			}
