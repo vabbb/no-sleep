@@ -1,88 +1,54 @@
 {% macro add_flow(flow, services) %}
-{% if flow['hasFlag'] == True %}
-{% if services[flow['srcPort']] %}
-<li class="nav-item flow hasflag {{ services[flow['srcPort']] }}" onclick="activate(this, '{{ flow['_id'] }}')">
-  {% elif services[flow['dstPort']] %}
-<li class="nav-item flow hasflag {{ services[flow['dstPort']] }}" onclick="activate(this, '{{ flow['_id'] }}')">
-  {% else %}
-<li class="nav-item flow hasflag " onclick="activate(this, '{{ flow['_id'] }}')">
-  {% endif %}
-  <a class="nav-link" href="javascript:void(0);">
+<li class="nav-item flow
+          {{ services[flow['dstPort']] }}
+          {{ services[flow['srcPort']] }}
+          {% if services[flow['hasflag']] %} hasflag {% endif %}"
+    id=  "{{ flow['_id'] }}"
+    onclick="setActiveFlow('{{ flow['_id'] }}')">
+    <a href="javscript:void(0)" class='nav-link'>
     <table class="text-center ns-table">
       <tr>
-        <td colspan="2" class="ns-bold">{% if services[flow['srcPort']] %}{{ services[flow['srcPort']] }}{% elif services[flow['dstPort']] %}{{ services[flow['dstPort']] }}{% else %}unknown{% endif %}</td>
-        <td><span class="green" data-feather="flag"></span></td>
+        <td>
+          <i class="far fa-heart"></i>
+
+        {% if services[flow['hasflag']] %} 
+          <i class="far fa-flag"></i>
+        {% endif %}
+          
+        </td><td colspan="2" class="ns-bold">
+        {% if services[flow['srcPort']] %}
+          {{ services[flow['srcPort']] }}
+        {% elif services[flow['dstPort']] %}
+          {{ services[flow['dstPort']] }}
+        {% else %}
+          unknown
+        {% endif %}
+        </td>
       </tr>
+
       <tr>
         <td>
           <red>SRC</red>
-        </td>
-        <td>{{ flow['srcIP'] }} : <red>{{ flow['srcPort'] }}</red>
-        </td>
-        <td>+{{ flow['time'] // 10000000 % 30000 / 100 }}s{# TIME PASSED SINCE START OF THE ROUND #}</td>
+        </td><td>
+          {{ flow['srcIP'] }} : <red>{{ flow['srcPort'] }}</red>
+        </td><td>
+          +{{ flow['time'] // 10000000 % 30000 / 100 }}s{# TIME PASSED SINCE START OF THE ROUND #}</td>
       </tr>
+
       <tr>
         <td>
           <cyan>DST</cyan>
-        </td>
-        <td>{{ flow['dstIP'] }} : <cyan>{{ flow['dstPort'] }}</cyan>
-        </td>
-        <td>{{ flow['trafficSize'] | format_bytes }}</td>
+        </td><td>
+          {{ flow['dstIP'] }} : <cyan>{{ flow['dstPort'] }}</cyan>
+        </td><td>
+          {{ flow['trafficSize'] | format_bytes }}</td>
       </tr>
     </table>
-  </a>
+  </a>  
 </li>
-{% else %}
-{% if services[flow['srcPort']] %}
-<li class="nav-item flow {{ services[flow['srcPort']] }}" onclick="activate(this, '{{ flow['_id'] }}')">
-  {% elif services[flow['dstPort']] %}
-<li class="nav-item flow {{ services[flow['dstPort']] }}" onclick="activate(this, '{{ flow['_id'] }}')">
-  {% else %}
-<li class="nav-item flow" onclick="activate(this, '{{ flow['_id'] }}')">
-  {% endif %}
-  <a class="nav-link" href="javascript:void(0);">
-    <table class="text-center ns-table">
-      <tr>
-        <td colspan="2" class="ns-bold">{% if services[flow['srcPort']] %}{{ services[flow['srcPort']] }}{% elif services[flow['dstPort']] %}{{ services[flow['dstPort']] }}{% else %}unknown{% endif %}</td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>
-          <red>SRC</red>
-        </td>
-        <td>{{ flow['srcIP'] }} : <red>{{ flow['srcPort'] }}</red>
-        </td>
-        <td>+{{ flow['time'] // 10000000 % 30000 / 100 }}s{# TIME PASSED SINCE START OF THE ROUND #}</td>
-      </tr>
-      <tr>
-        <td>
-          <cyan>DST</cyan>
-        </td>
-        <td>{{ flow['dstIP'] }} : <cyan>{{ flow['dstPort'] }}</cyan>
-        </td>
-        <td>{{ flow['trafficSize'] | format_bytes }}</td>
-      </tr>
-    </table>
-  </a>
-</li>
-{% endif %}
+
 {% endmacro %}
+
 {% for flow in flows %}
-{{ add_flow(flow, services_map) }}
+  {{ add_flow(flow, services_map) }}
 {% endfor %}
-
-<script>
-/*check if function is declared before calling it*/
-if(typeof showFlagsOnly === 'function'){
-  if (document.getElementById("flagsOnly").checked == true) {
-    showFlagsOnly()
-  } else {
-    undoShowFlagsOnly()
-  }
-}
-</script>
-
-<script src="{{ url_for('static', filename='vendor/feather/feather.min.js') }}"></script>
-<script>
-  feather.replace()
-</script>
