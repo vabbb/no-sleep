@@ -1,7 +1,57 @@
-function get_flow(id) {
+const checkboxHex = document.getElementById('hexdump')
+const checkboxFlags = document.getElementById('flagsOnly')
+const selectService = document.getElementById('selectService')
+
+// FILTERS OBJECTS
+// set the value of the filter and then call the toggle() method to update the changes
+var flowFilters = {
+	hex : false,
+
+	toggle : function(){
+		if (this.hex) {
+			$('.blob').removeClass('d-none')
+			$('.printableData').addClass('d-none')
+		} else {
+			$('.blob').addClass('d-none')
+			$('.printableData').removeClass('d-none')
+		}
+	}
+}
+
+var flowsFilters = {
+	activeService : 'all',
+	onlyFlaggedFlows : false,
+	onlyFavoriteFlows : false,
+
+	toggle : function(){
+		console.log('vengoeseguito')
+		$("#flow-list").children().each(function() {
+			$(this).removeClass('d-none')
+			if (flowsFilters.onlyFlaggedFlows && !$(this).hasClass('hasflag') ){
+				if (!$(this).hasClass('d-none'))
+					$(this).addClass('d-none')
+			}
+			if ( flowsFilters.onlyFavoriteFlows && !$(this).hasClass('favourite') ){
+				if (!$(this).hasClass('d-none'))
+					$(this).addClass('d-none')	
+			}
+			if ( flowsFilters.activeService != 'all' && !$(this).hasClass(flowsFilters.activeService)){
+				if (!$(this).hasClass('d-none'))
+					$(this).addClass('d-none')	
+			}
+		})
+	}
+}
+
+var roundsFilters = {
+
+}
+
+// UTILITY FUNCTIONS TO FETCH DATA
+function getFlow(id) {
 	const checkbox = document.getElementById('hexdump')
 	$.ajax({
-		url: '/flow/' + id + '?hex=' + checkbox.checked,
+		url: '/flow/' + id + '?hex=' + flowFilters.hex,
 		type: 'GET',
 		success: function (response) {
 			$("#main").children().each(function (i) {
@@ -15,7 +65,7 @@ function get_flow(id) {
 	});
 }
 
-function get_round(time) {
+function getRound(time) {
 	$.ajax({
 		url: '/round/' + time,
 		type: 'POST',
@@ -23,95 +73,14 @@ function get_round(time) {
 			$("#flow-list").children().each(function (i) {
 				this.remove()
 			});
-			// console.log(response);
 			$("#flow-list").append(response);
+			flowsFilters.toggle()
 		},
 		error: function (error) {
 			console.log(error);
 		}
 	});
-}
-/*
-function update_starred() {
-	$(".list-group-star").children().each(function (i) {
-		this.remove()
-	})
-	$.ajax({
-		url: '/starred',
-		type: 'POST',
-		success: function (response) {
-			$(".list-group-star").append(response)
-		},
-		error: function (error) {
-			console.log(error);
-		}
-	});
-}
-
-function change_star(icon, id) {
-	var sel
-	if (icon.className.match(/far/)) {
-		icon.className = icon.className.replace(/far/g, 'fas')
-		sel = 'true'
-	} else {
-		icon.className = icon.className.replace(/fas/g, 'far')
-		sel = 'false'
-	}
-	$.ajax({
-		url: '/star/' + id + '/' + sel,
-		type: 'POST',
-		success: function (response) {
-			console.log(response);
-		},
-		error: function (error) {
-			console.log(error);
-		}
-	});
-	update_starred()
-}
-*/
-function deactivate_all() {
-	$("#flow-list").children().each(function (i) {
-		this.className = this.className.replace(/ active/, '')
-	})
-}
-
-function activate(o, id) {
-	deactivate_all()
-	if (!o.className.match(/active/)) {
-		o.className += ' active'
-	}
-	get_flow(id)
-}
-
-function deactivate_all_rounds() {
-	$("#round-list").children().each(function (i) {
-		this.className = this.className.replace(/ active/, '')
-	})
-}
-
-function activate_round(o, time) {
-	deactivate_all_rounds()
-	if (!o.className.match(/active/)) {
-		o.className += ' active'
-	}
-	get_round(time)
-}
-
-function showFlagsOnly() {
-	serviceActived = selectService.value
-	$('li.flow').removeClass("d-none")
-	if (serviceActived == "all") $('li.flow').not('li.flow.hasflag').addClass('d-none')
-	else $('li.flow').not('li.flow.hasflag.' + serviceActived).addClass('d-none')
-}
-
-function undoShowFlagsOnly() {
-	serviceActived = selectService.value
-	if (serviceActived == "all") $('li.flow').removeClass('d-none')
-	else {
-		$('li.flow').removeClass('d-none')
-		$('li.flow').not('li.flow.' + serviceActived).addClass('d-none')
-	}
+	
 }
 
 function pwn(flow_id) {
@@ -130,113 +99,121 @@ function pwn(flow_id) {
 	});
 }
 
-const checkboxHex = document.getElementById('hexdump')
-const checkboxFlags = document.getElementById('flagsOnly')
-const selectService = document.getElementById('selectService')
-
-function onlyShowPrintable() {
-	$('.blob').addClass('d-none')
-	$('.printableData').removeClass('d-none')
+// TOGGLE HIGHLIGHTS FOR THE FLOWS
+function getActiveFlow(){
+	return $("#flow-list").find('.active')
 }
 
-function onlyShowHexDump() {
-	$('.blob').removeClass('d-none')
-	$('.printableData').addClass('d-none')
+function setActiveFlow(id){
+	getActiveFlow().removeClass('active')
+	$("#flow-list").find('#'+id).addClass('active')
+	getFlow(id)
 }
 
-checkboxHex.addEventListener('change', (event) => {
-	if (event.target.checked) {
-		onlyShowHexDump();
-	} else {
-		onlyShowPrintable();
-	}
-})
+// TOGGLE HIGHLIGHTS FOR THE ROUNDS
+function getActiveRound(){
+	return $("#round-list").find('.active')
+}
 
-checkboxFlags.addEventListener('change', (event) => {
-	if (event.target.checked) {
-		showFlagsOnly();
-	} else {
-		undoShowFlagsOnly();
-	}
-})
+function setActiveRound(time){
+	getActiveRound().removeClass('active')
+	$("#round-list").find('#'+time).addClass('active')
+	getRound(time)
+}
 
-selectService.addEventListener('change', (event) => {
-	if (checkboxFlags.checked) {
-		showFlagsOnly()
-	} else {
-		undoShowFlagsOnly()
-	}
-})
-
-document.onkeydown = function (e) {
-	switch (e.key) {
-		case 'f':
-			if (checkboxFlags.checked) {
-				$('#flagsOnly').prop('checked', false);
-				undoShowFlagsOnly();
-				break
-			}
-			$('#flagsOnly').prop('checked', true);
-			showFlagsOnly();
+function shortcut(key){
+	switch (key) {
+		case 'h':
+			checkboxHex.click()
 			break;
-		case 'x':
-			if (checkboxHex.checked) {
-				$('#hexdump').prop('checked', false);
-				onlyShowPrintable();
-				break;
-			}
-			$('#hexdump').prop('checked', true);
-			onlyShowHexDump();
-			break;
-		case 'k':
-			var curr = $("#flow-list > li.active")
-			var prev = $("#flow-list > li.active").prevAll().not(".d-none").filter(":first")
-			if (prev.hasClass("nav-item")) {
-				curr.removeClass("active")
-				prev.addClass("active")
-			}
-			document.activeElement.blur()
-			break;
-		case 'j':
-			var curr = $("#flow-list > li.active")
-			if (curr.length == 0) { // select first in list
-				var first = $("#flow-list > li:not(.d-none)").filter(":first")
-				first.addClass("active")
-				break;
-			}
-			var next = $("#flow-list > li.active").nextAll().not(".d-none").filter(":first")
-			if (next.hasClass("nav-item")) {
-				curr.removeClass("active")
-				next.addClass("active")
-			}
-			document.activeElement.blur()
-			break;
-		case 'Enter':
-			$("#flow-list > li.active").click()
-			break;
-		case 'w':
-			var curr = $("#round-list > li.active")
-			if (curr.prev().hasClass("nav-item")) {
-				curr.removeClass("active")
-				curr.prev().addClass("active")
-				curr.prev().click()
-			}
-			document.activeElement.blur()
-			break;
-		case 's':
-			var curr = $("#round-list > li.active")
-			if (curr.length == 0) { // select first in list
-				var first = $("#round-list > li").filter(":first")
-				first.addClass("active")
-				first.click()
-				break;
-			}
-			if (curr.next().hasClass("nav-item")) {
-				curr.removeClass("active")
-				curr.next().addClass("active")
-				curr.next().click()
-			}
-			document.activeElement.blur()
+		default:
+			// statements_def
 			break;
 	}
 }
+
+// EVENT LISTENERS
+checkboxHex.addEventListener('change', function (event) {
+	flowFilters.hex = event.target.checked
+	flowFilters.toggle()
+})
+
+checkboxFlags.addEventListener('change', function(event) {
+	flowsFilters.onlyFlaggedFlows = event.target.checked
+	flowsFilters.toggle()
+})
+
+selectService.addEventListener('change', function(event) {
+	flowsFilters.activeService = event.target.value
+	flowsFilters.toggle()
+})
+
+document.addEventListener('keydown', function(event) {
+	shortcut(event.key)
+})
+
+// document.onkeydown = function (e) {
+// 	switch (e.key) {
+// 		case 'f':
+// 			checkboxHex.click()
+// 		case 'x':
+// 			if (checkboxHex.checked) {
+// 				$('#hexdump').prop('checked', false);
+// 				onlyShowPrintable();
+// 				break;
+// 			}
+// 			$('#hexdump').prop('checked', true);
+// 			onlyShowHexDump();
+// 			break;
+// 		case 'k':
+// 			var curr = $("#flow-list > li.active")
+// 			var prev = $("#flow-list > li.active").prevAll().not(".d-none").filter(":first")
+// 			if (prev.hasClass("nav-item")) {
+// 				curr.removeClass("active")
+// 				prev.addClass("active")
+// 			}
+// 			document.activeElement.blur()
+// 			break;
+// 		case 'j':
+// 			var curr = $("#flow-list > li.active")
+// 			if (curr.length == 0) { // select first in list
+// 				var first = $("#flow-list > li:not(.d-none)").filter(":first")
+// 				first.addClass("active")
+// 				break;
+// 			}
+// 			var next = $("#flow-list > li.active").nextAll().not(".d-none").filter(":first")
+// 			if (next.hasClass("nav-item")) {
+// 				curr.removeClass("active")
+// 				next.addClass("active")
+// 			}
+// 			document.activeElement.blur()
+// 			break;
+// 		case 'Enter':
+// 			$("#flow-list > li.active").click()
+// 			break;
+// 		case 'w':
+// 			var curr = $("#round-list > li.active")
+// 			if (curr.prev().hasClass("nav-item")) {
+// 				curr.removeClass("active")
+// 				curr.prev().addClass("active")
+// 				curr.prev().click()
+// 			}
+// 			document.activeElement.blur()
+// 			break;
+// 		case 's':
+// 			var curr = $("#round-list > li.active")
+// 			if (curr.length == 0) { // select first in list
+// 				var first = $("#round-list > li").filter(":first")
+// 				first.addClass("active")
+// 				first.click()
+// 				break;
+// 			}
+// 			if (curr.next().hasClass("nav-item")) {
+// 				curr.removeClass("active")
+// 				curr.next().addClass("active")
+// 				curr.next().click()
+// 			}
+// 			document.activeElement.blur()
+// 			break;
+// 	}
+// }

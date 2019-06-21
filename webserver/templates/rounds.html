@@ -1,8 +1,16 @@
-<li onclick="activate_round(this, 'ongoing')" class="nav-item ongoing round">
-  <a id="ongoing" class="nav-link text-center" href="javascript:void(0);">ongoing | 420KB</a>
-</li>
-{% for round, round_data in rounds.items() %}
-<li onclick="activate_round(this, '{{ round }}')" class="nav-item round">
-  <a class="nav-link text-center" href="javascript:void(0);">{{ round | int_to_round_time }} | {{ round_data[0] | format_bytes }}</a>
-</li>
+<!-- <li id="ongoing" onclick="setActiveRound('ongoing')" class="nav-item ongoing round">
+  <a class="nav-link text-center" href="javascript:void(0);">
+  	ongoing | 420KB
+	</a>
+</li> -->
+
+{% for round, traffic in rounds.items() %}
+	<li id="{{ round }}" 
+		onclick="setActiveRound('{{ round }}')" 
+		class="nav-item round">
+	  <a class="nav-link text-center" 
+	  	 href="javascript:void(0);">
+	  		{{ round | int_to_round_time }} | {{ traffic[0] | format_bytes }}
+	  </a>
+	</li>
 {% endfor %}
