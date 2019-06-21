@@ -54,10 +54,10 @@ function getFlow(id) {
 		url: '/flow/' + id + '?hex=' + flowFilters.hex,
 		type: 'GET',
 		success: function (response) {
-			$("#main").children().each(function (i) {
-				this.remove()
-			})
+			$("#main").empty()
 			$("#main").append(response)
+
+			flowFilters.toggle()
 		},
 		error: function (error) {
 			console.log(error);
@@ -70,10 +70,9 @@ function getRound(time) {
 		url: '/round/' + time,
 		type: 'POST',
 		success: function (response) {
-			$("#flow-list").children().each(function (i) {
-				this.remove()
-			});
+			$("#flow-list").empty()
 			$("#flow-list").append(response);
+
 			flowsFilters.toggle()
 		},
 		error: function (error) {

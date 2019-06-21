@@ -1,22 +1,31 @@
-{% macro flow_track(index, node, hex) %}
-{% if node['fromSrc'] == True %}
+{% macro flow_track(index, node) %}
+  {% if node['fromSrc'] == True %}
 
-{% if hex == 'true' %}
-<pre class=" text-monospace d-none ns-light-text printableData"><reddump>{{ node['printableData'] }}</reddump></pre>
-<pre class=" text-monospace blob"><reddump>{{ node['blob'] }}</reddump></pre>
-{% else %}
-<pre class=" text-monospace ns-light-text printableData"><reddump>{{ node['printableData'] }}</reddump></pre>
-<pre class=" text-monospace d-none blob"><reddump>{{ node['blob'] }}</reddump></pre>
-{% endif %}
-{% else %}
-{% if hex == 'true' %}
-<pre class=" text-monospace d-none ns-light-text printableData"><cyandump>{{ node['printableData'] }}</cyandump></pre>
-<pre class=" text-monospace blob"><cyandump>{{ node['blob'] }}</cyandump></pre>
-{% else %}
-<pre class=" text-monospace ns-light-text printableData"><cyandump>{{ node['printableData'] }}</cyandump></pre>
-<pre class=" text-monospace d-none blob"><cyandump>{{ node['blob'] }}</cyandump></pre>
-{% endif %}
-{% endif %}
+    <div class=" text-monospace ns-light-text printableData">
+      <reddump>
+        <pre>{{ node['printableData'] }}</pre>
+      </reddump>
+    </div>
+    <div class="text-monospace blob">
+      <reddump>
+        <pre>{{ node['blob'] }}</pre>
+      </reddump>
+    </div>
+
+  {% else %}
+
+    <div class=" text-monospace d-none ns-light-text printableData">
+      <cyandump>
+        <pre>{{ node['printableData'] }}</pre>
+      </cyandump>
+    </div>
+    <div class=" text-monospace blob">
+      <cyandump>
+        <pre>{{ node['blob'] }}</pre>
+      </cyandump>
+    </div>
+
+  {% endif %}
 {% endmacro %}
 
 <table class="w-100">
@@ -67,11 +76,7 @@
     <td> </td>
   </tr>
 </table>
-<hr size="2" class="mt-2 mb-3">
+<hr class="mt-2 mb-3">
 {% for node in flow['nodes'] %}
-{{ flow_track(loop.index, node, hex) }}
+  {{ flow_track(loop.index, node) }}
 {% endfor %}
-<script src="{{ url_for('static', filename='vendor/feather/feather.min.js') }}"></script>
-<script>
-  feather.replace()
-</script>
