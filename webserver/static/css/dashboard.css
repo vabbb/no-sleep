@@ -32,6 +32,7 @@ hr {
   background-color: rgb(51, 51, 51);
   height: 2px;
 }
+
 .ns-height {
   height: calc(100% - 48px);
 }
@@ -43,11 +44,6 @@ hr {
 .ongoing {
   color: rgb(214, 211, 205);
   background-color: #2c4d4d;
-}
-
-.active {
-  color: rgb(214, 211, 205);
-  background-color: #313c47;
 }
 
 body,
@@ -65,7 +61,6 @@ body,
 
 .container-fluid a:hover {
   color: rgb(214, 211, 205) !important;
-  background-color: #424b57 !important;
 }
 
 /* a:hover red, a:hover cyan {
@@ -185,57 +180,7 @@ cyandump {
   box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
 }
 
-.fixee0 {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 12rem;
-}
 
-.fixee1 {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 12rem;
-  width: 18rem;
-}
-
-.fixee2 {
-  top: 0;
-  bottom: 0;
-  margin-left: 30rem;
-  /* Firefox */
-  width: -moz-calc(100% - 30rem);
-  /* WebKit */
-  width: -webkit-calc(100% - 30rem);
-  /* Opera */
-  width: -o-calc(100% - 30rem);
-  /* Standard */
-  width: calc(100% - 30rem);
-}
-
-.fixeeSearchBar {
-  position: inherit;
-  top: 0;
-  bottom: 0;
-  left: 12rem;
-  width: 18rem;
-}
-
-.fixeeOpts {
-  top: 0;
-  bottom: 0;
-  /* Firefox */
-  width: -moz-calc(100% - 30rem);
-  /* WebKit */
-  width: -webkit-calc(100% - 30rem);
-  /* Opera */
-  width: -o-calc(100% - 30rem);
-  /* Standard */
-  width: calc(100% - 30rem);
-
-}
 
 .sidebar-sticky {
   position: relative;
@@ -328,3 +273,74 @@ cyandump {
   background-color: rgb(214, 211, 205);
   box-shadow: 0 0 0 0px rgba(0, 0, 0, 0);
 }
+
+/*Navigation*/
+
+li.flow:hover, li.flow.hover, li.round:hover, li.round.hover {
+  color: rgb(214, 211, 205);
+  background-color: #313131;
+}
+
+li.flow.active, li.round.active {
+  color: rgb(214, 211, 205);
+  background-color: #525252;
+}
+
+/*Fixees*/
+.fixee0 {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 12rem;
+}
+
+.fixee1 {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 12rem;
+  width: 18rem;
+}
+
+.fixee2 {
+  top: 0;
+  bottom: 0;
+  margin-left: 30rem;
+  /* Firefox */
+  width: -moz-calc(100% - 30rem);
+  /* WebKit */
+  width: -webkit-calc(100% - 30rem);
+  /* Opera */
+  width: -o-calc(100% - 30rem);
+  /* Standard */
+  width: calc(100% - 30rem);
+}
+
+.fixeeSearchBar, .fixee1-2 {
+  position: inherit;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 30rem;
+}
+
+.fixeeOpts {
+  top: 0;
+  bottom: 0;
+  /* Firefox */
+  width: -moz-calc(100% - 30rem);
+  /* WebKit */
+  width: -webkit-calc(100% - 30rem);
+  /* Opera */
+  width: -o-calc(100% - 30rem);
+  /* Standard */
+  width: calc(100% - 30rem);
+
+}
+
+/*Markings*/
+.mark, mark{
+    padding: 0px
+}
+

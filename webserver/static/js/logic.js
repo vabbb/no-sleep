@@ -1,5 +1,5 @@
 const checkboxHex = document.getElementById('hexdump')
-const checkboxFlags = document.getElementById('flagsOnly')
+const checkboxFlag = document.getElementById('flagsOnly')
 const selectService = document.getElementById('selectService')
 
 // FILTERS OBJECTS
@@ -120,13 +120,13 @@ function setActiveRound(time){
 	getRound(time)
 }
 
-function shortcut(key){
+function shortcuts(key){
 	switch (key) {
 		case 'h':
 			checkboxHex.click()
 			break;
-		default:
-			// statements_def
+		case 'f':
+			checkboxFlag.click()
 			break;
 	}
 }
@@ -137,7 +137,7 @@ checkboxHex.addEventListener('change', function (event) {
 	flowFilters.toggle()
 })
 
-checkboxFlags.addEventListener('change', function(event) {
+checkboxFlag.addEventListener('change', function(event) {
 	flowsFilters.onlyFlaggedFlows = event.target.checked
 	flowsFilters.toggle()
 })
@@ -148,22 +148,11 @@ selectService.addEventListener('change', function(event) {
 })
 
 document.addEventListener('keydown', function(event) {
-	shortcut(event.key)
+	shortcuts(event.key)
 })
 
 // document.onkeydown = function (e) {
 // 	switch (e.key) {
-// 		case 'f':
-// 			checkboxHex.click()
-// 		case 'x':
-// 			if (checkboxHex.checked) {
-// 				$('#hexdump').prop('checked', false);
-// 				onlyShowPrintable();
-// 				break;
-// 			}
-// 			$('#hexdump').prop('checked', true);
-// 			onlyShowHexDump();
-// 			break;
 // 		case 'k':
 // 			var curr = $("#flow-list > li.active")
 // 			var prev = $("#flow-list > li.active").prevAll().not(".d-none").filter(":first")
@@ -216,3 +205,31 @@ document.addEventListener('keydown', function(event) {
 // 			break;
 // 	}
 // }
+
+// SEARCHBAR
+$(function() {
+
+  var mark = function() {
+
+    // Read the keyword
+    var keyword = $("input[name='keyword']").val();
+
+    // Determine selected options
+    var options = {};
+    $("input[name='opt[]']").each(function() {
+      options[$(this).val()] = $(this).is(":checked");
+    });
+
+    // Remove previous marked elements and mark
+    // the new keyword inside the context
+    $(".flow, .printableData, .blob").unmark({
+      done: function() {
+        $(".flow, .printableData, .blob").mark(keyword, options);
+      }
+    });
+  };
+
+  $("input[name='keyword']").on("input", mark);
+  $("input[type='checkbox']").on("change", mark);
+
+});

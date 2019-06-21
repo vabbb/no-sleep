@@ -14,12 +14,23 @@
   <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
   <!-- Custom styles for this template-->
   <link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">
+
+  <!-- jQuery JS -->
+  <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
+
+  <!-- Bootstrap JS -->
+  <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+
+  <!-- Mark JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.js" type="text/javascript" charset="utf-8" ></script>
+
+  <!-- Mark jQuery JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.js" type="text/javascript" charset="utf-8"></script>
 </head>
 
 <body>
   <nav class="navbar navbar-dark sticky-top ns-bg-dark flex-md-nowrap p-0">
-    <a class="navbar-brand mr-0 text-center ns-light-text ns-logo fixee0" href="javascript:void(0)">n05133p</a>
-    <input class="form-control form-control-dark fixeeSearchBar" type="text" placeholder="Search" aria-label="Search">
+    <input class="form-control form-control-dark fixeeSearchBar" type="text" placeholder="Search" name='keyword' aria-label="Search">
     <div class="navbar navbar-dark sticky-top ns-bg-dark flex-md-nowrap p-0 fixeeOpts">
       <ul class="navbar-nav px-3 pl-4">
         <li class="nav-item text-nowrap">
@@ -79,17 +90,8 @@
       </main>
     </div>
   </div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-  <script>
-    window.jQuery || document.write('<script src="/docs/4.3/assets/js/vendor/jquery-slim.min.js"><\/script>')
-  </script>
-
-  <!-- Bootstrap core JavaScript-->
-  <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 
   <!-- Core plugin JavaScript-->
-  <script src="{{ url_for('static', filename='vendor/jquery-easing/jquery.easing.min.js') }}"></script>
   <script src="{{ url_for('static', filename='js/logic.js') }}"></script>
 
 </body>
