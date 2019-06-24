@@ -120,14 +120,21 @@ function pwn(flow_id) {
 		type: 'GET',
 		success: function (response) {
 			$(".modal-body").html("<pre><code>"+
-				response+
-				"</code></pre>")
-			$("#exploit").modal()
+				response+"</code></pre>");
+			$("#exploit").modal();
 		},
 		error: function (error) {
 			console.log(error);
 		}
 	});
+}
+
+function copyExploitToClipboard() {
+	var $temp = $("<textarea>");
+	$(".modal-body").append($temp);
+	$temp.text($(".modal-body").text()).select();
+	document.execCommand("copy");
+	$temp.remove();
 }
 
 const checkboxHex = document.getElementById('hexdump')
