@@ -27,11 +27,21 @@ select {
   /* height: 80%; */
 }
 
+.ns-rounds-time,
+.ns-rounds-size {
+  width: 70px;
+}
+
+.ns-rounds-sep {
+  width: 14px;
+}
+
 hr {
   border: none;
   background-color: rgb(51, 51, 51);
   height: 2px;
 }
+
 .ns-height {
   height: calc(100% - 48px);
 }
@@ -95,6 +105,7 @@ cyandump {
 .green-text {
   color: rgb(47, 223, 12)
 }
+
 .red-text {
   color: rgb(192, 51, 51);
 }
@@ -102,6 +113,7 @@ cyandump {
 .strikethrough {
   position: relative;
 }
+
 .strikethrough:before {
   position: absolute;
   content: "";
@@ -111,11 +123,11 @@ cyandump {
   border-top: 2px solid;
   border-color: inherit;
 
-  -webkit-transform:rotate(-25deg);
-  -moz-transform:rotate(-25deg);
-  -ms-transform:rotate(-25deg);
-  -o-transform:rotate(-25deg);
-  transform:rotate(-25deg);
+  -webkit-transform: rotate(-25deg);
+  -moz-transform: rotate(-25deg);
+  -ms-transform: rotate(-25deg);
+  -o-transform: rotate(-25deg);
+  transform: rotate(-25deg);
 }
 
 .feather {
@@ -132,11 +144,13 @@ cyandump {
 
 .ns-thin-scroll {
   scrollbar-width: thin;
-  scrollbar-color: rgb(51, 51, 51) rgb(30, 32, 34);;
+  scrollbar-color: rgb(51, 51, 51) rgb(30, 32, 34);
+  ;
 }
 
 ::-webkit-scrollbar {
-  background-color: rgb(30, 32, 34);;
+  background-color: rgb(30, 32, 34);
+  ;
   width: 5px;
 }
 
