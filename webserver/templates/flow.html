@@ -72,7 +72,6 @@
 {% for node in flow['nodes'] %}
 {{ flow_track(loop.index, node, hex) }}
 {% endfor %}
-<script src="{{ url_for('static', filename='vendor/feather/feather.min.js') }}"></script>
 <script>
   feather.replace()
 </script>
